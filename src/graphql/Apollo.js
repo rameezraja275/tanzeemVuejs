@@ -1,19 +1,29 @@
 import { ApolloClient } from "apollo-client";
 import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
+import { setContext } from "apollo-link-context";
 
-// HTTP connection to the API
+import localStorage from "../utils/localStorageService";
+const localStorageService = localStorage.getService();
+
 const httpLink = createHttpLink({
-  // You should use an absolute URL here
-  uri: "http://192.168.1.7:4000"
+  uri: "http://192.168.1.3:4000"
 });
 
-// Cache implementation
+const authLink = setContext((_, { headers }) => {
+  const token = localStorageService.getAccessToken();
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : ""
+    }
+  };
+});
+
 const cache = new InMemoryCache();
 
-// Create the apollo client
 const apolloClient = new ApolloClient({
-  link: httpLink,
+  link: authLink.concat(httpLink),
   cache
 });
 
