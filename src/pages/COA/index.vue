@@ -23,11 +23,6 @@ export default {
     getAccountParents: {
       query: GET_ACCOUNTS_PARENTS
     }
-  },
-  methods: {
-    // setAccountId(id) {
-    //   this.currentAccountID = id;
-    // }
   }
 };
 </script>

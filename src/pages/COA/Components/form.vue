@@ -57,6 +57,25 @@
             <v-radio label="Detail" :value="2"></v-radio>
           </v-radio-group>
         </validation-provider>
+        <validation-provider
+          v-slot="{ errors }"
+          name="accConfig"
+          rules="required"
+        >
+          <v-select
+            v-model="accConfig"
+            :items="configAccounts"
+            :error-messages="errors"
+            label="Configure account"
+            data-vv-name="select"
+            required
+            item-text="label"
+            item-value="id"
+          ></v-select>
+        </validation-provider>
+        <v-alert :value="message" dense elevation="2" type="error">
+          {{ message }}
+        </v-alert>
         <div class="text-right">
           <v-btn
             class="mr-4"
@@ -101,7 +120,9 @@ import {
   GET_ACCOUNTS_CHILDS,
   GET_ACCOUNTS_INFO_BY_ACCCODE,
   UPDATE_ACCOUNT,
-  DELETE_ACCOUNT
+  DELETE_ACCOUNT,
+  GET_ACCOUNTS_PARENTS,
+  GET_ACCOUNTS_CONFIG
 } from "../../../graphql/quries";
 
 setInteractionMode("eager");
@@ -130,7 +151,10 @@ export default {
     items: [],
     getGroupAccounts: [],
     allAcounts: [],
-    mutationLoading: false
+    configAccounts: [],
+    mutationLoading: false,
+    accConfig: null,
+    message: null
   }),
   apollo: {
     getGroupAccounts: {
@@ -151,6 +175,12 @@ export default {
         this.allAcounts = data.getAccounts;
         this.getCurrentAccount();
       }
+    },
+    getConfigAccounts: {
+      query: GET_ACCOUNTS_CONFIG,
+      result({ data }) {
+        this.configAccounts = data.getAccountConfig;
+      }
     }
   },
   computed: {
@@ -166,20 +196,34 @@ export default {
       this.$refs.observer.validate();
       this.mutationLoading = true;
       const variables = {
-        acc_code: Number(this.accountCode),
         acc_name: this.accountName,
         acc_parent: this.accParent,
-        acc_type: this.accType
+        acc_type: this.accType,
+        acc_config: this.accConfig
       };
-      const result = await this.$apollo.mutate({
-        mutation: this.isEditable ? UPDATE_ACCOUNT : ADD_ACCOUNT,
-        variables: this.isEditable
-          ? {
-              ...variables,
-              id: this.id
-            }
-          : variables
-      });
+      try {
+        const result = await this.$apollo.mutate({
+          mutation: this.isEditable ? UPDATE_ACCOUNT : ADD_ACCOUNT,
+          variables: this.isEditable
+            ? {
+                ...variables,
+                id: this.id
+              }
+            : {
+                ...variables,
+                acc_code: Number(this.accountCode)
+              }
+        });
+        if (result.errors) {
+          throw result.errors[0].message;
+        }
+        const asd = await this.$apollo.query({
+          query: GET_ACCOUNTS_PARENTS
+        });
+      } catch (e) {
+        console.log("err", e);
+        this.message = e;
+      }
       this.mutationLoading = false;
     },
     onClear() {
@@ -204,18 +248,28 @@ export default {
         const accountData = accounts.find(
           account => account.acc_code == this.$route.params.acccode
         );
-        const { acc_code, acc_name, acc_parent, id, acc_type } = accountData;
+        const {
+          acc_code,
+          acc_name,
+          acc_parent,
+          id,
+          acc_type,
+          acc_config
+        } = accountData;
         this.accountCode = acc_code;
         this.accountName = acc_name;
         this.accParent = acc_parent;
         this.accType = acc_type;
+        this.accConfig = acc_config;
         this.id = id;
       }
     }
   },
+  created() {
+    this.acc_code == this.$route.params.acccode;
+  },
   watch: {
     $route: function(newCode, oldCode) {
-      console.log("this", oldCode.params.acccode);
       if (newCode.params.acccode == "0") {
         this.onClear();
       }

@@ -1,11 +1,17 @@
 <template>
-  <div>
-    <h4>Voucher Post</h4>
-  </div>
+  <v-card class="flex">
+    <List />
+    <router-view />
+  </v-card>
 </template>
 
 <script>
+import List from "./components/List";
+
 export default {
-  name: "VoucherPost"
+  name: "VP",
+  components: {
+    List
+  }
 };
 </script>

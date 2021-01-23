@@ -8,6 +8,11 @@
 
 <script>
 export default {
-  name: "Form"
+  name: "Form",
+  methods: {
+    conso: function() {
+      console.log("data ", this.$apollo);
+    }
+  }
 };
 </script>

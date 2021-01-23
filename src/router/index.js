@@ -71,7 +71,14 @@ const routes = [
           name: "Login"
         });
       }
-    }
+    },
+    children: [
+      {
+        path: ":vpid",
+        component: () => import("../pages/VoucherPost/components/Table"),
+        meta: { layout: Layout }
+      }
+    ]
   },
   {
     path: "/login",
