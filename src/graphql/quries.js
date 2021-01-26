@@ -113,7 +113,7 @@ export const ADD_POST_VOUCHER = gql`
   mutation addAccountVoucher(
     $voucher_date: Date!
     $voucher_type: Int!
-    $data: [Voucher_Input]
+    $data: [Add_Voucher_Input]
   ) {
     addAccountVoucher(
       voucher_date: $voucher_date
@@ -130,11 +130,13 @@ export const UPDATE_POST_VOUCHER = gql`
   mutation updateAccountVoucher(
     $voucher_date: Date!
     $voucher_type: Int!
+    $acc_master_id: Int!
     $data: [Update_Voucher_Input]
   ) {
     updateAccountVoucher(
       voucher_date: $voucher_date
       voucher_type: $voucher_type
+      acc_master_id: $acc_master_id
       data: $data
     ) {
       message
@@ -144,7 +146,7 @@ export const UPDATE_POST_VOUCHER = gql`
 `;
 
 export const GET_VOUCHER_POST = gql`
-  query getGroupVouchers($voucher_date: Date!) {
+  query getGroupVouchers($voucher_date: Date) {
     getGroupVouchers(voucher_date: $voucher_date) {
       id
     }
@@ -154,13 +156,28 @@ export const GET_VOUCHER_POST = gql`
 export const GET_VOUCHERS_BY_GROUPID = gql`
   query getAccountVouchers($id: Int!) {
     getAccountVouchers(id: $id) {
-      id
-      acc_master_id
-      acc_code_id
-      acc_no_id
-      narration
-      dr
-      cr
+      group_details {
+        voucher_date
+        voucher_type
+      }
+      vouchers {
+        id
+        acc_master_id
+        acc_code_id
+        acc_no_id
+        narration
+        dr
+        cr
+      }
+    }
+  }
+`;
+
+export const DELETE_POST_VOUCHER = gql`
+  mutation deleteVoucherGroup($id: Int!) {
+    deleteVoucherGroup(id: $id) {
+      message
+      status
     }
   }
 `;

@@ -75,7 +75,7 @@ const routes = [
     children: [
       {
         path: ":vpid",
-        component: () => import("../pages/VoucherPost/components/Table"),
+        component: () => import("../pages/VoucherPost"),
         meta: { layout: Layout }
       }
     ]

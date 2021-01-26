@@ -7,3 +7,10 @@ export const validateToken = () => {
   if (token) return true;
   return false;
 };
+
+export const omitTypeOff = data => {
+  const omitTypename = (key, value) =>
+    key === "__typename" ? undefined : value;
+  const parsedData = JSON.parse(JSON.stringify(data), omitTypename);
+  return parsedData;
+};

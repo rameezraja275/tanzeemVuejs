@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container pt-8">
     <v-data-table
       :headers="headers"
       :items="voucherGroup"
@@ -8,10 +8,13 @@
     >
       <template v-slot:top>
         <v-toolbar flat>
-          <v-toolbar-title>Voucher Post</v-toolbar-title>
+          <v-toolbar-title>{{
+            isEditMode ? "Edit Vouchers" : "Add Voucher"
+          }}</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
           <v-menu
+            class="ma-5"
             v-model="menu2"
             :close-on-content-click="false"
             :nudge-right="40"
@@ -22,7 +25,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
                 v-model="voucherPostDate"
-                label="Picker without buttons"
+                label="Date Picker"
                 prepend-icon="mdi-calendar"
                 readonly
                 v-bind="attrs"
@@ -36,9 +39,10 @@
           </v-menu>
 
           <v-select
-            v-model="accType"
+            class="ma-5"
+            v-model="voucherType"
             :items="accountTypes"
-            label="Account Type"
+            label="Voucher Type"
             item-text="name"
             item-value="id"
           ></v-select>
@@ -66,17 +70,26 @@
         </v-icon>
       </template>
       <template v-slot:no-data>
-        <v-btn color="primary" @click="initialize">
-          Reset
-        </v-btn>
+        <h4>No Vouchers found</h4>
       </template>
     </v-data-table>
-    <v-btn
-      @click="onSubmit"
-      :loading="mutationLoading"
-      :disabled="mutationLoading"
-      >Done</v-btn
-    >
+    <div class="text-right mx-5 my-5">
+      <v-btn
+        class="mr-4"
+        @click="onSubmit"
+        :loading="mutationLoading"
+        :disabled="mutationLoading || voucherGroup == 0"
+        color="primary"
+        >Done</v-btn
+      >
+      <v-btn
+        @click="onDelete"
+        :loading="delLoading"
+        :disabled="delLoading"
+        color="error"
+        >Delete</v-btn
+      >
+    </div>
   </div>
 </template>
 
@@ -85,17 +98,16 @@ import VoucherForm from "./VoucherForm.vue";
 import DeleteAlert from "./alert.vue";
 import AccountTypes from "../../../utils/accountTypes";
 import {
-  UPDATE_POST_VOUCHER,
-  ADD_POST_VOUCHER,
-  GET_VOUCHERS_BY_GROUPID
-} from "../../../graphql/quries";
+  addUpdateVouchers,
+  deleteVouchers,
+  getVoucherByGroupId
+} from "../actions";
 export default {
   components: { VoucherForm, DeleteAlert },
   data: () => ({
-    accType: 1,
+    voucherType: 1,
     dialog: false,
     dialogDelete: false,
-    isEditMode: true,
     mutationLoading: false,
     headers: [
       {
@@ -128,12 +140,19 @@ export default {
       dr: "",
       cr: ""
     },
-    accountTypes: AccountTypes
+    accountTypes: AccountTypes,
+    delLoading: false
   }),
 
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? "Add Voucher" : "Edit Voucher";
+    },
+    isEditMode() {
+      return this.voucherGroupId ? true : false;
+    },
+    voucherGroupId() {
+      return this.$route.params.vpid;
     }
   },
 
@@ -144,54 +163,29 @@ export default {
     dialogDelete(val) {
       val || this.closeDelete();
     },
-    $route: function(newCode, oldCode) {
-      this.getVoucherByGroupId();
+    $route: function(newRoute, oldRoute) {
+      if (newRoute.params.vpid == undefined) {
+        this.onClear();
+      }
+      getVoucherByGroupId(this);
     }
   },
-
   created() {
     this.initialize();
+    getVoucherByGroupId(this);
   },
-
   methods: {
     initialize() {
       this.voucherGroup = [];
     },
-    async getVoucherByGroupId() {
-      const result = await this.$apollo.query({
-        query: GET_VOUCHERS_BY_GROUPID,
-        variables: {
-          id: Number(this.$route.params.vpid)
-        }
-      });
-      this.voucherGroup = result.data.getAccountVouchers;
+    onClear() {
+      this.voucherGroup = [];
     },
-    async onSubmit() {
-      this.mutationLoading = true;
-      const variables = {
-        voucher_date: this.voucherPostDate,
-        voucher_type: this.accType,
-        data: this.voucherGroup
-      };
-      try {
-        const result = await this.$apollo.mutate({
-          mutation: this.isEditMode ? UPDATE_POST_VOUCHER : ADD_POST_VOUCHER,
-          variables: this.isEditMode
-            ? {
-                ...variables,
-                acc_master_id: Number(this.$route.params.vpid)
-              }
-            : {
-                ...variables
-              }
-        });
-        if (result.errors) {
-          throw result.errors[0].message;
-        }
-      } catch (e) {
-        this.message = e;
-      }
-      this.mutationLoading = false;
+    onSubmit() {
+      addUpdateVouchers(this);
+    },
+    async onDelete() {
+      deleteVouchers(this);
     },
     editItem(item) {
       this.editedIndex = this.voucherGroup.indexOf(item);
@@ -200,7 +194,6 @@ export default {
     },
 
     deleteItem(item) {
-      console.log("item", item);
       this.editedIndex = this.voucherGroup.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialogDelete = true;

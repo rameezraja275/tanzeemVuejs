@@ -1,17 +1,19 @@
 <template>
   <v-card class="flex">
     <List />
-    <router-view />
+    <Table />
   </v-card>
 </template>
 
 <script>
 import List from "./components/List";
+import Table from "./components/Table.vue";
 
 export default {
   name: "VP",
   components: {
-    List
+    List,
+    Table
   }
 };
 </script>

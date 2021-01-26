@@ -115,6 +115,7 @@ import {
   ValidationProvider,
   setInteractionMode
 } from "vee-validate";
+import { getAccountChilds } from "../actions/index";
 
 setInteractionMode("eager");
 
@@ -150,15 +151,6 @@ export default {
     }
   },
   methods: {
-    async getChilds(item) {
-      const result = await this.$apollo.query({
-        query: GET_ACCOUNTS_CHILDS,
-        variables: {
-          acc_parent: item.acc_code_id
-        }
-      });
-      this.accounts_child = result.data.getAccountChilds;
-    },
     submit() {
       this.$refs.observer.validate();
       this.save();
@@ -167,7 +159,7 @@ export default {
   watch: {
     editedItem: {
       handler(newItem, oldItem) {
-        this.getChilds(newItem);
+        getAccountChilds(this, newItem);
       },
       deep: true
     }

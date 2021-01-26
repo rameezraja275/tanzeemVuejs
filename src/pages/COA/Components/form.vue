@@ -53,8 +53,8 @@
           rules="required"
         >
           <v-radio-group v-model="accType" row :error-messages="errors">
-            <v-radio label="Group" :value="1"></v-radio>
-            <v-radio label="Detail" :value="2"></v-radio>
+            <v-radio label="Group" :value="GROUP_ACCOUNTS"></v-radio>
+            <v-radio label="Detail" :value="DETAIL_ACCOUNTS"></v-radio>
           </v-radio-group>
         </validation-provider>
         <validation-provider
@@ -124,6 +124,11 @@ import {
   GET_ACCOUNTS_PARENTS,
   GET_ACCOUNTS_CONFIG
 } from "../../../graphql/quries";
+import {
+  DEFAULT,
+  GROUP_ACCOUNTS,
+  DETAIL_ACCOUNTS
+} from "../../../utils/constants";
 
 setInteractionMode("eager");
 
@@ -145,7 +150,7 @@ export default {
   data: () => ({
     accountCode: "",
     accountName: "",
-    accType: 1,
+    accType: GROUP_ACCOUNTS,
     accParent: null,
     id: null,
     items: [],
@@ -154,13 +159,15 @@ export default {
     configAccounts: [],
     mutationLoading: false,
     accConfig: null,
-    message: null
+    message: null,
+    GROUP_ACCOUNTS,
+    DETAIL_ACCOUNTS
   }),
   apollo: {
     getGroupAccounts: {
       query: GET_ACCOUNTS,
       variables: {
-        acc_type: 1
+        acc_type: GROUP_ACCOUNTS
       },
       result({ data }) {
         this.getGroupAccounts = data.getAccounts;
@@ -169,7 +176,7 @@ export default {
     getAllAccounts: {
       query: GET_ACCOUNTS,
       variables: {
-        acc_type: 0
+        acc_type: DETAIL_ACCOUNTS
       },
       result({ data }) {
         this.allAcounts = data.getAccounts;
@@ -221,7 +228,6 @@ export default {
           query: GET_ACCOUNTS_PARENTS
         });
       } catch (e) {
-        console.log("err", e);
         this.message = e;
       }
       this.mutationLoading = false;
@@ -230,7 +236,7 @@ export default {
       this.accountCode = "";
       this.accountName = "";
       this.accParent = null;
-      this.accType = 1;
+      this.accType = GROUP_ACCOUNTS;
       this.$refs.observer.reset();
     },
     async onDelete() {
@@ -267,6 +273,7 @@ export default {
   },
   created() {
     this.acc_code == this.$route.params.acccode;
+    this.getCurrentAccount();
   },
   watch: {
     $route: function(newCode, oldCode) {

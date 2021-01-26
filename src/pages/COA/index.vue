@@ -1,18 +1,20 @@
 <template>
   <v-card class="flex">
     <Tree :parentAccounts="getAccountParents" />
-    <router-view />
+    <Form />
   </v-card>
 </template>
 
 <script>
 import Tree from "./Components/tree";
+import Form from "./Components/form";
 import { GET_ACCOUNTS_PARENTS } from "../../graphql/quries";
 
 export default {
   name: "COA",
   components: {
-    Tree
+    Tree,
+    Form
   },
   data() {
     return {

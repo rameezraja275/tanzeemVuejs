@@ -2,14 +2,44 @@
   <v-card max-width="500" tile>
     <v-list shaped>
       <v-subheader>Vouchers</v-subheader>
+      <div class="px-5">
+        <v-btn block plain to="/voucherpost" class="primary">
+          Add New Vouchers
+        </v-btn>
+        <v-menu
+          v-model="menu2"
+          :close-on-content-click="false"
+          :nudge-right="40"
+          transition="scale-transition"
+          offset-y
+          min-width="auto"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+              v-model="filterDate"
+              label="Picker without buttons"
+              prepend-icon="mdi-calendar"
+              readonly
+              v-bind="attrs"
+              v-on="on"
+            ></v-text-field>
+          </template>
+          <v-date-picker
+            v-model="filterDate"
+            @input="menu2 = false"
+          ></v-date-picker>
+        </v-menu>
+      </div>
       <v-list-item-group v-model="selectedItem" color="primary">
-        <v-list-item v-for="(voucherGroup, i) in vouchersGroups" :key="i">
+        <v-list-item
+          v-for="(voucherGroup, i) in vouchersGroups"
+          :key="i"
+          :to="{ path: `/voucherpost/${voucherGroup.id}` }"
+        >
           <v-list-item-content>
-            <router-link :to="{ path: `/voucherpost/${voucherGroup.id}` }">
-              <v-list-item-title
-                v-text="`Voucher # ${voucherGroup.id}`"
-              ></v-list-item-title>
-            </router-link>
+            <v-list-item-title
+              v-text="`Voucher # ${voucherGroup.id}`"
+            ></v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list-item-group>
@@ -18,25 +48,24 @@
 </template>
 
 <script>
-import { GET_VOUCHER_POST } from "../../../graphql/quries";
+import { getVoucherByDate } from "../actions/index";
 export default {
   data: () => ({
     selectedItem: 1,
-    vouchersGroups: []
+    vouchersGroups: [],
+    menu2: false,
+    filterDate: new Date().toISOString().substr(0, 10)
   }),
-  methods: {
-    async getChilds(item) {
-      const result = await this.$apollo.query({
-        query: GET_VOUCHER_POST,
-        variables: {
-          voucher_date: "2019-10-11"
-        }
-      });
-      this.vouchersGroups = result.data.getGroupVouchers;
-    }
-  },
   created() {
-    this.getChilds();
+    getVoucherByDate(this);
+  },
+  watch: {
+    filterDate: {
+      handler(newItem, oldItem) {
+        getVoucherByDate(this);
+      },
+      deep: true
+    }
   }
 };
 </script>

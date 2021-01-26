@@ -2,7 +2,7 @@
   <v-card max-width="500" height="100%">
     <div>
       <v-sheet class="pa-4 lighten-2 rounded-0" width="250">
-        <v-btn block plain to="/coa/0" class="primary">
+        <v-btn block plain to="/coa" class="primary">
           Add New Account
         </v-btn>
       </v-sheet>
