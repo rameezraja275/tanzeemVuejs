@@ -10,7 +10,7 @@
         >
           <v-text-field
             :disabled="isEditable"
-            v-model="accountCode"
+            v-model="acc_code"
             :counter="4"
             :error-messages="errors"
             label="Acc Code"
@@ -148,7 +148,7 @@ export default {
     ValidationObserver
   },
   data: () => ({
-    accountCode: "",
+    acc_code: "",
     accountName: "",
     accType: GROUP_ACCOUNTS,
     accParent: null,
@@ -218,7 +218,7 @@ export default {
               }
             : {
                 ...variables,
-                acc_code: Number(this.accountCode)
+                acc_code: Number(this.acc_code)
               }
         });
         if (result.errors) {
@@ -233,7 +233,7 @@ export default {
       this.mutationLoading = false;
     },
     onClear() {
-      this.accountCode = "";
+      this.acc_code = "";
       this.accountName = "";
       this.accParent = null;
       this.accType = GROUP_ACCOUNTS;
@@ -262,7 +262,7 @@ export default {
           acc_type,
           acc_config
         } = accountData;
-        this.accountCode = acc_code;
+        this.acc_code = acc_code;
         this.accountName = acc_name;
         this.accParent = acc_parent;
         this.accType = acc_type;

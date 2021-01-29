@@ -82,8 +82,7 @@ export default {
         value: "first_name",
         width: 400
       },
-      { text: "Account Code", value: "acc_code" },
-      { text: "Cellphone", value: "cell" },
+      { text: "Cellphone Number", value: "cell" },
       { text: "Gender", value: "gender" },
       { text: "National Id", value: "cnic" },
       { text: "Account Id", value: "id" }

@@ -109,34 +109,20 @@ export async function fetchAccountHolders(vueObj) {
   vueObj.accountHoldersData = result.data.getAccountHolders;
 }
 
-// export async function newAccountHolder(vueObj) {
-//   const variables = {
-//     acc_code: vueObj.dataFromInputs1.accountCode,
-//     acc_code_id: vueObj.dataFromInputs1.accountCodeId,
-//     acc_no: vueObj.dataFromInputs1.accountNumber,
-//     first_name: vueObj.dataFromInputs1.firstName,
-//     middle_name: vueObj.dataFromInputs1.middleName,
-//     last_name: vueObj.dataFromInputs1.lastName,
-//     guardian_type: vueObj.dataFromInputs1.guardianType,
-//     guardian_name: vueObj.dataFromInputs1.guardianName,
-//     cell: vueObj.dataFromInputs1.cellPhone,
-//     landline_no: vueObj.dataFromInputs1.landLineNumber,
-//     cnic: vueObj.dataFromInputs1.cnic,
-//     gender: vueObj.dataFromInputs1.gender,
-//     dob: vueObj.dataFromInputs1.dateOfBirth,
-//     address: vueObj.dataFromInputs1.address,
-//     opening_date: vueObj.dataFromInputs1.accountOpeningDate,
-//     guarantor: []
-//   };
-//   try {
-//     const result = await vueObj.$apollo.mutate({
-//       mutation: ADD_ACCOUNT_HOLDER,
-//       variables: variables
-//     });
-//     if (result.errors) {
-//       throw result.errors[0].message;
-//     }
-//   } catch (e) {
-//     vueObj.message = e;
-//   }
-// }
+export async function newAccountHolder(vueObj) {
+  const variables = {
+    ...vueObj.dataFromInputs1
+  };
+  try {
+    const result = await vueObj.$apollo.mutate({
+      mutation: ADD_ACCOUNT_HOLDER,
+      variables: variables
+    });
+    console.log(result, "Result from mutation");
+    if (result.errors) {
+      throw result.errors[0].message;
+    }
+  } catch (e) {
+    vueObj.message = e;
+  }
+}

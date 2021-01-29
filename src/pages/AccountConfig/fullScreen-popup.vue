@@ -80,41 +80,42 @@ export default {
         }
       ],
       guarantorObj1: {
-        accountNumberId: null,
-        guarantorName: null,
+        acc_no_id: null,
+        guarantor_name: null,
         cnic: null,
         contact: null
       },
       guarantorObj2: {
-        accountNumberId: null,
-        guarantorName: null,
+        acc_no_id: null,
+        guarantor_name: null,
         cnic: null,
         contact: null
       },
 
       dataFromInputs1: {
-        firstName: "",
-        middleName: "",
-        lastName: "",
-        accountCode: null,
-        accountCodeId: null,
-        accountNumber: null,
-        guardianType: null,
-        guardianName: null,
-        cellPhone: null,
-        landLineNumber: null,
+        first_name: "",
+        middle_name: "",
+        last_name: "",
+        acc_code_id: null,
+        acc_no: null,
+        guardian_type: null,
+        guardian_name: null,
+        cell: null,
+        landline_no: null,
         address: "",
         cnic: null,
         gender: null,
-        dateOfBirth: null,
-        accountOpeningDate: null,
+        dob: null,
+        opening_date: null,
         guarantor: []
       }
     };
   },
   methods: {
     submitData: function() {
+      this.dataFromInputs1.guarantor.push(this.guarantorObj1);
       this.dialogPopUp = false;
+      console.log(this.dataFromInputs1.opening_date);
       newAccountHolder(this);
     }
   }

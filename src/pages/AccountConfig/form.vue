@@ -23,43 +23,50 @@
                   <v-text-field
                     label="First Name"
                     :rules="rules"
-                    v-model="dataFromInputs1.firstName"
+                    v-model="dataFromInputs1.first_name"
                   ></v-text-field>
                 </v-col>
                 <v-col md="4">
                   <v-text-field
                     label="Middle Name"
-                    v-model="dataFromInputs1.middleName"
+                    v-model="dataFromInputs1.middle_name"
                   ></v-text-field>
                 </v-col>
                 <v-col md="4">
                   <v-text-field
                     label="Last Name"
-                    v-model="dataFromInputs1.lastName"
+                    v-model="dataFromInputs1.last_name"
                   ></v-text-field>
                 </v-col>
               </v-row>
 
               <v-row>
                 <v-col md="4">
-                  <v-text-field
+                  <!-- <v-text-field
                     label="Account Code"
                     :rules="rules"
-                    v-model="dataFromInputs1.accountCode"
+                    v-model="dataFromInputs1.acc_code"
                   ></v-text-field>
                 </v-col>
                 <v-col md="4">
                   <v-text-field
                     label="Account Code Id"
                     :rules="rules"
-                    v-model="dataFromInputs1.accountCodeId"
-                  ></v-text-field>
+                    v-model="dataFromInputs1.acc_code_id"
+                  ></v-text-field> -->
+                  <v-autocomplete
+                    v-model="dataFromInputs1.acc_code_id"
+                    :items="accounts"
+                    item-text="acc_code"
+                    item-value="id"
+                    label="Account"
+                  ></v-autocomplete>
                 </v-col>
                 <v-col md="4">
                   <v-text-field
                     label="Account Number"
                     :rules="rules"
-                    v-model="dataFromInputs1.accountNumber"
+                    v-model="dataFromInputs1.acc_no"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -69,14 +76,14 @@
                   <v-text-field
                     label="Guardian Type"
                     :rules="rules"
-                    v-model="dataFromInputs1.guardianType"
+                    v-model="dataFromInputs1.guardian_type"
                   ></v-text-field>
                 </v-col>
                 <v-col md="4">
                   <v-text-field
                     label="Guardian Name"
                     :rules="rules"
-                    v-model="dataFromInputs1.guardianName"
+                    v-model="dataFromInputs1.guardian_name"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -85,13 +92,13 @@
                 <v-col md="4">
                   <v-text-field
                     label="Cell Phone"
-                    v-model="dataFromInputs1.cellPhone"
+                    v-model="dataFromInputs1.cell"
                   ></v-text-field>
                 </v-col>
                 <v-col md="4">
                   <v-text-field
                     label="Landline Number"
-                    v-model="dataFromInputs1.landLineNumber"
+                    v-model="dataFromInputs1.landline_no"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -141,9 +148,9 @@
                     </template>
                     <v-date-picker
                       ref="picker"
-                      v-model="dataFromInputs1.dateOfBirth"
+                      v-model="dataFromInputs1.dob"
                       :max="new Date().toISOString().substr(0, 10)"
-                      min="1950-01-01"
+                      min="1900-01-01"
                       @change="save"
                     ></v-date-picker>
                   </v-menu>
@@ -164,7 +171,7 @@
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
                         v-model="date2"
-                        label="Picker in menu"
+                        label="Account Opening Date"
                         prepend-icon="mdi-calendar"
                         v-bind="attrs"
                         v-on="on"
@@ -175,11 +182,7 @@
                       <v-btn text color="primary" @click="menu2 = false">
                         Cancel
                       </v-btn>
-                      <v-btn
-                        text
-                        color="primary"
-                        @click="$refs.menu2.save(date2)"
-                      >
+                      <v-btn text color="primary" @click="setDate2()">
                         OK
                       </v-btn>
                     </v-date-picker>
@@ -200,7 +203,7 @@
                   <v-text-field
                     label="Guarantor Name"
                     :rules="rules"
-                    v-model="guarantorObj1.guarantorName"
+                    v-model="guarantorObj1.guarantor_name"
                   ></v-text-field>
                 </v-col>
 
@@ -227,8 +230,8 @@
                     :items="accountHoldersData"
                     item-text="first_name"
                     item-value="id"
-                    v-model="guarantorObj1.accountNumberId"
-                    label="Account Holder ID's"
+                    v-model="guarantorObj1.acc_no_id"
+                    label="Account Number ID"
                     :rules="rules"
                     required
                   ></v-select>
@@ -244,7 +247,7 @@
                   <v-text-field
                     label="Guarantor Name"
                     :rules="rules"
-                    v-model="guarantorObj2.guarantorName"
+                    v-model="guarantorObj2.guarantor_name"
                   ></v-text-field>
                 </v-col>
 
@@ -271,7 +274,7 @@
                     :items="accountHoldersData"
                     item-text="first_name"
                     item-value="id"
-                    v-model="guarantorObj2.accountNumberId"
+                    v-model="guarantorObj2.acc_no_id"
                     label="Account Holder ID's"
                     :rules="rules"
                     required
@@ -280,21 +283,6 @@
               </v-row>
             </v-card-text>
           </v-window-item>
-
-          <!-- <v-window-item :value="3">
-                <div class="pa-4 text-center">
-                    <v-img
-                    class="mb-4"
-                    contain
-                    height="128"
-                    src="https://cdn.vuetifyjs.com/images/logos/v.svg"
-                    ></v-img>
-                    <h3 class="title font-weight-light mb-2">
-                    Welcome to Vuetify
-                    </h3>
-                    <span class="caption grey--text">Thanks for signing up!</span>
-                </div>
-                </v-window-item> -->
         </v-window>
 
         <v-divider></v-divider>
@@ -308,7 +296,7 @@
             :disabled="step === 2"
             color="primary"
             depressed
-            @click="test()"
+            @click="step++"
           >
             Next
           </v-btn>
@@ -319,7 +307,7 @@
 </template>
 
 <script>
-import { GET_ACCOUNTS } from "../../graphql/quries";
+import { GET_ACCOUNTS_NO_ID } from "../../graphql/quries";
 
 export default {
   props: [
@@ -358,9 +346,9 @@ export default {
     save(date) {
       this.$refs.menu.save(date);
     },
-    test() {
-      this.step++;
-      this.dataFromInputs1.accountOpeningDate = this.date2;
+    setDate2() {
+      this.$refs.menu2.save(this.date2);
+      this.dataFromInputs1.opening_date = this.date2;
     }
   },
   watch: {
@@ -371,10 +359,7 @@ export default {
   created() {},
   apollo: {
     getGroupAccounts: {
-      query: GET_ACCOUNTS,
-      variables: {
-        acc_type: 1
-      },
+      query: GET_ACCOUNTS_NO_ID,
       result({ data }) {
         this.accounts = data.getAccounts;
       }

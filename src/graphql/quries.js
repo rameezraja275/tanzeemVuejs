@@ -25,6 +25,19 @@ export const GET_ACCOUNTS = gql`
     }
   }
 `;
+// test this
+export const GET_ACCOUNTS_NO_ID = gql`
+  query {
+    getAccounts {
+      id
+      acc_code
+      acc_parent
+      acc_name
+      acc_type
+      acc_config
+    }
+  }
+`;
 
 export const GET_ACCOUNTS_PARENTS = gql`
   query {
@@ -190,14 +203,50 @@ export const GET_ACCOUNT_HOLDERS = gql`
       last_name
       cnic
       gender
-      acc_code
       cell
     }
   }
 `;
 
-// export const ADD_ACCOUNT_HOLDER = gql`
-//   mutation addAccountHolder() {
-
-//   }
-// `
+export const ADD_ACCOUNT_HOLDER = gql`
+  mutation addAccountHolder(
+    $acc_code: BigInt
+    $acc_code_id: BigInt
+    $acc_no: BigInt
+    $first_name: String
+    $middle_name: String
+    $last_name: String
+    $guardian_type: String
+    $guardian_name: String
+    $cell: String
+    $landline_no: String
+    $cnic: String
+    $gender: String
+    $dob: Date
+    $address: String
+    $opening_date: Date
+    $guarantor: [Account_Guarantor_Input]
+  ) {
+    addAccountHolder(
+      acc_code: $acc_code
+      acc_code_id: $acc_code_id
+      acc_no: $acc_no
+      first_name: $first_name
+      middle_name: $middle_name
+      last_name: $last_name
+      guardian_type: $guardian_type
+      guardian_name: $guardian_name
+      cell: $cell
+      landline_no: $landline_no
+      cnic: $cnic
+      gender: $gender
+      dob: $dob
+      address: $address
+      opening_date: $opening_date
+      guarantor: $guarantor
+    ) {
+      message
+      status
+    }
+  }
+`;
