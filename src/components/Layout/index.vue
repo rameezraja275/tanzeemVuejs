@@ -53,7 +53,7 @@ export default {
         { title: "Chart of accounts", icon: "mdi-home-city", to: "/coa" },
         { title: "Post Voucher", icon: "mdi-account", to: "/voucherpost" },
         {
-          title: "Account Config",
+          title: "Account Holders",
           icon: "mdi-account-group-outline",
           to: "/accountconfig"
         }

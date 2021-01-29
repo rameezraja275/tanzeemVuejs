@@ -181,3 +181,23 @@ export const DELETE_POST_VOUCHER = gql`
     }
   }
 `;
+
+export const GET_ACCOUNT_HOLDERS = gql`
+  query {
+    getAccountHolders {
+      id
+      first_name
+      last_name
+      cnic
+      gender
+      acc_code
+      cell
+    }
+  }
+`;
+
+// export const ADD_ACCOUNT_HOLDER = gql`
+//   mutation addAccountHolder() {
+
+//   }
+// `
