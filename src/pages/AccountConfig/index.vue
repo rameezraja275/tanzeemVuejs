@@ -41,6 +41,7 @@
           <pop-up
             :dialogPopUp="dialogPopUp"
             :accountHoldersData="accountHoldersData"
+            :editAccountDetails="editAccountDetails"
           ></pop-up>
         </v-toolbar>
       </template>
@@ -52,17 +53,20 @@
           mdi-delete
         </v-icon>
       </template>
-      <template v-slot:no-data>
+      <!-- <template v-slot:no-data>
         <v-btn color="primary" @click="initialize">
           Reset
         </v-btn>
-      </template>
+      </template> -->
     </v-data-table>
   </div>
 </template>
 
 <script>
-import { fetchAccountHolders } from "../VoucherPost/actions/index";
+import {
+  fetchAccountHolders,
+  deleteAccountHolder
+} from "../VoucherPost/actions/index";
 import popup from "./fullScreen-popup";
 
 export default {
@@ -85,9 +89,16 @@ export default {
       { text: "Cellphone Number", value: "cell" },
       { text: "Gender", value: "gender" },
       { text: "National Id", value: "cnic" },
-      { text: "Account Id", value: "id" }
+      { text: "Account Id", value: "id" },
+      { text: "Actions", value: "actions", sortable: false }
     ],
-    accountHoldersData: []
+    accountHoldersData: [],
+
+    // for edit
+    editAccountDetails: null,
+
+    // for del
+    id: null
   }),
 
   computed: {
@@ -121,12 +132,24 @@ export default {
     },
 
     deleteItemConfirm() {
+      this.id = this.accountHoldersData[this.editedIndex].id;
       this.accountHoldersData.splice(this.editedIndex, 1);
+      deleteAccountHolder(this);
       this.closeDelete();
     },
 
     closeDelete() {
       this.dialogDelete = false;
+      console.log(this.dialogDelete);
+    },
+
+    editItem(item) {
+      this.dialogPopUp = true;
+      this.editAccountDetails = item;
+      this.editedIndex = this.accountHoldersData.indexOf(item);
+      this.editAccountDetails.id = this.accountHoldersData[this.editedIndex].id;
+      console.log(this.editAccountDetails);
+      this.editAccountDetails;
     }
   }
 };

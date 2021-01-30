@@ -199,18 +199,26 @@ export const GET_ACCOUNT_HOLDERS = gql`
   query {
     getAccountHolders {
       id
+      acc_code_id
+      acc_no
       first_name
+      middle_name
       last_name
+      guardian_type
+      guardian_name
+      cell
+      landline_no
       cnic
       gender
-      cell
+      dob
+      address
+      opening_date
     }
   }
 `;
 
 export const ADD_ACCOUNT_HOLDER = gql`
   mutation addAccountHolder(
-    $acc_code: BigInt
     $acc_code_id: BigInt
     $acc_no: BigInt
     $first_name: String
@@ -228,7 +236,56 @@ export const ADD_ACCOUNT_HOLDER = gql`
     $guarantor: [Account_Guarantor_Input]
   ) {
     addAccountHolder(
-      acc_code: $acc_code
+      acc_code_id: $acc_code_id
+      acc_no: $acc_no
+      first_name: $first_name
+      middle_name: $middle_name
+      last_name: $last_name
+      guardian_type: $guardian_type
+      guardian_name: $guardian_name
+      cell: $cell
+      landline_no: $landline_no
+      cnic: $cnic
+      gender: $gender
+      dob: $dob
+      address: $address
+      opening_date: $opening_date
+      guarantor: $guarantor
+    ) {
+      message
+      status
+    }
+  }
+`;
+
+export const DELETE_ACCOUNT_HOLDER = gql`
+  mutation deleteAccountHolder($id: Int!) {
+    deleteAccountHolder(id: $id) {
+      message
+      status
+    }
+  }
+`;
+
+export const UPDATE_ACCOUNT_HOLDER = gql`
+  mutation updateAccountHolder(
+    $acc_code_id: BigInt
+    $acc_no: BigInt
+    $first_name: String
+    $middle_name: String
+    $last_name: String
+    $guardian_type: String
+    $guardian_name: String
+    $cell: String
+    $landline_no: String
+    $cnic: String
+    $gender: String
+    $dob: Date
+    $address: String
+    $opening_date: Date
+    $guarantor: [Account_Guarantor_Input]
+  ) {
+    updateAccountHolder(
       acc_code_id: $acc_code_id
       acc_no: $acc_no
       first_name: $first_name
