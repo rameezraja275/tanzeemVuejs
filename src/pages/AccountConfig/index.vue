@@ -17,7 +17,7 @@
             class="mb-2"
             v-bind="attrs"
             v-on="on"
-            @click="dialogPopUp = true"
+            @click="newUser()"
           >
             New Account
           </v-btn>
@@ -38,26 +38,39 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
-          <pop-up
-            :dialogPopUp="dialogPopUp"
-            :accountHoldersData="accountHoldersData"
-            :editAccountDetails="editAccountDetails"
-          ></pop-up>
+          <div>
+            <v-row justify="center">
+              <v-dialog
+                v-model="dialogPopUp"
+                fullscreen
+                hide-overlay
+                transition="dialog-bottom-transition"
+                scrollable
+              >
+                <pop-up
+                  :hideOrShowForm="hideOrShowForm"
+                  :dialogPopUp="dialogPopUp"
+                  :accountHoldersData="accountHoldersData"
+                  :editAccountDetails="editAccountDetails"
+                  :isReadOnly="isReadOnly"
+                  :disableBtn="disableBtn"
+                ></pop-up>
+              </v-dialog>
+            </v-row>
+          </div>
         </v-toolbar>
       </template>
       <template v-slot:item.actions="{ item }">
         <v-icon small class="mr-2" @click="editItem(item)">
           mdi-pencil
         </v-icon>
-        <v-icon small @click="deleteItem(item)">
+        <v-icon small class="mr-2" @click="deleteItem(item)">
           mdi-delete
         </v-icon>
+        <v-icon size="20" @click="showCompleteInfo(item)">
+          mdi-account-details
+        </v-icon>
       </template>
-      <!-- <template v-slot:no-data>
-        <v-btn color="primary" @click="initialize">
-          Reset
-        </v-btn>
-      </template> -->
     </v-data-table>
   </div>
 </template>
@@ -65,7 +78,8 @@
 <script>
 import {
   fetchAccountHolders,
-  deleteAccountHolder
+  deleteAccountHolder,
+  getAccountHolderById
 } from "../VoucherPost/actions/index";
 import popup from "./fullScreen-popup";
 
@@ -96,9 +110,16 @@ export default {
 
     // for edit
     editAccountDetails: null,
+    editId: null,
 
     // for del
-    id: null
+    id: null,
+
+    // for show complete details
+    isReadOnly: false,
+
+    // in form
+    disableBtn: false
   }),
 
   computed: {
@@ -144,12 +165,29 @@ export default {
     },
 
     editItem(item) {
-      this.dialogPopUp = true;
-      this.editAccountDetails = item;
+      this.disableBtn = false;
+      this.isReadOnly = false;
       this.editedIndex = this.accountHoldersData.indexOf(item);
-      this.editAccountDetails.id = this.accountHoldersData[this.editedIndex].id;
-      console.log(this.editAccountDetails);
-      this.editAccountDetails;
+      this.editId = this.accountHoldersData[this.editedIndex].id;
+      getAccountHolderById(this);
+    },
+
+    hideOrShowForm(data) {
+      this.dialogPopUp = data;
+    },
+
+    showCompleteInfo(item) {
+      this.disableBtn = true;
+      this.editedIndex = this.accountHoldersData.indexOf(item);
+      this.editId = this.accountHoldersData[this.editedIndex].id;
+      this.isReadOnly = true;
+      getAccountHolderById(this);
+    },
+
+    newUser() {
+      this.disableBtn = false;
+      this.isReadOnly = false;
+      this.dialogPopUp = true;
     }
   }
 };

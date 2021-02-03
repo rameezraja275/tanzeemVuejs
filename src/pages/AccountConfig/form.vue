@@ -34,19 +34,22 @@
                     <v-text-field
                       label="First Name"
                       :rules="rules"
-                      v-model="dataFromInputs1.first_name"
+                      v-model="dataFromInputs.first_name"
+                      :readonly="isReadOnly"
                     ></v-text-field>
                   </v-col>
                   <v-col md="4">
                     <v-text-field
                       label="Middle Name"
-                      v-model="dataFromInputs1.middle_name"
+                      v-model="dataFromInputs.middle_name"
+                      :readonly="isReadOnly"
                     ></v-text-field>
                   </v-col>
                   <v-col md="4">
                     <v-text-field
                       label="Last Name"
-                      v-model="dataFromInputs1.last_name"
+                      v-model="dataFromInputs.last_name"
+                      :readonly="isReadOnly"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -54,9 +57,10 @@
                 <v-row>
                   <v-col md="4">
                     <v-autocomplete
-                      v-model="dataFromInputs1.acc_code_id"
+                      v-model="dataFromInputs.acc_code_id"
                       :items="accounts"
                       :rules="rules"
+                      :readonly="isReadOnly"
                       item-text="acc_code"
                       item-value="id"
                       label="Account"
@@ -66,8 +70,9 @@
                     <v-text-field
                       label="Account Number"
                       :rules="rules"
-                      v-model="dataFromInputs1.acc_no"
+                      v-model="dataFromInputs.acc_no"
                       required
+                      :readonly="isReadOnly"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -77,16 +82,18 @@
                     <v-text-field
                       label="Guardian Type"
                       :rules="rules"
-                      v-model="dataFromInputs1.guardian_type"
+                      v-model="dataFromInputs.guardian_type"
                       required
+                      :readonly="isReadOnly"
                     ></v-text-field>
                   </v-col>
                   <v-col md="4">
                     <v-text-field
                       label="Guardian Name"
                       :rules="rules"
-                      v-model="dataFromInputs1.guardian_name"
+                      v-model="dataFromInputs.guardian_name"
                       required
+                      :readonly="isReadOnly"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -95,13 +102,15 @@
                   <v-col md="4">
                     <v-text-field
                       label="Cell Phone"
-                      v-model="dataFromInputs1.cell"
+                      v-model="dataFromInputs.cell"
+                      :readonly="isReadOnly"
                     ></v-text-field>
                   </v-col>
                   <v-col md="4">
                     <v-text-field
                       label="Landline Number"
-                      v-model="dataFromInputs1.landline_no"
+                      v-model="dataFromInputs.landline_no"
+                      :readonly="isReadOnly"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -110,13 +119,15 @@
                   <v-col md="4">
                     <v-text-field
                       label="Address"
-                      v-model="dataFromInputs1.address"
+                      v-model="dataFromInputs.address"
+                      :readonly="isReadOnly"
                     ></v-text-field>
                   </v-col>
                   <v-col md="4">
                     <v-text-field
                       label="CNIC"
-                      v-model="dataFromInputs1.cnic"
+                      v-model="dataFromInputs.cnic"
+                      :readonly="isReadOnly"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -125,10 +136,11 @@
                   <v-col md="4">
                     <v-select
                       :items="genderOptions"
-                      v-model="dataFromInputs1.gender"
+                      v-model="dataFromInputs.gender"
                       label="Gender"
                       :rules="rules"
                       required
+                      :readonly="isReadOnly"
                     ></v-select>
                   </v-col>
                   <v-col md="4">
@@ -142,16 +154,17 @@
                     >
                       <template v-slot:activator="{ on, attrs }">
                         <v-text-field
-                          v-model="dataFromInputs1.dob"
+                          v-model="dataFromInputs.dob"
                           label="Date Of Birth"
                           prepend-icon="mdi-calendar"
                           v-bind="attrs"
                           v-on="on"
+                          :readonly="isReadOnly"
                         ></v-text-field>
                       </template>
                       <v-date-picker
                         ref="picker"
-                        v-model="dataFromInputs1.dob"
+                        v-model="dataFromInputs.dob"
                         :max="new Date().toISOString().substr(0, 10)"
                         min="1900-01-01"
                         @change="save"
@@ -180,6 +193,7 @@
                           v-on="on"
                           :rules="rules"
                           required
+                          :readonly="isReadOnly"
                         ></v-text-field>
                       </template>
                       <v-date-picker v-model="date2" no-title scrollable>
@@ -208,6 +222,7 @@
                     <v-text-field
                       label="Guarantor Name"
                       v-model="guarantorObj1.guarantor_name"
+                      :readonly="isReadOnly"
                     ></v-text-field>
                   </v-col>
 
@@ -215,6 +230,7 @@
                     <v-text-field
                       label="Guarantor Contact"
                       v-model="guarantorObj1.contact"
+                      :readonly="isReadOnly"
                     ></v-text-field>
                   </v-col>
 
@@ -222,6 +238,7 @@
                     <v-text-field
                       label="Guarantor CNIC"
                       v-model="guarantorObj1.cnic"
+                      :readonly="isReadOnly"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -234,6 +251,7 @@
                       item-value="id"
                       v-model="guarantorObj1.acc_no_id"
                       label="Account Number ID"
+                      :readonly="isReadOnly"
                     ></v-select>
                   </v-col>
                 </v-row>
@@ -247,12 +265,14 @@
                     <v-text-field
                       label="Guarantor Name"
                       v-model="guarantorObj2.guarantor_name"
+                      :readonly="isReadOnly"
                     ></v-text-field>
                   </v-col>
 
                   <v-col md="4">
                     <v-text-field
                       label="Guarantor Contact"
+                      :readonly="isReadOnly"
                       v-model="guarantorObj2.contact"
                     ></v-text-field>
                   </v-col>
@@ -261,6 +281,7 @@
                     <v-text-field
                       label="Guarantor CNIC"
                       v-model="guarantorObj2.cnic"
+                      :readonly="isReadOnly"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -273,6 +294,7 @@
                       item-value="id"
                       v-model="guarantorObj2.acc_no_id"
                       label="Account Holder ID's"
+                      :readonly="isReadOnly"
                     ></v-select>
                   </v-col>
                 </v-row>
@@ -288,7 +310,7 @@
             </v-btn>
             <v-spacer></v-spacer>
             <v-btn
-              :disabled="!valid"
+              :disabled="disableBtn"
               color="success"
               depressed
               @click="validate"
@@ -320,10 +342,16 @@ import {
 import { GET_ACCOUNTS_NO_ID } from "../../graphql/quries";
 
 export default {
-  props: ["dialogPopUp", "accountHoldersData", "editAccountDetails"],
+  props: [
+    "accountHoldersData",
+    "editAccountDetails",
+    "dialogPopUp",
+    "isReadOnly",
+    "disableBtn"
+  ],
   data: () => ({
     step: 1,
-    valid: true,
+    // valid: true,
     rules: [value => !!value || "Required."],
     genderOptions: ["Male", "Female", "Other"],
     date: null,
@@ -346,7 +374,7 @@ export default {
       contact: null
     },
 
-    dataFromInputs1: {
+    dataFromInputs: {
       first_name: null,
       middle_name: null,
       last_name: null,
@@ -392,7 +420,7 @@ export default {
     },
     setDate2() {
       this.$refs.menu2.save(this.date2);
-      this.dataFromInputs1.opening_date = this.date2;
+      this.dataFromInputs.opening_date = this.date2;
     },
     validate() {
       this.$refs.form.validate();
@@ -405,31 +433,55 @@ export default {
         this.guarantorObj2.guarantor_name !== "" &&
         this.guarantorObj2.guarantor_name !== null
       ) {
-        this.dataFromInputs1.guarantor.push(this.guarantorObj2);
+        this.dataFromInputs.guarantor.push(this.guarantorObj2);
       } else if (
         this.guarantorObj2.guarantor_name !== "" &&
         this.guarantorObj2.guarantor_name !== null
       ) {
-        this.dataFromInputs1.guarantor.push(this.guarantorObj1);
+        this.dataFromInputs.guarantor.push(this.guarantorObj1);
       } else {
         console.log("test");
       }
       if (this.editAccountDetails !== null) {
-        // delete extra properties of dataFromInputs1 obj
+        // delete extra properties of dataFromInputs obj
         updateAccountHolder(this);
       } else {
         newAccountHolder(this);
       }
+    },
+
+    reset() {
+      this.$refs.form.reset();
     }
   },
   watch: {
     menu(val) {
       val && setTimeout(() => (this.$refs.picker.activePicker = "YEAR"));
+    },
+    dialogPopUp(val) {
+      if (val === true) {
+        if (
+          this.editAccountDetails !== null &&
+          this.editAccountDetails.account_holder.first_name !== ""
+        ) {
+          this.dataFromInputs = this.editAccountDetails.account_holder;
+          this.guarantorObj1 = this.editAccountDetails.guarantors[0];
+          this.guarantorObj2 = this.editAccountDetails.guarantors[1];
+          console.log("popup true");
+        }
+      } else {
+        this.reset();
+        console.log("popup fasle");
+      }
     }
   },
   created() {
     if (this.editAccountDetails !== null) {
-      this.dataFromInputs1 = this.editAccountDetails;
+      this.dataFromInputs = this.editAccountDetails.account_holder;
+      if (this.editAccountDetails.guarantors.length > 0) {
+        this.guarantorObj1 = this.editAccountDetails.guarantors[0];
+        this.guarantorObj2 = this.editAccountDetails.guarantors[1];
+      }
     }
   },
   apollo: {

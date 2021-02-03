@@ -7,8 +7,11 @@ import VueApollo from "vue-apollo";
 import apolloClient from "./graphql/Apollo";
 import vuetify from "./plugins/vuetify";
 import "vuetify/dist/vuetify.min.css";
+// import Vue from 'vue';
+// import Vuex from 'vuex';
 
 Vue.use(VueApollo);
+// Vue.use(Vuex);
 
 const apolloProvider = new VueApollo({
   defaultClient: apolloClient

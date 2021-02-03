@@ -8,7 +8,8 @@ import {
   GET_ACCOUNT_HOLDERS,
   ADD_ACCOUNT_HOLDER,
   DELETE_ACCOUNT_HOLDER,
-  UPDATE_ACCOUNT_HOLDER
+  UPDATE_ACCOUNT_HOLDER,
+  GET_ACCOUNT_HOLDERS_BY_ID
 } from "../../../graphql/quries";
 import { omitTypeOff } from "../../../utils/helpers";
 
@@ -115,7 +116,7 @@ export async function newAccountHolder(vueObj) {
   console.log("mutation called waiting for response");
   vueObj.loading = true;
   const variables = {
-    ...vueObj.dataFromInputs1
+    ...vueObj.dataFromInputs
   };
   try {
     const result = await vueObj.$apollo.mutate({
@@ -152,14 +153,40 @@ export async function deleteAccountHolder(vueObj) {
 }
 
 export async function updateAccountHolder(vueObj) {
+  vueObj.loading = true;
   const variables = {
-    ...vueObj.dataFromInputs1
+    ...vueObj.dataFromInputs
   };
   try {
     const result = await vueObj.$apollo.mutate({
       mutation: UPDATE_ACCOUNT_HOLDER,
       variables: variables
     });
+    if (result.errors) {
+      throw result.errors[0].message;
+    }
+  } catch (e) {
+    vueObj.message = e;
+  }
+  vueObj.loading = false;
+}
+
+export async function getAccountHolderById(vueObj) {
+  const variables = {
+    id: vueObj.editId
+  };
+  // debugger
+  try {
+    const result = await vueObj.$apollo.query({
+      query: GET_ACCOUNT_HOLDERS_BY_ID,
+      variables: variables
+      // fetchPolicy: "cache-and-network"
+    });
+    console.log("Result", result);
+    vueObj.editAccountDetails = result.data.getAccountHolderById;
+    console.log(result.data.getAccountHolderById, "ACTUAL DATA");
+    console.log(vueObj.editAccountDetails, "from actions");
+    vueObj.dialogPopUp = true;
     if (result.errors) {
       throw result.errors[0].message;
     }

@@ -269,8 +269,7 @@ export const DELETE_ACCOUNT_HOLDER = gql`
 
 export const UPDATE_ACCOUNT_HOLDER = gql`
   mutation updateAccountHolder(
-    $acc_code_id: BigInt
-    $acc_no: BigInt
+    $id: Int
     $first_name: String
     $middle_name: String
     $last_name: String
@@ -282,12 +281,10 @@ export const UPDATE_ACCOUNT_HOLDER = gql`
     $gender: String
     $dob: Date
     $address: String
-    $opening_date: Date
     $guarantor: [Account_Guarantor_Input]
   ) {
     updateAccountHolder(
-      acc_code_id: $acc_code_id
-      acc_no: $acc_no
+      id: $id
       first_name: $first_name
       middle_name: $middle_name
       last_name: $last_name
@@ -299,11 +296,41 @@ export const UPDATE_ACCOUNT_HOLDER = gql`
       gender: $gender
       dob: $dob
       address: $address
-      opening_date: $opening_date
       guarantor: $guarantor
     ) {
       message
       status
+    }
+  }
+`;
+
+export const GET_ACCOUNT_HOLDERS_BY_ID = gql`
+  query getAccountHolderById($id: Int!) {
+    getAccountHolderById(id: $id) {
+      account_holder {
+        id
+        acc_code_id
+        acc_no
+        first_name
+        middle_name
+        last_name
+        guardian_type
+        guardian_name
+        cell
+        landline_no
+        cnic
+        gender
+        dob
+        address
+        opening_date
+      }
+      guarantors {
+        acc_holder_id
+        acc_no_id
+        guarantor_name
+        cnic
+        contact
+      }
     }
   }
 `;
