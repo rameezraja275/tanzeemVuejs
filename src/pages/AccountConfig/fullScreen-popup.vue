@@ -52,21 +52,21 @@
                       label="First Name"
                       :rules="rules"
                       v-model="dataFromInputs.first_name"
-                      :disabled="disableAndReadonly"
+                      :readonly="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                   <v-col md="4">
                     <v-text-field
                       label="Middle Name"
                       v-model="dataFromInputs.middle_name"
-                      :disabled="disableAndReadonly"
+                      :readonly="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                   <v-col md="4">
                     <v-text-field
                       label="Last Name"
                       v-model="dataFromInputs.last_name"
-                      :disabled="disableAndReadonly"
+                      :readonly="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -77,7 +77,7 @@
                       v-model="dataFromInputs.acc_code_id"
                       :items="accounts"
                       :rules="rules"
-                      :disabled="disableAndReadonly"
+                      :readonly="disableAndReadonly"
                       item-text="acc_code"
                       item-value="id"
                       label="Account"
@@ -89,7 +89,7 @@
                       :rules="rules"
                       v-model="dataFromInputs.acc_no"
                       required
-                      :disabled="disableAndReadonly"
+                      :readonly="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -101,7 +101,7 @@
                       :rules="rules"
                       v-model="dataFromInputs.guardian_type"
                       required
-                      :disabled="disableAndReadonly"
+                      :readonly="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                   <v-col md="4">
@@ -110,7 +110,7 @@
                       :rules="rules"
                       v-model="dataFromInputs.guardian_name"
                       required
-                      :disabled="disableAndReadonly"
+                      :readonly="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -120,14 +120,14 @@
                     <v-text-field
                       label="Cell Phone"
                       v-model="dataFromInputs.cell"
-                      :disabled="disableAndReadonly"
+                      :readonly="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                   <v-col md="4">
                     <v-text-field
                       label="Landline Number"
                       v-model="dataFromInputs.landline_no"
-                      :disabled="disableAndReadonly"
+                      :readonly="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -137,14 +137,14 @@
                     <v-text-field
                       label="Address"
                       v-model="dataFromInputs.address"
-                      :disabled="disableAndReadonly"
+                      :readonly="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                   <v-col md="4">
                     <v-text-field
                       label="CNIC"
                       v-model="dataFromInputs.cnic"
-                      :disabled="disableAndReadonly"
+                      :readonly="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -157,7 +157,7 @@
                       label="Gender"
                       :rules="rules"
                       required
-                      :disabled="disableAndReadonly"
+                      :readonly="disableAndReadonly"
                     ></v-select>
                   </v-col>
                   <v-col md="4">
@@ -176,7 +176,7 @@
                           prepend-icon="mdi-calendar"
                           v-bind="attrs"
                           v-on="on"
-                          :disabled="disableAndReadonly"
+                          :readonly="disableAndReadonly"
                         ></v-text-field>
                       </template>
                       <v-date-picker
@@ -210,7 +210,7 @@
                           v-on="on"
                           :rules="rules"
                           required
-                          :disabled="disableAndReadonly"
+                          :readonly="disableAndReadonly"
                         ></v-text-field>
                       </template>
                       <v-date-picker v-model="date2" no-title scrollable>
@@ -239,7 +239,7 @@
                     <v-text-field
                       label="Guarantor Name"
                       v-model="guarantorObj1.guarantor_name"
-                      :disabled="disableAndReadonly"
+                      :readonly="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
 
@@ -247,7 +247,7 @@
                     <v-text-field
                       label="Guarantor Contact"
                       v-model="guarantorObj1.contact"
-                      :disabled="disableAndReadonly"
+                      :readonly="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
 
@@ -255,7 +255,7 @@
                     <v-text-field
                       label="Guarantor CNIC"
                       v-model="guarantorObj1.cnic"
-                      :disabled="disableAndReadonly"
+                      :readonly="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -268,7 +268,7 @@
                       item-value="id"
                       v-model="guarantorObj1.acc_no_id"
                       label="Account Number ID"
-                      :disabled="disableAndReadonly"
+                      :readonly="disableAndReadonly"
                     ></v-select>
                   </v-col>
                 </v-row>
@@ -282,14 +282,14 @@
                     <v-text-field
                       label="Guarantor Name"
                       v-model="guarantorObj2.guarantor_name"
-                      :disabled="disableAndReadonly"
+                      :readonly="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
 
                   <v-col md="4">
                     <v-text-field
                       label="Guarantor Contact"
-                      :disabled="disableAndReadonly"
+                      :readonly="disableAndReadonly"
                       v-model="guarantorObj2.contact"
                     ></v-text-field>
                   </v-col>
@@ -298,7 +298,7 @@
                     <v-text-field
                       label="Guarantor CNIC"
                       v-model="guarantorObj2.cnic"
-                      :disabled="disableAndReadonly"
+                      :readonly="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -311,7 +311,7 @@
                       item-value="id"
                       v-model="guarantorObj2.acc_no_id"
                       label="Account Number ID's"
-                      :disabled="disableAndReadonly"
+                      :readonly="disableAndReadonly"
                     ></v-select>
                   </v-col>
                 </v-row>
@@ -352,11 +352,10 @@
 </template>
 
 <script>
-// import form from "./form";
 import {
   newAccountHolder,
   updateAccountHolder
-} from "../VoucherPost/actions/index";
+} from "../AccountConfig/actions/actions";
 import { GET_ACCOUNTS_NO_ID } from "../../graphql/quries";
 
 export default {
@@ -512,7 +511,7 @@ export default {
         }
       } else {
         this.step = 1;
-        // this.reset();
+        this.reset();
       }
     }
   },

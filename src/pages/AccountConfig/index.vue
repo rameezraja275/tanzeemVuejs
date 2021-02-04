@@ -94,7 +94,7 @@ import {
   fetchAccountHolders,
   deleteAccountHolder,
   getAccountHolderById
-} from "../VoucherPost/actions/index";
+} from "../AccountConfig/actions/actions";
 import popup from "./fullScreen-popup";
 
 export default {
