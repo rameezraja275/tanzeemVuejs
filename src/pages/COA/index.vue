@@ -1,7 +1,7 @@
 <template>
   <v-card class="flex">
     <Tree :parentAccounts="getAccountParents" />
-    <Form />
+    <Form :readOnlySTatus="readOnlySTatus" />
   </v-card>
 </template>
 
@@ -18,7 +18,8 @@ export default {
   },
   data() {
     return {
-      getAccountParents: []
+      getAccountParents: [],
+      readOnlySTatus: true
     };
   },
   apollo: {

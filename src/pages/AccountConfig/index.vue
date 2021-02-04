@@ -1,5 +1,13 @@
 <template>
   <div class="mt-10 container">
+    <v-snackbar v-model="deleteAlert" top color="green" timeout="2500">
+      {{ deleteSuccess }}
+    </v-snackbar>
+
+    <v-snackbar v-model="snackbar" top color="red" timeout="2500">
+      {{ text }}
+    </v-snackbar>
+
     <v-data-table
       :headers="headers"
       :items="accountHoldersData"
@@ -52,8 +60,7 @@
                   :dialogPopUp="dialogPopUp"
                   :accountHoldersData="accountHoldersData"
                   :editAccountDetails="editAccountDetails"
-                  :isReadOnly="isReadOnly"
-                  :disableBtn="disableBtn"
+                  :disableAndReadonly="disableAndReadonly"
                 ></pop-up>
               </v-dialog>
             </v-row>
@@ -61,10 +68,17 @@
         </v-toolbar>
       </template>
       <template v-slot:item.actions="{ item }">
-        <v-icon small class="mr-2" @click="editItem(item)">
+        <v-icon small class="mr-2" v-if="!editingMode" @click="editItem(item)">
           mdi-pencil
         </v-icon>
-        <v-icon small class="mr-2" @click="deleteItem(item)">
+        <v-progress-circular
+          v-if="loading"
+          indeterminate
+          size="15"
+          width="1"
+          class="mr-2"
+        ></v-progress-circular>
+        <v-icon small class="mr-2" v-if="!deleteMode" @click="deleteItem(item)">
           mdi-delete
         </v-icon>
         <v-icon size="20" @click="showCompleteInfo(item)">
@@ -110,16 +124,23 @@ export default {
 
     // for edit
     editAccountDetails: null,
-    editId: null,
 
     // for del
     id: null,
 
-    // for show complete details
-    isReadOnly: false,
-
     // in form
-    disableBtn: false
+    disableAndReadonly: false,
+
+    editingMode: false,
+    loading: false,
+    deleteMode: false,
+
+    // delete alert
+    deleteAlert: false,
+    deleteSuccess: "Deleted successfully!",
+
+    snackbar: false,
+    text: "There seems to be an error, please try again!"
   }),
 
   computed: {
@@ -148,12 +169,16 @@ export default {
     },
 
     deleteItem(item) {
+      this.loading = true;
+      this.deleteMode = true;
       this.editedIndex = this.accountHoldersData.indexOf(item);
+      this.id = item.id;
       this.dialogDelete = true;
     },
 
     deleteItemConfirm() {
-      this.id = this.accountHoldersData[this.editedIndex].id;
+      this.loading = false;
+      this.deleteMode = false;
       this.accountHoldersData.splice(this.editedIndex, 1);
       deleteAccountHolder(this);
       this.closeDelete();
@@ -161,15 +186,15 @@ export default {
 
     closeDelete() {
       this.dialogDelete = false;
-      console.log(this.dialogDelete);
+      this.loading = false;
+      this.deleteMode = false;
     },
 
     editItem(item) {
-      this.disableBtn = false;
-      this.isReadOnly = false;
-      this.editedIndex = this.accountHoldersData.indexOf(item);
-      this.editId = this.accountHoldersData[this.editedIndex].id;
-      getAccountHolderById(this);
+      this.editingMode = true;
+      this.loading = true;
+      this.disableAndReadonly = false;
+      getAccountHolderById(this, item.id);
     },
 
     hideOrShowForm(data) {
@@ -177,16 +202,12 @@ export default {
     },
 
     showCompleteInfo(item) {
-      this.disableBtn = true;
-      this.editedIndex = this.accountHoldersData.indexOf(item);
-      this.editId = this.accountHoldersData[this.editedIndex].id;
-      this.isReadOnly = true;
-      getAccountHolderById(this);
+      this.disableAndReadonly = true;
+      getAccountHolderById(this, item.id);
     },
 
     newUser() {
-      this.disableBtn = false;
-      this.isReadOnly = false;
+      this.disableAndReadonly = false;
       this.dialogPopUp = true;
     }
   }

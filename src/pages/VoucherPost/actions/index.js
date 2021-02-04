@@ -113,8 +113,8 @@ export async function fetchAccountHolders(vueObj) {
 }
 
 export async function newAccountHolder(vueObj) {
-  console.log("mutation called waiting for response");
   vueObj.loading = true;
+  console.log(vueObj.dataFromInputs, "datra before sending");
   const variables = {
     ...vueObj.dataFromInputs
   };
@@ -146,14 +146,18 @@ export async function deleteAccountHolder(vueObj) {
     });
     if (result.errors) {
       throw result.errors[0].message;
+    } else {
+      vueObj.deleteAlert = true;
     }
   } catch (e) {
     vueObj.message = e;
+    vueObj.snackbar = true;
   }
 }
 
 export async function updateAccountHolder(vueObj) {
   vueObj.loading = true;
+  console.log(vueObj.dataFromInputs, "data before edit update");
   const variables = {
     ...vueObj.dataFromInputs
   };
@@ -165,32 +169,33 @@ export async function updateAccountHolder(vueObj) {
     if (result.errors) {
       throw result.errors[0].message;
     }
+    vueObj.editDataAlert = true;
   } catch (e) {
     vueObj.message = e;
+    vueObj.snackbar = true;
   }
   vueObj.loading = false;
 }
 
-export async function getAccountHolderById(vueObj) {
+export async function getAccountHolderById(vueObj, itemID) {
   const variables = {
-    id: vueObj.editId
+    id: itemID
   };
-  // debugger
   try {
     const result = await vueObj.$apollo.query({
       query: GET_ACCOUNT_HOLDERS_BY_ID,
-      variables: variables
-      // fetchPolicy: "cache-and-network"
+      variables: variables,
+      fetchPolicy: "no-cache"
     });
-    console.log("Result", result);
     vueObj.editAccountDetails = result.data.getAccountHolderById;
-    console.log(result.data.getAccountHolderById, "ACTUAL DATA");
-    console.log(vueObj.editAccountDetails, "from actions");
     vueObj.dialogPopUp = true;
+
     if (result.errors) {
       throw result.errors[0].message;
     }
   } catch (e) {
     vueObj.message = e;
   }
+  vueObj.loading = false;
+  vueObj.editingMode = false;
 }

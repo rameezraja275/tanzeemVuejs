@@ -325,7 +325,6 @@ export const GET_ACCOUNT_HOLDERS_BY_ID = gql`
         opening_date
       }
       guarantors {
-        acc_holder_id
         acc_no_id
         guarantor_name
         cnic

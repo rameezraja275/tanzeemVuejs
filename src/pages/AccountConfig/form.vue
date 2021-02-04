@@ -5,9 +5,12 @@
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-card-title class="title font-weight-regular justify-space-between">
             <span>{{ currentTitle }}</span>
+            <!-- error snackbar -->
             <v-snackbar v-model="snackbar" top color="red" timeout="2500">
               {{ text }}
             </v-snackbar>
+
+            <!-- new user added snackbar -->
             <v-snackbar
               v-model="snackbarSuccess"
               top
@@ -16,6 +19,17 @@
             >
               Added Successfully!
             </v-snackbar>
+
+            <!-- edited snackbar -->
+            <v-snackbar
+              v-model="editDataAlert"
+              top
+              color="green"
+              timeout="2500"
+            >
+              {{ editSuccess }}
+            </v-snackbar>
+
             <v-avatar
               color="primary lighten-2"
               class="subheading white--text"
@@ -35,21 +49,21 @@
                       label="First Name"
                       :rules="rules"
                       v-model="dataFromInputs.first_name"
-                      :readonly="isReadOnly"
+                      :disabled="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                   <v-col md="4">
                     <v-text-field
                       label="Middle Name"
                       v-model="dataFromInputs.middle_name"
-                      :readonly="isReadOnly"
+                      :disabled="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                   <v-col md="4">
                     <v-text-field
                       label="Last Name"
                       v-model="dataFromInputs.last_name"
-                      :readonly="isReadOnly"
+                      :disabled="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -60,7 +74,7 @@
                       v-model="dataFromInputs.acc_code_id"
                       :items="accounts"
                       :rules="rules"
-                      :readonly="isReadOnly"
+                      :disabled="disableAndReadonly"
                       item-text="acc_code"
                       item-value="id"
                       label="Account"
@@ -72,7 +86,7 @@
                       :rules="rules"
                       v-model="dataFromInputs.acc_no"
                       required
-                      :readonly="isReadOnly"
+                      :disabled="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -84,7 +98,7 @@
                       :rules="rules"
                       v-model="dataFromInputs.guardian_type"
                       required
-                      :readonly="isReadOnly"
+                      :disabled="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                   <v-col md="4">
@@ -93,7 +107,7 @@
                       :rules="rules"
                       v-model="dataFromInputs.guardian_name"
                       required
-                      :readonly="isReadOnly"
+                      :disabled="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -103,14 +117,14 @@
                     <v-text-field
                       label="Cell Phone"
                       v-model="dataFromInputs.cell"
-                      :readonly="isReadOnly"
+                      :disabled="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                   <v-col md="4">
                     <v-text-field
                       label="Landline Number"
                       v-model="dataFromInputs.landline_no"
-                      :readonly="isReadOnly"
+                      :disabled="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -120,14 +134,14 @@
                     <v-text-field
                       label="Address"
                       v-model="dataFromInputs.address"
-                      :readonly="isReadOnly"
+                      :disabled="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                   <v-col md="4">
                     <v-text-field
                       label="CNIC"
                       v-model="dataFromInputs.cnic"
-                      :readonly="isReadOnly"
+                      :disabled="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -140,7 +154,7 @@
                       label="Gender"
                       :rules="rules"
                       required
-                      :readonly="isReadOnly"
+                      :disabled="disableAndReadonly"
                     ></v-select>
                   </v-col>
                   <v-col md="4">
@@ -159,7 +173,7 @@
                           prepend-icon="mdi-calendar"
                           v-bind="attrs"
                           v-on="on"
-                          :readonly="isReadOnly"
+                          :disabled="disableAndReadonly"
                         ></v-text-field>
                       </template>
                       <v-date-picker
@@ -193,7 +207,7 @@
                           v-on="on"
                           :rules="rules"
                           required
-                          :readonly="isReadOnly"
+                          :disabled="disableAndReadonly"
                         ></v-text-field>
                       </template>
                       <v-date-picker v-model="date2" no-title scrollable>
@@ -222,7 +236,7 @@
                     <v-text-field
                       label="Guarantor Name"
                       v-model="guarantorObj1.guarantor_name"
-                      :readonly="isReadOnly"
+                      :disabled="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
 
@@ -230,7 +244,7 @@
                     <v-text-field
                       label="Guarantor Contact"
                       v-model="guarantorObj1.contact"
-                      :readonly="isReadOnly"
+                      :disabled="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
 
@@ -238,7 +252,7 @@
                     <v-text-field
                       label="Guarantor CNIC"
                       v-model="guarantorObj1.cnic"
-                      :readonly="isReadOnly"
+                      :disabled="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -251,7 +265,7 @@
                       item-value="id"
                       v-model="guarantorObj1.acc_no_id"
                       label="Account Number ID"
-                      :readonly="isReadOnly"
+                      :disabled="disableAndReadonly"
                     ></v-select>
                   </v-col>
                 </v-row>
@@ -265,14 +279,14 @@
                     <v-text-field
                       label="Guarantor Name"
                       v-model="guarantorObj2.guarantor_name"
-                      :readonly="isReadOnly"
+                      :disabled="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
 
                   <v-col md="4">
                     <v-text-field
                       label="Guarantor Contact"
-                      :readonly="isReadOnly"
+                      :disabled="disableAndReadonly"
                       v-model="guarantorObj2.contact"
                     ></v-text-field>
                   </v-col>
@@ -281,7 +295,7 @@
                     <v-text-field
                       label="Guarantor CNIC"
                       v-model="guarantorObj2.cnic"
-                      :readonly="isReadOnly"
+                      :disabled="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -293,8 +307,8 @@
                       item-text="first_name"
                       item-value="id"
                       v-model="guarantorObj2.acc_no_id"
-                      label="Account Holder ID's"
-                      :readonly="isReadOnly"
+                      label="Account Number ID's"
+                      :disabled="disableAndReadonly"
                     ></v-select>
                   </v-col>
                 </v-row>
@@ -310,7 +324,7 @@
             </v-btn>
             <v-spacer></v-spacer>
             <v-btn
-              :disabled="disableBtn"
+              :disabled="disableAndReadonly"
               color="success"
               depressed
               @click="validate"
@@ -346,12 +360,11 @@ export default {
     "accountHoldersData",
     "editAccountDetails",
     "dialogPopUp",
-    "isReadOnly",
-    "disableBtn"
+    "disableAndReadonly"
   ],
   data: () => ({
     step: 1,
-    // valid: true,
+    valid: true,
     rules: [value => !!value || "Required."],
     genderOptions: ["Male", "Female", "Other"],
     date: null,
@@ -398,8 +411,10 @@ export default {
     // snackbar
     snackbar: false,
     text: "There seems to be an error, please try again!",
+    snackbarSuccess: false,
 
-    snackbarSuccess: false
+    editDataAlert: false,
+    editSuccess: "Edited successfully!"
   }),
 
   computed: {
@@ -425,33 +440,43 @@ export default {
     validate() {
       this.$refs.form.validate();
       if (this.$refs.form.validate()) {
+        console.log("submit function called");
         this.submitData();
       }
     },
     submitData: function() {
+      this.dataFromInputs.guarantor = [];
+      if (
+        this.guarantorObj1.guarantor_name !== "" &&
+        this.guarantorObj1.guarantor_name !== null
+      ) {
+        this.dataFromInputs.guarantor.push(this.guarantorObj1);
+      }
       if (
         this.guarantorObj2.guarantor_name !== "" &&
         this.guarantorObj2.guarantor_name !== null
       ) {
         this.dataFromInputs.guarantor.push(this.guarantorObj2);
-      } else if (
-        this.guarantorObj2.guarantor_name !== "" &&
-        this.guarantorObj2.guarantor_name !== null
-      ) {
-        this.dataFromInputs.guarantor.push(this.guarantorObj1);
-      } else {
-        console.log("test");
       }
+
       if (this.editAccountDetails !== null) {
-        // delete extra properties of dataFromInputs obj
         updateAccountHolder(this);
       } else {
         newAccountHolder(this);
       }
     },
 
-    reset() {
-      this.$refs.form.reset();
+    // reset() {
+    //   this.$refs.form.reset();
+    // },
+
+    deleteTypeName() {
+      // delete type name from obj
+      delete this.editAccountDetails.account_holder.__typename;
+      delete this.editAccountDetails.__typename;
+      this.editAccountDetails.guarantors.forEach(element => {
+        delete element.__typename;
+      });
     }
   },
   watch: {
@@ -464,22 +489,34 @@ export default {
           this.editAccountDetails !== null &&
           this.editAccountDetails.account_holder.first_name !== ""
         ) {
+          // delete type name from obj
+          this.deleteTypeName();
+
           this.dataFromInputs = this.editAccountDetails.account_holder;
-          this.guarantorObj1 = this.editAccountDetails.guarantors[0];
-          this.guarantorObj2 = this.editAccountDetails.guarantors[1];
-          console.log("popup true");
+
+          if (this.editAccountDetails.guarantors[0] !== undefined) {
+            this.guarantorObj1 = this.editAccountDetails.guarantors[0];
+          }
+          if (this.editAccountDetails.guarantors[1] !== undefined) {
+            this.guarantorObj2 = this.editAccountDetails.guarantors[1];
+          }
         }
       } else {
-        this.reset();
-        console.log("popup fasle");
+        this.step = 1;
+        // this.reset();
       }
     }
   },
   created() {
     if (this.editAccountDetails !== null) {
+      // delete type name from obj
+      this.deleteTypeName();
+
       this.dataFromInputs = this.editAccountDetails.account_holder;
-      if (this.editAccountDetails.guarantors.length > 0) {
+      if (this.editAccountDetails.guarantors[0] !== undefined) {
         this.guarantorObj1 = this.editAccountDetails.guarantors[0];
+      }
+      if (this.editAccountDetails.guarantors[1] !== undefined) {
         this.guarantorObj2 = this.editAccountDetails.guarantors[1];
       }
     }
