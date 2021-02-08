@@ -25,7 +25,7 @@ export const GET_ACCOUNTS = gql`
     }
   }
 `;
-// test this
+
 export const GET_ACCOUNTS_NO_ID = gql`
   query {
     getAccounts {
@@ -330,6 +330,143 @@ export const GET_ACCOUNT_HOLDERS_BY_ID = gql`
         cnic
         contact
       }
+    }
+  }
+`;
+
+export const GET_LOAN_ISSUES = gql`
+  query {
+    getLoanIssues {
+      id
+      issue_date
+      loan_type
+      transfer_acc_code_id
+      transfer_acc_no_id
+      loan_acc_code_id
+      loan_acc_no_id
+      loan_amount
+      markup_percentage
+      issue_duration
+      maturity_date
+      narration
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+export const GET_LOAN_ISSUES_BY_ID = gql`
+  query getLoanIssueById($id: Int!) {
+    getLoanIssueById(id: $id) {
+      loan_issue {
+        id
+        issue_date
+        loan_type
+        transfer_acc_code_id
+        transfer_acc_no_id
+        loan_acc_code_id
+        loan_acc_no_id
+        loan_amount
+        markup_percentage
+        issue_duration
+        maturity_date
+        narration
+        createdAt
+        updatedAt
+      }
+      guarantors {
+        id
+        module_id
+        ref_id
+        acc_holder_id
+        acc_no_id
+        guarantor_name
+        cnic
+        contact
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
+
+export const ADD_LOAN_ISSUE = gql`
+  mutation addLoanIssue(
+    $issue_date: Date
+    $loan_type: TinyInt
+    $transfer_acc_code_id: BigInt
+    $transfer_acc_no_id: BigInt
+    $loan_acc_code_id: BigInt
+    $loan_acc_no_id: BigInt
+    $loan_amount: Decimal
+    $markup_percentage: Float
+    $issue_duration: Int
+    $maturity_date: Date
+    $narration: String
+    $guarantor: [Account_Guarantor_Input]
+  ) {
+    addLoanIssue(
+      issue_date: $issue_date
+      loan_type: $loan_type
+      transfer_acc_code_id: $transfer_acc_code_id
+      transfer_acc_no_id: $transfer_acc_no_id
+      loan_acc_code_id: $loan_acc_code_id
+      loan_acc_no_id: $loan_acc_no_id
+      loan_amount: $loan_amount
+      markup_percentage: $markup_percentage
+      issue_duration: $issue_duration
+      maturity_date: $maturity_date
+      narration: $narration
+      guarantor: $guarantor
+    ) {
+      message
+      status
+    }
+  }
+`;
+
+export const UPDATE_LOAN_ISSUE = gql`
+  mutation updateLoanIssue(
+    $id: Int
+    $issue_date: Date
+    $loan_type: TinyInt
+    $transfer_acc_code_id: BigInt
+    $transfer_acc_no_id: BigInt
+    $loan_acc_code_id: BigInt
+    $loan_acc_no_id: BigInt
+    $loan_amount: Decimal
+    $markup_percentage: Float
+    $issue_duration: Int
+    $maturity_date: Date
+    $narration: String
+    $guarantor: [Account_Guarantor_Input]
+  ) {
+    updateLoanIssue(
+      id: $id
+      issue_date: $issue_date
+      loan_type: $loan_type
+      transfer_acc_code_id: $transfer_acc_code_id
+      transfer_acc_no_id: $transfer_acc_no_id
+      loan_acc_code_id: $loan_acc_code_id
+      loan_acc_no_id: $loan_acc_no_id
+      loan_amount: $loan_amount
+      markup_percentage: $markup_percentage
+      issue_duration: $issue_duration
+      maturity_date: $maturity_date
+      narration: $narration
+      guarantor: $guarantor
+    ) {
+      message
+      status
+    }
+  }
+`;
+
+export const DELETE_LOAN_ISSUE = gql`
+  mutation deleteLoanIssue($id: Int) {
+    deleteLoanIssue(id: $id) {
+      message
+      status
     }
   }
 `;

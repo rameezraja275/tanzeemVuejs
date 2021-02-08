@@ -1,10 +1,10 @@
 <template>
   <div class="mt-10 container">
-    <v-snackbar v-model="deleteAlert" top color="green" timeout="2500">
+    <v-snackbar v-model="deleteAlert" top color="green" :timeout="snackbarTime">
       {{ deleteSuccess }}
     </v-snackbar>
 
-    <v-snackbar v-model="snackbar" top color="red" timeout="2500">
+    <v-snackbar v-model="snackbar" top color="red" :timeout="snackbarTime">
       {{ text }}
     </v-snackbar>
 
@@ -19,14 +19,7 @@
           <v-toolbar-title>Account Holders</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
-          <v-btn
-            color="primary"
-            dark
-            class="mb-2"
-            v-bind="attrs"
-            v-on="on"
-            @click="newUser()"
-          >
+          <v-btn color="primary" dark class="mb-2" @click="newUser()">
             New Account
           </v-btn>
           <v-dialog v-model="dialogDelete" max-width="500">
@@ -67,7 +60,7 @@
           </div>
         </v-toolbar>
       </template>
-      <template v-slot:item.actions="{ item }">
+      <template v-slot:[`item.actions`]="{ item }">
         <v-icon small class="mr-2" v-if="!editingMode" @click="editItem(item)">
           mdi-pencil
         </v-icon>
@@ -140,6 +133,7 @@ export default {
     deleteSuccess: "Deleted successfully!",
 
     snackbar: false,
+    snackbarTime: 2500,
     text: "There seems to be an error, please try again!"
   }),
 

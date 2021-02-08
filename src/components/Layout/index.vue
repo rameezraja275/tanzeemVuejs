@@ -56,7 +56,8 @@ export default {
           title: "Account Holders",
           icon: "mdi-account-group-outline",
           to: "/accountconfig"
-        }
+        },
+        { title: "Loan", icon: "mdi-home-city", to: "/loan" }
       ],
       mini: true
     };

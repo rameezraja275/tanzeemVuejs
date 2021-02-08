@@ -93,6 +93,12 @@ const routes = [
         });
       }
     }
+  },
+  {
+    path: "/loan",
+    name: "Loan",
+    component: () => import("../pages/loan/"),
+    meta: { layout: Layout }
   }
 ];
 

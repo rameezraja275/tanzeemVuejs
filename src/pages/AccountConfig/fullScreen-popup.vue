@@ -14,14 +14,19 @@
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-card-title class="title font-weight-regular justify-space-between">
             <span>{{ currentTitle }}</span>
-            <v-snackbar v-model="snackbar" top color="red" timeout="2500">
+            <v-snackbar
+              v-model="snackbar"
+              top
+              color="red"
+              :timeout="snackbarTime"
+            >
               {{ text }}
             </v-snackbar>
             <v-snackbar
               v-model="snackbarSuccess"
               top
               color="green"
-              timeout="2500"
+              :timeout="snackbarTime"
             >
               Added Successfully!
             </v-snackbar>
@@ -29,7 +34,7 @@
               v-model="editDataAlert"
               top
               color="green"
-              timeout="2500"
+              :timeout="snackbarTime"
             >
               {{ editSuccess }}
             </v-snackbar>
@@ -416,6 +421,7 @@ export default {
     snackbar: false,
     text: "There seems to be an error, please try again!",
     snackbarSuccess: false,
+    snackbarTime: 2500,
 
     editDataAlert: false,
     editSuccess: "Edited successfully!"
