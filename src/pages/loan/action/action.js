@@ -8,6 +8,7 @@ import {
   GET_ACCOUNTS_CHILDS
 } from "../../../graphql/quries";
 import { omitTypeOff } from "../../../utils/helpers";
+import { GROUP_ACCOUNTS } from "../../../utils/constants";
 
 export async function fetchLoanIssues(vueObj) {
   vueObj.loaderOn = true;
@@ -54,6 +55,7 @@ export async function fetchLoanIssuesById(vueObj, ID) {
 
 export async function addNewLoanIssue(vueObj) {
   vueObj.submitLoading = true;
+  console.log(vueObj.loanAccountDetails, "loan account details");
   let variables = {
     issue_date: vueObj.dataFromInputs.issue_date,
     loan_type: Number(vueObj.dataFromInputs.loan_type),
@@ -72,7 +74,7 @@ export async function addNewLoanIssue(vueObj) {
     variables.transfer_acc_no_id = 0;
   }
 
-  console.log(variables);
+  console.log(variables, "new loan data before sending");
 
   try {
     const result = await vueObj.$apollo.mutate({
@@ -83,6 +85,7 @@ export async function addNewLoanIssue(vueObj) {
       throw result.errors[0].message;
     } else {
       console.log("successfully added new loan");
+      vueObj.loanAccountDetails.push(result.data.addLoanIssue);
       vueObj.snackbarSuccessLoan = true;
     }
   } catch (e) {
@@ -153,7 +156,7 @@ export async function deleteLoanIssue(vueObj, ID) {
 
 export async function getDetailAccounts(vueObj) {
   const variables = {
-    acc_type: 1
+    acc_type: GROUP_ACCOUNTS
   };
 
   try {

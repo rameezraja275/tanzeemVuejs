@@ -1,26 +1,56 @@
 <template>
   <div class="mt-10 container">
     <!-- add new response -->
-    <snack-bars
-      :model1="snackbarSuccessLoan"
-      :model2="snackbarFailedLoan"
-      :successText="successTextNewLoan"
-      :failedText="failedTextNewLoan"
-    ></snack-bars>
+    <v-snackbar
+      v-model="snackbarSuccessLoan"
+      top
+      color="success"
+      :timeout="snackbarTime"
+    >
+      {{ successTextNewLoan }}
+    </v-snackbar>
+    <v-snackbar
+      v-model="snackbarFailedLoan"
+      top
+      color="red"
+      :timeout="snackbarTime"
+    >
+      {{ failedTextNewLoan }}
+    </v-snackbar>
     <!-- edit response -->
-    <snack-bars
-      :model1="snackbarSuccessEdit"
-      :model2="snackbarFailedEdit"
-      :successText="successTextNewEdit"
-      :failedText="failedTextNewEdit"
-    ></snack-bars>
+    <v-snackbar
+      v-model="snackbarSuccessEdit"
+      top
+      color="success"
+      :timeout="snackbarTime"
+    >
+      {{ successTextNewEdit }}
+    </v-snackbar>
+    <v-snackbar
+      v-model="snackbarFailedEdit"
+      top
+      color="red"
+      :timeout="snackbarTime"
+    >
+      {{ failedTextNewEdit }}
+    </v-snackbar>
     <!-- delete response -->
-    <snack-bars
-      :model1="snackbarSuccessDelete"
-      :model2="snackbarFailedDelete"
-      :successText="successTextDelete"
-      :failedText="failedTextDelete"
-    ></snack-bars>
+    <v-snackbar
+      v-model="snackbarSuccessDelete"
+      top
+      color="success"
+      :timeout="snackbarTime"
+    >
+      {{ successTextDelete }}
+    </v-snackbar>
+    <v-snackbar
+      v-model="snackbarFailedDelete"
+      top
+      color="red"
+      :timeout="snackbarTime"
+    >
+      {{ failedTextDelete }}
+    </v-snackbar>
 
     <v-data-table
       :headers="headers"
@@ -284,21 +314,6 @@
                           <v-col cols="12" sm="6" md="4">
                             <validation-provider
                               v-slot="{ errors }"
-                              name="Guarantors Name"
-                              rules="required"
-                            >
-                              <v-text-field
-                                v-model="guarantor1.guarantor_name"
-                                label="Guarantors Name"
-                                :readonly="disableAndReadonly"
-                                required
-                                :error-messages="errors"
-                              ></v-text-field>
-                            </validation-provider>
-                          </v-col>
-                          <v-col cols="12" sm="6" md="4">
-                            <validation-provider
-                              v-slot="{ errors }"
                               name="Account Number ID"
                               rules="required"
                             >
@@ -317,13 +332,28 @@
                           <v-col cols="12" sm="6" md="4">
                             <validation-provider
                               v-slot="{ errors }"
+                              name="Guarantors Name"
+                              rules="required"
+                            >
+                              <v-text-field
+                                v-model="setGuarantor1.name"
+                                label="Guarantors Name"
+                                readonly
+                                required
+                                :error-messages="errors"
+                              ></v-text-field>
+                            </validation-provider>
+                          </v-col>
+                          <v-col cols="12" sm="6" md="4">
+                            <validation-provider
+                              v-slot="{ errors }"
                               name="Guarantor CNIC"
                               rules="required"
                             >
                               <v-text-field
-                                v-model="guarantor1.cnic"
+                                v-model="setGuarantor1.cnic"
                                 label="Guarantor CNIC"
-                                :readonly="disableAndReadonly"
+                                readonly
                                 required
                                 :error-messages="errors"
                               ></v-text-field>
@@ -339,9 +369,9 @@
                               rules="required"
                             >
                               <v-text-field
-                                v-model="guarantor1.contact"
+                                v-model="setGuarantor1.cell"
                                 label="Guarantor Contact"
-                                :readonly="disableAndReadonly"
+                                readonly
                                 required
                                 :error-messages="errors"
                               ></v-text-field>
@@ -351,21 +381,6 @@
 
                         <span>Please enter second guarantors info</span>
                         <v-row>
-                          <v-col cols="12" sm="6" md="4">
-                            <validation-provider
-                              v-slot="{ errors }"
-                              name="Guarantors Name"
-                              rules="required"
-                            >
-                              <v-text-field
-                                v-model="guarantor2.guarantor_name"
-                                label="Guarantors Name"
-                                :readonly="disableAndReadonly"
-                                required
-                                :error-messages="errors"
-                              ></v-text-field>
-                            </validation-provider>
-                          </v-col>
                           <v-col cols="12" sm="6" md="4">
                             <validation-provider
                               v-slot="{ errors }"
@@ -385,9 +400,24 @@
                             </validation-provider>
                           </v-col>
                           <v-col cols="12" sm="6" md="4">
+                            <validation-provider
+                              v-slot="{ errors }"
+                              name="Guarantors Name"
+                              rules="required"
+                            >
+                              <v-text-field
+                                v-model="setGuarantor2.name"
+                                label="Guarantors Name"
+                                readonly
+                                required
+                                :error-messages="errors"
+                              ></v-text-field>
+                            </validation-provider>
+                          </v-col>
+                          <v-col cols="12" sm="6" md="4">
                             <v-text-field
-                              v-model="guarantor2.cnic"
-                              :readonly="disableAndReadonly"
+                              v-model="setGuarantor2.cnic"
+                              readonly
                               label="Guarantor CNIC"
                             ></v-text-field>
                           </v-col>
@@ -401,10 +431,10 @@
                               rules="required"
                             >
                               <v-text-field
-                                v-model="guarantor2.contact"
+                                v-model="setGuarantor2.cell"
                                 label="Guarantor Contact"
                                 required
-                                :readonly="disableAndReadonly"
+                                readonly
                                 :error-messages="errors"
                               ></v-text-field>
                             </validation-provider>
@@ -499,7 +529,6 @@ import {
   ValidationProvider,
   setInteractionMode
 } from "vee-validate";
-import snackbars from "../../../components/snackBars";
 
 setInteractionMode("eager");
 
@@ -511,8 +540,7 @@ extend("required", {
 export default {
   components: {
     ValidationProvider,
-    ValidationObserver,
-    "snack-bars": snackbars
+    ValidationObserver
   },
   data: () => ({
     dialog: false,
@@ -520,8 +548,8 @@ export default {
     headers: [
       { text: "Loan Issue Date", value: "issue_date", sortable: false },
       {
-        text: "Loan Account Number Id",
-        value: "loan_acc_no_id",
+        text: "Loan Account Name",
+        value: "loan_acc_name",
         sortable: false
       },
       { text: "Loan Amount", value: "loan_amount" },
@@ -595,8 +623,6 @@ export default {
     // get loan account codes
     loanAccounts: null,
 
-    test: false,
-
     // snackbars new loan
     snackbarSuccessLoan: false,
     snackbarFailedLoan: false,
@@ -615,6 +641,7 @@ export default {
     successTextDelete: "Successfully deleted",
     failedTextDelete: "There seems to be an error, failed to delete",
 
+    snackbarTime: 2500,
     // For view complete info
     disableAndReadonly: false,
 
@@ -626,12 +653,66 @@ export default {
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
+    },
+    setGuarantor1() {
+      var temp = {};
+      if (
+        this.guarantor1.acc_no_id !== null ||
+        this.guarantor1.acc_no_id !== ""
+      ) {
+        this.accountHoldersData.forEach(element => {
+          if (element.id == this.guarantor1.acc_no_id) {
+            this.guarantor1.guarantor_name = element.first_name;
+            this.guarantor1.cnic = element.cnic;
+            this.guarantor1.contact = element.cell;
+            if (element.middle_name == null) {
+              temp.middleName = "";
+            } else {
+              temp.middleName = element.middle_name;
+            }
+            temp.name = `${element.first_name} ${temp.middleName} ${element.last_name}`;
+            temp.cnic = element.cnic;
+            temp.cell = element.cell;
+          }
+        });
+      }
+      return temp;
+    },
+    setGuarantor2() {
+      var temp = {};
+      if (
+        this.guarantor2.acc_no_id !== null ||
+        this.guarantor2.acc_no_id !== ""
+      ) {
+        this.accountHoldersData.forEach(element => {
+          if (element.id == this.guarantor2.acc_no_id) {
+            this.guarantor2.guarantor_name = element.first_name;
+            this.guarantor2.cnic = element.cnic;
+            this.guarantor2.contact = element.cell;
+            if (element.middle_name == null) {
+              temp.middleName = "";
+            } else {
+              temp.middleName = element.middle_name;
+            }
+            temp.name = `${element.first_name} ${temp.middleName} ${element.last_name}`;
+            temp.cnic = element.cnic;
+            temp.cell = element.cell;
+          }
+        });
+      }
+      return temp;
     }
   },
 
   watch: {
     dialog(val) {
       val || this.close();
+      if (val) {
+        this.snackbarSuccessDelete = false;
+        this.snackbarFailedDelete = false;
+        this.snackbarSuccessEdit = false;
+        this.snackbarFailedEdit = false;
+      }
     },
     dialogDelete(val) {
       val || this.closeDelete();
@@ -661,6 +742,10 @@ export default {
     },
 
     close() {
+      this.snackbarSuccessDelete = false;
+      this.snackbarFailedDelete = false;
+      this.snackbarSuccessEdit = false;
+      this.snackbarFailedEdit = false;
       this.dialog = false;
       this.disableAndReadonly = false;
       this.clear();
@@ -689,9 +774,10 @@ export default {
           this.loanAccountDetails[this.editedIndex],
           this.dataFromInputs
         );
-      } else {
-        this.loanAccountDetails.push(this.dataFromInputs);
       }
+      // else {
+      //   this.loanAccountDetails.push(this.dataFromInputs);
+      // }
       if (this.newLoan === true) {
         addNewLoanIssue(this);
       } else {
@@ -743,7 +829,7 @@ export default {
 
     showCompleteInfo(item) {
       fetchLoanIssuesById(this, item.id);
-      this.onNextPage = true;
+      this.onNextPage = false;
       this.disableAndReadonly = true;
     }
   },

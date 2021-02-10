@@ -243,24 +243,27 @@
                   <v-col md="4">
                     <v-text-field
                       label="Guarantor Name"
-                      v-model="guarantorObj1.guarantor_name"
+                      v-model="setGuarantors1.name"
                       :readonly="disableAndReadonly"
+                      :disabled="idIsNotDefined1"
                     ></v-text-field>
                   </v-col>
 
                   <v-col md="4">
                     <v-text-field
                       label="Guarantor Contact"
-                      v-model="guarantorObj1.contact"
+                      v-model="setGuarantors1.cell"
                       :readonly="disableAndReadonly"
+                      :disabled="idIsNotDefined1"
                     ></v-text-field>
                   </v-col>
 
                   <v-col md="4">
                     <v-text-field
                       label="Guarantor CNIC"
-                      v-model="guarantorObj1.cnic"
+                      v-model="setGuarantors1.cnic"
                       :readonly="disableAndReadonly"
+                      :disabled="idIsNotDefined1"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -268,7 +271,7 @@
                 <v-row>
                   <v-col md="4">
                     <v-select
-                      :items="accountHoldersData"
+                      :items="returnAccountHolders"
                       item-text="first_name"
                       item-value="id"
                       v-model="guarantorObj1.acc_no_id"
@@ -286,8 +289,9 @@
                   <v-col md="4">
                     <v-text-field
                       label="Guarantor Name"
-                      v-model="guarantorObj2.guarantor_name"
+                      v-model="setGuarantors2.name"
                       :readonly="disableAndReadonly"
+                      :disabled="idIsNotDefined2"
                     ></v-text-field>
                   </v-col>
 
@@ -295,15 +299,17 @@
                     <v-text-field
                       label="Guarantor Contact"
                       :readonly="disableAndReadonly"
-                      v-model="guarantorObj2.contact"
+                      v-model="setGuarantors2.cell"
+                      :disabled="idIsNotDefined2"
                     ></v-text-field>
                   </v-col>
 
                   <v-col md="4">
                     <v-text-field
                       label="Guarantor CNIC"
-                      v-model="guarantorObj2.cnic"
+                      v-model="setGuarantors2.cnic"
                       :readonly="disableAndReadonly"
+                      :disabled="idIsNotDefined2"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -311,7 +317,7 @@
                 <v-row>
                   <v-col md="4">
                     <v-select
-                      :items="accountHoldersData"
+                      :items="returnAccountHolders"
                       item-text="first_name"
                       item-value="id"
                       v-model="guarantorObj2.acc_no_id"
@@ -437,6 +443,88 @@ export default {
         default:
           return "Not set up yet";
       }
+    },
+    returnAccountHolders() {
+      let temp = {
+        first_name: "Deselect",
+        id: 0
+      };
+      let newObj = [...this.accountHoldersData];
+      newObj.unshift(temp);
+      return newObj;
+    },
+    idIsNotDefined1() {
+      let temp = null;
+      if (this.guarantorObj1.acc_no_id !== 0) {
+        temp = true;
+      } else {
+        temp = false;
+      }
+      if (this.guarantorObj1.acc_no_id == null) {
+        temp = false;
+      }
+      return temp;
+    },
+    idIsNotDefined2() {
+      let temp = null;
+      if (this.guarantorObj2.acc_no_id !== 0) {
+        temp = true;
+      } else {
+        temp = false;
+      }
+      if (this.guarantorObj2.acc_no_id == null) {
+        temp = false;
+      }
+      return temp;
+    },
+
+    setGuarantors1() {
+      var temp = {};
+      if (
+        this.guarantorObj1.acc_no_id !== 0 &&
+        this.guarantorObj1.acc_no_id !== null
+      ) {
+        this.accountHoldersData.forEach(element => {
+          if (element.id == this.guarantorObj1.acc_no_id) {
+            this.guarantorObj1.guarantor_name = element.first_name;
+            this.guarantorObj1.cnic = element.cnic;
+            this.guarantorObj1.contact = element.cell;
+            if (element.middle_name == null) {
+              temp.middleName = "";
+            } else {
+              temp.middleName = element.middle_name;
+            }
+            temp.name = `${element.first_name} ${temp.middleName} ${element.last_name}`;
+            temp.cnic = element.cnic;
+            temp.cell = element.cell;
+          }
+        });
+      }
+      return temp;
+    },
+    setGuarantors2() {
+      var temp = {};
+      if (
+        this.guarantorObj2.acc_no_id !== 0 &&
+        this.guarantorObj2.acc_no_id !== null
+      ) {
+        this.accountHoldersData.forEach(element => {
+          if (element.id == this.guarantorObj2.acc_no_id) {
+            this.guarantorObj2.guarantor_name = element.first_name;
+            this.guarantorObj2.cnic = element.cnic;
+            this.guarantorObj2.contact = element.cell;
+            if (element.middle_name == null) {
+              temp.middleName = "";
+            } else {
+              temp.middleName = element.middle_name;
+            }
+            temp.name = `${element.first_name} ${temp.middleName} ${element.last_name}`;
+            temp.cnic = element.cnic;
+            temp.cell = element.cell;
+          }
+        });
+      }
+      return temp;
     }
   },
 

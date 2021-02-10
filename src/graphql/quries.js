@@ -343,6 +343,7 @@ export const GET_LOAN_ISSUES = gql`
       transfer_acc_code_id
       transfer_acc_no_id
       loan_acc_no_id
+      loan_acc_name
       loan_amount
       markup_percentage
       issue_duration
@@ -409,8 +410,20 @@ export const ADD_LOAN_ISSUE = gql`
       narration: $narration
       guarantor: $guarantor
     ) {
-      message
-      status
+      id
+      issue_date
+      loan_type
+      transfer_acc_code_id
+      transfer_acc_no_id
+      loan_acc_no_id
+      loan_acc_name
+      loan_amount
+      markup_percentage
+      issue_duration
+      maturity_date
+      narration
+      createdAt
+      updatedAt
     }
   }
 `;

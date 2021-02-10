@@ -7,11 +7,19 @@ import {
 } from "../../../graphql/quries";
 
 export async function fetchAccountHolders(vueObj) {
-  const result = await vueObj.$apollo.query({
-    query: GET_ACCOUNT_HOLDERS,
-    fetchPolicy: "network-only"
-  });
-  vueObj.accountHoldersData = result.data.getAccountHolders;
+  try {
+    const result = await vueObj.$apollo.query({
+      query: GET_ACCOUNT_HOLDERS,
+      fetchPolicy: "network-only"
+    });
+    if (result.errors) {
+      throw result.errors[0].message;
+    } else {
+      vueObj.accountHoldersData = result.data.getAccountHolders;
+    }
+  } catch (e) {
+    vueObj.message = e;
+  }
 }
 
 export async function newAccountHolder(vueObj) {
@@ -20,6 +28,11 @@ export async function newAccountHolder(vueObj) {
   const variables = {
     ...vueObj.dataFromInputs
   };
+  variables.guarantor.forEach(element => {
+    if (element.acc_no_id == null) {
+      element.acc_no_id = 0;
+    }
+  });
   try {
     const result = await vueObj.$apollo.mutate({
       mutation: ADD_ACCOUNT_HOLDER,
