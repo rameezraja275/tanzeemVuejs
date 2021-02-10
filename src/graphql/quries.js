@@ -342,7 +342,6 @@ export const GET_LOAN_ISSUES = gql`
       loan_type
       transfer_acc_code_id
       transfer_acc_no_id
-      loan_acc_code_id
       loan_acc_no_id
       loan_amount
       markup_percentage
@@ -364,7 +363,6 @@ export const GET_LOAN_ISSUES_BY_ID = gql`
         loan_type
         transfer_acc_code_id
         transfer_acc_no_id
-        loan_acc_code_id
         loan_acc_no_id
         loan_amount
         markup_percentage
@@ -375,16 +373,10 @@ export const GET_LOAN_ISSUES_BY_ID = gql`
         updatedAt
       }
       guarantors {
-        id
-        module_id
-        ref_id
-        acc_holder_id
         acc_no_id
         guarantor_name
         cnic
         contact
-        createdAt
-        updatedAt
       }
     }
   }
@@ -396,7 +388,6 @@ export const ADD_LOAN_ISSUE = gql`
     $loan_type: TinyInt
     $transfer_acc_code_id: BigInt
     $transfer_acc_no_id: BigInt
-    $loan_acc_code_id: BigInt
     $loan_acc_no_id: BigInt
     $loan_amount: Decimal
     $markup_percentage: Float
@@ -410,7 +401,6 @@ export const ADD_LOAN_ISSUE = gql`
       loan_type: $loan_type
       transfer_acc_code_id: $transfer_acc_code_id
       transfer_acc_no_id: $transfer_acc_no_id
-      loan_acc_code_id: $loan_acc_code_id
       loan_acc_no_id: $loan_acc_no_id
       loan_amount: $loan_amount
       markup_percentage: $markup_percentage
@@ -432,7 +422,6 @@ export const UPDATE_LOAN_ISSUE = gql`
     $loan_type: TinyInt
     $transfer_acc_code_id: BigInt
     $transfer_acc_no_id: BigInt
-    $loan_acc_code_id: BigInt
     $loan_acc_no_id: BigInt
     $loan_amount: Decimal
     $markup_percentage: Float
@@ -447,7 +436,6 @@ export const UPDATE_LOAN_ISSUE = gql`
       loan_type: $loan_type
       transfer_acc_code_id: $transfer_acc_code_id
       transfer_acc_no_id: $transfer_acc_no_id
-      loan_acc_code_id: $loan_acc_code_id
       loan_acc_no_id: $loan_acc_no_id
       loan_amount: $loan_amount
       markup_percentage: $markup_percentage
