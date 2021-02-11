@@ -542,7 +542,6 @@ export default {
     validate() {
       this.$refs.form.validate();
       if (this.$refs.form.validate()) {
-        console.log("submit function called");
         this.submitData();
       }
     },

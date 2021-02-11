@@ -61,10 +61,10 @@
     >
       <template v-slot:top>
         <v-toolbar flat>
-          <v-toolbar-title>Loans Issued</v-toolbar-title>
+          <v-toolbar-title>Loans</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="900px">
+          <v-dialog v-model="dialog" max-width="900px" persistent>
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 color="primary"
@@ -83,145 +83,11 @@
               <validation-observer ref="observer" v-slot="{ invalid }">
                 <form @submit.prevent="submit">
                   <v-card-title>
-                    <span class="headline text--secondary">{{
-                      formTitle
-                    }}</span>
+                    <span>{{ formTitle }}</span>
                   </v-card-title>
                   <v-window v-model="step">
                     <v-window-item :value="1">
                       <v-card-text>
-                        <v-row>
-                          <v-col cols="12" sm="6" md="4">
-                            <validation-provider
-                              v-slot="{ errors }"
-                              name="Loan Amount"
-                              rules="required"
-                            >
-                              <v-text-field
-                                v-model="dataFromInputs.loan_amount"
-                                label="Loan Amount"
-                                :readonly="disableAndReadonly"
-                                required
-                                :error-messages="errors"
-                              ></v-text-field>
-                            </validation-provider>
-                          </v-col>
-                          <v-col cols="12" sm="6" md="4">
-                            <validation-provider
-                              v-slot="{ errors }"
-                              name="Markup Percentage"
-                              rules="required"
-                            >
-                              <v-text-field
-                                v-model="dataFromInputs.markup_percentage"
-                                label="Markup Percentage"
-                                :readonly="disableAndReadonly"
-                                required
-                                :error-messages="errors"
-                              ></v-text-field>
-                            </validation-provider>
-                          </v-col>
-                          <v-col cols="12" sm="6" md="4">
-                            <validation-provider
-                              v-slot="{ errors }"
-                              name="Issue Duration"
-                              rules="required"
-                            >
-                              <v-text-field
-                                v-model="dataFromInputs.issue_duration"
-                                label="Issue Duration"
-                                :readonly="disableAndReadonly"
-                                required
-                                :error-messages="errors"
-                              ></v-text-field>
-                            </validation-provider>
-                          </v-col>
-                        </v-row>
-
-                        <v-row>
-                          <v-col cols="12" sm="6" md="4">
-                            <p>Account Type:</p>
-                            <!-- add v-model on radio group -->
-                            <validation-provider
-                              v-slot="{ errors }"
-                              name="Account Type"
-                              rules="required"
-                            >
-                              <v-radio-group
-                                row
-                                v-model="dataFromInputs.loan_type"
-                                required
-                                :error-messages="errors"
-                                :readonly="disableAndReadonly"
-                              >
-                                <v-radio label="Cash" :value="1"></v-radio>
-                                <v-radio label="Transfer" :value="2"></v-radio>
-                              </v-radio-group>
-                            </validation-provider>
-                          </v-col>
-                          <v-col cols="12" sm="6" md="4">
-                            <validation-provider
-                              v-slot="{ errors }"
-                              name="Transfer Account Code ID"
-                              :rules="
-                                dataFromInputs.loan_type == 2
-                                  ? 'required'
-                                  : null
-                              "
-                            >
-                              <v-text-field
-                                v-model="dataFromInputs.transfer_acc_code_id"
-                                :disabled="dataFromInputs.loan_type == 1"
-                                :readonly="disableAndReadonly"
-                                label="Transfer Account Code ID"
-                                :required="dataFromInputs.loan_type == 2"
-                                :error-messages="errors"
-                              ></v-text-field>
-                            </validation-provider>
-                          </v-col>
-                          <v-col cols="12" sm="6" md="4">
-                            <validation-provider
-                              v-slot="{ errors }"
-                              name="Transfer Account Number ID"
-                              :rules="
-                                dataFromInputs.loan_type == 2
-                                  ? 'required'
-                                  : null
-                              "
-                            >
-                              <v-text-field
-                                v-model="dataFromInputs.transfer_acc_no_id"
-                                :disabled="dataFromInputs.loan_type == 1"
-                                label="Transfer Account Number ID"
-                                :readonly="disableAndReadonly"
-                                :required="dataFromInputs.loan_type == 2"
-                                :error-messages="errors"
-                              ></v-text-field>
-                            </validation-provider>
-                          </v-col>
-                        </v-row>
-
-                        <v-row>
-                          <v-col cols="12" sm="6" md="4">
-                            <validation-provider
-                              v-slot="{ errors }"
-                              name="Loan Account Number ID"
-                              rules="required"
-                            >
-                              <v-autocomplete
-                                v-model="dataFromInputs.loan_acc_no_id"
-                                :items="loanAccounts"
-                                item-text="acc_code"
-                                item-value="id"
-                                :readonly="disableAndReadonly"
-                                label="Loan Account Number ID"
-                                required
-                                :error-messages="errors"
-                              ></v-autocomplete>
-                            </validation-provider>
-                          </v-col>
-                        </v-row>
-
                         <v-row>
                           <v-col cols="12" sm="6" md="4">
                             <v-menu
@@ -243,6 +109,7 @@
                                     label="Issue Date"
                                     prepend-icon="mdi-calendar"
                                     :disabled="disableAndReadonly"
+                                    :allowed-dates="allowedDates"
                                     v-bind="attrs"
                                     v-on="on"
                                     required
@@ -252,9 +119,151 @@
                               </template>
                               <v-date-picker
                                 v-model="dataFromInputs.issue_date"
+                                :max="getEndDate"
                                 @input="menu = false"
                               ></v-date-picker>
                             </v-menu>
+                          </v-col>
+                          <v-col cols="12" sm="6" md="6">
+                            <!-- add v-model on radio group -->
+                            <validation-provider
+                              v-slot="{ errors }"
+                              name="Payment Type"
+                              rules="required"
+                            >
+                              <v-radio-group
+                                row
+                                v-model="dataFromInputs.loan_type"
+                                required
+                                label="Payment Type:"
+                                :error-messages="errors"
+                                :readonly="disableAndReadonly"
+                              >
+                                <v-radio
+                                  label="Cash"
+                                  :value="1"
+                                  class="ml-4"
+                                ></v-radio>
+                                <v-radio label="Transfer" :value="2"></v-radio>
+                              </v-radio-group>
+                            </validation-provider>
+                          </v-col>
+                        </v-row>
+
+                        <v-row>
+                          <v-col cols="12" sm="6" md="4">
+                            <validation-provider
+                              v-slot="{ errors }"
+                              name="Transfer A/C Code"
+                              :rules="
+                                dataFromInputs.loan_type == 2
+                                  ? 'required'
+                                  : null
+                              "
+                            >
+                              <v-text-field
+                                v-model="dataFromInputs.transfer_acc_code_id"
+                                :disabled="dataFromInputs.loan_type == 1"
+                                :readonly="disableAndReadonly"
+                                type="number"
+                                label="Transfer A/C Code"
+                                :required="dataFromInputs.loan_type == 2"
+                                :error-messages="errors"
+                              ></v-text-field>
+                            </validation-provider>
+                          </v-col>
+                          <v-col cols="12" sm="6" md="4">
+                            <validation-provider
+                              v-slot="{ errors }"
+                              name="Transfer A/C No"
+                              :rules="
+                                dataFromInputs.loan_type == 2
+                                  ? 'required'
+                                  : null
+                              "
+                            >
+                              <v-text-field
+                                v-model="dataFromInputs.transfer_acc_no_id"
+                                :disabled="dataFromInputs.loan_type == 1"
+                                label="Transfer A/C No"
+                                type="number"
+                                :readonly="disableAndReadonly"
+                                :required="dataFromInputs.loan_type == 2"
+                                :error-messages="errors"
+                              ></v-text-field>
+                            </validation-provider>
+                          </v-col>
+                        </v-row>
+
+                        <v-row>
+                          <v-col cols="12" sm="6" md="4">
+                            <validation-provider
+                              v-slot="{ errors }"
+                              name="Loan A/C No"
+                              rules="required"
+                            >
+                              <v-autocomplete
+                                v-model="dataFromInputs.loan_acc_no_id"
+                                :items="loanAccounts"
+                                item-text="acc_code"
+                                item-value="id"
+                                :readonly="disableAndReadonly"
+                                label="Loan A/C No"
+                                required
+                                :error-messages="errors"
+                              ></v-autocomplete>
+                            </validation-provider>
+                          </v-col>
+                          <v-col cols="12" sm="6" md="4">
+                            <validation-provider
+                              v-slot="{ errors }"
+                              name="Duration"
+                              rules="required"
+                            >
+                              <v-text-field
+                                v-model="dataFromInputs.issue_duration"
+                                label="Duration(months)"
+                                type="number"
+                                :readonly="disableAndReadonly"
+                                required
+                                :error-messages="errors"
+                              ></v-text-field>
+                            </validation-provider>
+                          </v-col>
+                          <v-col cols="12" sm="6" md="4">
+                            <validation-provider
+                              v-slot="{ errors }"
+                              name="Loan Amount"
+                              rules="required"
+                            >
+                              <v-text-field
+                                v-model="dataFromInputs.loan_amount"
+                                label="Loan Amount"
+                                type="number"
+                                :readonly="disableAndReadonly"
+                                required
+                                :error-messages="errors"
+                              ></v-text-field>
+                            </validation-provider>
+                          </v-col>
+                        </v-row>
+
+                        <v-row>
+                          <v-col cols="12" sm="6" md="4">
+                            <validation-provider
+                              v-slot="{ errors }"
+                              name="Markup Percentage"
+                              rules="required"
+                            >
+                              <v-text-field
+                                v-model="dataFromInputs.markup_percentage"
+                                label="Markup Percentage"
+                                type="number"
+                                :readonly="disableAndReadonly"
+                                required
+                                :error-messages="errors"
+                              ></v-text-field>
+                            </validation-provider>
                           </v-col>
                           <v-col cols="12" sm="6" md="4">
                             <v-menu
@@ -274,6 +283,7 @@
                                   <v-text-field
                                     v-model="dataFromInputs.maturity_date"
                                     label="Maturity Date"
+                                    readonly
                                     prepend-icon="mdi-calendar"
                                     :disabled="disableAndReadonly"
                                     v-bind="attrs"
@@ -283,10 +293,6 @@
                                   ></v-text-field>
                                 </validation-provider>
                               </template>
-                              <v-date-picker
-                                v-model="dataFromInputs.maturity_date"
-                                @input="menu2 = false"
-                              ></v-date-picker>
                             </v-menu>
                           </v-col>
                         </v-row>
@@ -307,7 +313,7 @@
                     <v-window-item :value="2">
                       <v-card-text>
                         <span
-                          >Please enter your <strong>guarantors</strong> account
+                          >Please enter your <strong>guarantor</strong> account
                           details</span
                         >
                         <v-row>
@@ -329,15 +335,18 @@
                               ></v-autocomplete>
                             </validation-provider>
                           </v-col>
+                        </v-row>
+
+                        <v-row>
                           <v-col cols="12" sm="6" md="4">
                             <validation-provider
                               v-slot="{ errors }"
-                              name="Guarantors Name"
+                              name="Guarantor Name"
                               rules="required"
                             >
                               <v-text-field
                                 v-model="setGuarantor1.name"
-                                label="Guarantors Name"
+                                label="Guarantor Name"
                                 readonly
                                 required
                                 :error-messages="errors"
@@ -359,9 +368,6 @@
                               ></v-text-field>
                             </validation-provider>
                           </v-col>
-                        </v-row>
-
-                        <v-row>
                           <v-col cols="12" sm="6" md="4">
                             <validation-provider
                               v-slot="{ errors }"
@@ -379,7 +385,7 @@
                           </v-col>
                         </v-row>
 
-                        <span>Please enter second guarantors info</span>
+                        <span>Please enter second guarantor info</span>
                         <v-row>
                           <v-col cols="12" sm="6" md="4">
                             <validation-provider
@@ -399,15 +405,18 @@
                               ></v-autocomplete>
                             </validation-provider>
                           </v-col>
+                        </v-row>
+
+                        <v-row>
                           <v-col cols="12" sm="6" md="4">
                             <validation-provider
                               v-slot="{ errors }"
-                              name="Guarantors Name"
+                              name="Guarantor Name"
                               rules="required"
                             >
                               <v-text-field
                                 v-model="setGuarantor2.name"
-                                label="Guarantors Name"
+                                label="Guarantor Name"
                                 readonly
                                 required
                                 :error-messages="errors"
@@ -421,9 +430,6 @@
                               label="Guarantor CNIC"
                             ></v-text-field>
                           </v-col>
-                        </v-row>
-
-                        <v-row>
                           <v-col cols="12" sm="6" md="4">
                             <validation-provider
                               v-slot="{ errors }"
@@ -444,13 +450,21 @@
                     </v-window-item>
 
                     <v-card-actions>
-                      <v-btn :disabled="step === 1" text @click="step--">
-                        Back
-                      </v-btn>
                       <v-btn color="blue darken-1" text @click="close">
                         Cancel
                       </v-btn>
                       <v-spacer></v-spacer>
+                      <v-btn :disabled="step === 1" text @click="step--">
+                        Back
+                      </v-btn>
+                      <v-btn
+                        :disabled="step === 2"
+                        color="primary"
+                        depressed
+                        @click="nextPage"
+                      >
+                        Next
+                      </v-btn>
                       <v-btn
                         color="success"
                         @click="submit"
@@ -459,14 +473,6 @@
                         :loading="submitLoading"
                       >
                         Submit
-                      </v-btn>
-                      <v-btn
-                        :disabled="step === 3"
-                        color="primary"
-                        depressed
-                        @click="nextPage"
-                      >
-                        Next
                       </v-btn>
                     </v-card-actions>
                   </v-window>
@@ -647,18 +653,31 @@ export default {
 
     // loader
     loaderOn: false,
-    submitLoading: false
+    submitLoading: false,
+
+    // show complete info
+    viewLoanOpen: false,
+
+    newTest: new Date()
   }),
 
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? "New Item" : "Edit Item";
+      var temp = null;
+      if (this.editedIndex === -1 && this.viewLoanOpen == false) {
+        temp = "New Loan";
+      } else if (this.editedIndex !== -1 && this.viewLoanOpen == false) {
+        temp = "Edit Loan";
+      } else if (this.viewLoanOpen == true) {
+        temp = "View Loan";
+      }
+      return temp;
     },
     setGuarantor1() {
       var temp = {};
       if (
         this.guarantor1.acc_no_id !== null ||
-        this.guarantor1.acc_no_id !== ""
+        this.guarantor1.accaccountHoldersData_no_id !== ""
       ) {
         this.accountHoldersData.forEach(element => {
           if (element.id == this.guarantor1.acc_no_id) {
@@ -701,25 +720,81 @@ export default {
         });
       }
       return temp;
+    },
+    testing() {
+      var temp = null;
+      if (
+        this.dataFromInputs.issue_date !== null &&
+        this.dataFromInputs.issue_date !== "" &&
+        this.dataFromInputs.issue_date !== undefined &&
+        this.dataFromInputs.issue_duration !== null &&
+        this.dataFromInputs.issue_duration !== "" &&
+        this.dataFromInputs.issue_duration !== undefined
+      ) {
+        temp = true;
+      } else {
+        temp = false;
+      }
+      return temp;
+    },
+    getEndDate() {
+      var date = new Date();
+      var dd = date.getDate();
+      var mm = date.getMonth() + 1;
+      var yy = date.getFullYear();
+      var finalDate = null;
+      if (mm == 0) {
+        mm = 12;
+      }
+      if (mm < 10) {
+        finalDate = `${yy}-0${mm}-${dd}`;
+      } else {
+        finalDate = `${yy}-${mm}-${dd}`;
+      }
+      console.log(finalDate);
+      return finalDate;
     }
   },
 
   watch: {
     dialog(val) {
       val || this.close();
-      if (val) {
-        this.snackbarSuccessDelete = false;
-        this.snackbarFailedDelete = false;
-        this.snackbarSuccessEdit = false;
-        this.snackbarFailedEdit = false;
-      }
     },
     dialogDelete(val) {
       val || this.closeDelete();
+    },
+    testing(val) {
+      if (val === true) {
+        this.maturityDate();
+      }
     }
   },
 
   methods: {
+    maturityDate() {
+      var date = this.dataFromInputs.issue_date;
+      var monthsToAdd = parseInt(this.dataFromInputs.issue_duration, 10);
+      var year = date.slice(0, 4);
+      var month = date.slice(5, 7);
+      var day = date.slice(8, 10);
+
+      var dt = new Date(year, month, day);
+      dt.setMonth(dt.getMonth() + monthsToAdd);
+      var dd = dt.getDate();
+      var mm = dt.getMonth();
+      var yy = dt.getFullYear();
+      var finalDate = null;
+      if (mm == 0) {
+        mm = 12;
+      }
+      if (mm < 10) {
+        finalDate = `${yy}-0${mm}-${dd}`;
+      } else {
+        finalDate = `${yy}-${mm}-${dd}`;
+      }
+      this.dataFromInputs.maturity_date = finalDate;
+    },
+
     editItem(item) {
       this.editId = item.id;
       this.editedIndex = this.loanAccountDetails.indexOf(item);
@@ -742,11 +817,9 @@ export default {
     },
 
     close() {
-      this.snackbarSuccessDelete = false;
-      this.snackbarFailedDelete = false;
-      this.snackbarSuccessEdit = false;
-      this.snackbarFailedEdit = false;
+      this.maturityDate;
       this.dialog = false;
+      this.viewLoanOpen = false;
       this.disableAndReadonly = false;
       this.clear();
       this.newLoan = false;
@@ -767,7 +840,6 @@ export default {
 
     submit() {
       this.dataFromInputs.guarantor = [];
-
       this.dataFromInputs.guarantor.push(this.guarantor1, this.guarantor2);
       if (this.editedIndex > -1) {
         Object.assign(
@@ -783,7 +855,6 @@ export default {
       } else {
         updateLoanIssue(this, this.editId);
       }
-      this.close();
     },
 
     newLoanRequired() {
@@ -828,9 +899,14 @@ export default {
     },
 
     showCompleteInfo(item) {
+      this.viewLoanOpen = true;
       fetchLoanIssuesById(this, item.id);
       this.onNextPage = false;
       this.disableAndReadonly = true;
+    },
+
+    allowedDates(val) {
+      console.log("asfd", val);
     }
   },
 

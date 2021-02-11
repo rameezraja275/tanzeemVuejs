@@ -93,6 +93,7 @@ export async function addNewLoanIssue(vueObj) {
     vueObj.snackbarFailedLoan = true;
   }
   vueObj.submitLoading = false;
+  vueObj.close();
 }
 
 export async function updateLoanIssue(vueObj, itemId) {
@@ -127,8 +128,10 @@ export async function updateLoanIssue(vueObj, itemId) {
   } catch (e) {
     vueObj.message = e;
     vueObj.snackbarFailedEdit = true;
+    console.log("error");
   }
   vueObj.submitLoading = false;
+  vueObj.close();
 }
 
 export async function deleteLoanIssue(vueObj, ID) {
@@ -170,6 +173,7 @@ export async function getDetailAccounts(vueObj) {
       const variables = {
         acc_parent: null
       };
+      console.log(result.data.getAccounts, "data");
       result.data.getAccounts.forEach(element => {
         if (element.acc_name == "Loan") {
           variables.acc_parent = element.id;
