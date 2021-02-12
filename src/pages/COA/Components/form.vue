@@ -57,22 +57,15 @@
             <v-radio label="Detail" :value="DETAIL_ACCOUNTS"></v-radio>
           </v-radio-group>
         </validation-provider>
-        <validation-provider
-          v-slot="{ errors }"
-          name="accConfig"
-          rules="required"
-        >
-          <v-select
-            v-model="accConfig"
-            :items="configAccounts"
-            :error-messages="errors"
-            label="Configure account"
-            data-vv-name="select"
-            required
-            item-text="label"
-            item-value="id"
-          ></v-select>
-        </validation-provider>
+        <v-select
+          v-model="accConfig"
+          :items="configAccounts"
+          :error-messages="errors"
+          label="Configure account"
+          data-vv-name="select"
+          item-text="label"
+          item-value="id"
+        ></v-select>
         <v-alert :value="message" dense elevation="2" type="error">
           {{ message }}
         </v-alert>
@@ -202,12 +195,16 @@ export default {
     async onSubmit() {
       this.$refs.observer.validate();
       this.mutationLoading = true;
-      const variables = {
+      let variables = {
         acc_name: this.accountName,
         acc_parent: this.accParent,
         acc_type: this.accType,
         acc_config: this.accConfig
       };
+
+      if (variables.acc_config == null) {
+        variables.acc_config = 0;
+      }
       try {
         const result = await this.$apollo.mutate({
           mutation: this.isEditable ? UPDATE_ACCOUNT : ADD_ACCOUNT,

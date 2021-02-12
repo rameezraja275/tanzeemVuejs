@@ -170,10 +170,11 @@ export async function getDetailAccounts(vueObj) {
     if (result.errors) {
       throw result.errors[0].message;
     } else {
+      vueObj.allGroupAccounts = result.data.getAccounts;
       const variables = {
         acc_parent: null
       };
-      console.log(result.data.getAccounts, "data");
+
       result.data.getAccounts.forEach(element => {
         if (element.acc_name == "Loan") {
           variables.acc_parent = element.id;
@@ -192,6 +193,27 @@ export async function getDetailAccounts(vueObj) {
       } catch (e) {
         vueObj.message = e;
       }
+    }
+  } catch (e) {
+    vueObj.message = e;
+  }
+}
+
+export async function getAccountChilds(vueObj, accParent) {
+  console.log(accParent);
+  const variables = {
+    acc_parent: accParent
+  };
+
+  try {
+    const result = await vueObj.$apollo.query({
+      query: GET_ACCOUNTS_CHILDS,
+      variables: variables
+    });
+    if (result.errors) {
+      throw result.errors[0].message;
+    } else {
+      vueObj.childsAfterSelection = result.data.getAccountChilds;
     }
   } catch (e) {
     vueObj.message = e;

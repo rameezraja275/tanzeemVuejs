@@ -54,6 +54,7 @@
                   :accountHoldersData="accountHoldersData"
                   :editAccountDetails="editAccountDetails"
                   :disableAndReadonly="disableAndReadonly"
+                  :editedIndex="editedIndex"
                 ></pop-up>
               </v-dialog>
             </v-row>
@@ -127,6 +128,7 @@ export default {
     editingMode: false,
     loading: false,
     deleteMode: false,
+    editedIndex: -1,
 
     // delete alert
     deleteAlert: false,
@@ -182,11 +184,15 @@ export default {
       this.dialogDelete = false;
       this.loading = false;
       this.deleteMode = false;
+      this.$nextTick(() => {
+        this.editedIndex = -1;
+      });
     },
 
     editItem(item) {
       this.editingMode = true;
       this.loading = true;
+      this.editedIndex = this.accountHoldersData.indexOf(item);
       this.disableAndReadonly = false;
       getAccountHolderById(this, item.id);
     },
@@ -201,6 +207,7 @@ export default {
     },
 
     newUser() {
+      this.editedIndex = -1;
       this.disableAndReadonly = false;
       this.dialogPopUp = true;
     }

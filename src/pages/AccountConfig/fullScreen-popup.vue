@@ -4,7 +4,7 @@
       <v-btn icon dark @click="closePopup()">
         <v-icon>mdi-close</v-icon>
       </v-btn>
-      <v-toolbar-title>Create new account</v-toolbar-title>
+      <v-toolbar-title>{{ currentTitle }}</v-toolbar-title>
       <v-spacer></v-spacer>
     </v-toolbar>
 
@@ -13,7 +13,7 @@
       <v-card class="mx-auto mt-10 mb-10" max-width="1200" width="100%">
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-card-title class="title font-weight-regular justify-space-between">
-            <span>{{ currentTitle }}</span>
+            <span>{{ formTitle }}</span>
             <v-snackbar
               v-model="snackbar"
               top
@@ -375,7 +375,8 @@ export default {
     "accountHoldersData",
     "editAccountDetails",
     "dialogPopUp",
-    "disableAndReadonly"
+    "disableAndReadonly",
+    "editedIndex"
   ],
   data: () => ({
     step: 1,
@@ -437,12 +438,23 @@ export default {
     currentTitle() {
       switch (this.step) {
         case 1:
-          return "Enter new user details";
+          return "A/C Holder Info";
         case 2:
           return "Guarantor Details";
         default:
           return "Not set up yet";
       }
+    },
+    formTitle() {
+      var temp = null;
+      if (this.editedIndex === -1 && this.disableAndReadonly == false) {
+        temp = "New Loan";
+      } else if (this.editedIndex !== -1 && this.disableAndReadonly == false) {
+        temp = "Edit Loan";
+      } else if (this.disableAndReadonly == true) {
+        temp = "View Loan";
+      }
+      return temp;
     },
     returnAccountHolders() {
       let temp = {

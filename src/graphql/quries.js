@@ -80,7 +80,7 @@ export const ADD_ACCOUNT = gql`
       acc_type: $acc_type
       acc_config: $acc_config
     ) {
-      id
+      message
     }
   }
 `;

@@ -161,15 +161,17 @@
                                   : null
                               "
                             >
-                              <v-text-field
+                              <v-autocomplete
                                 v-model="dataFromInputs.transfer_acc_code_id"
+                                :items="getChildsOfSelected"
                                 :disabled="dataFromInputs.loan_type == 1"
+                                :item-text="transferCodeNname"
+                                item-value="id"
                                 :readonly="disableAndReadonly"
-                                type="number"
                                 label="Transfer A/C Code"
                                 :required="dataFromInputs.loan_type == 2"
                                 :error-messages="errors"
-                              ></v-text-field>
+                              ></v-autocomplete>
                             </validation-provider>
                           </v-col>
                           <v-col cols="12" sm="6" md="4">
@@ -182,7 +184,7 @@
                                   : null
                               "
                             >
-                              <v-text-field
+                              <!-- <v-text-field
                                 v-model="dataFromInputs.transfer_acc_no_id"
                                 :disabled="dataFromInputs.loan_type == 1"
                                 label="Transfer A/C No"
@@ -190,7 +192,18 @@
                                 :readonly="disableAndReadonly"
                                 :required="dataFromInputs.loan_type == 2"
                                 :error-messages="errors"
-                              ></v-text-field>
+                              ></v-text-field> -->
+                              <v-autocomplete
+                                v-model="dataFromInputs.transfer_acc_no_id"
+                                :items="childsAfterSelection"
+                                :disabled="dataFromInputs.loan_type == 1"
+                                :item-text="transferNoNname"
+                                item-value="id"
+                                :readonly="disableAndReadonly"
+                                label="Transfer A/C No"
+                                :required="dataFromInputs.loan_type == 2"
+                                :error-messages="errors"
+                              ></v-autocomplete>
                             </validation-provider>
                           </v-col>
                         </v-row>
@@ -525,7 +538,8 @@ import {
   addNewLoanIssue,
   fetchLoanIssuesById,
   updateLoanIssue,
-  getDetailAccounts
+  getDetailAccounts,
+  getAccountChilds
 } from "../action/action";
 import { fetchAccountHolders } from "../../AccountConfig/actions/actions";
 import { required } from "vee-validate/dist/rules";
@@ -658,10 +672,28 @@ export default {
     // show complete info
     viewLoanOpen: false,
 
-    newTest: new Date()
+    newTest: new Date(),
+
+    // banks
+    bankAccounts: null,
+
+    // all group accounts
+    allGroupAccounts: null,
+
+    // account childs
+    childsAfterSelection: null
   }),
 
   computed: {
+    getChildsOfSelected() {
+      if (
+        this.dataFromInputs.transfer_acc_code_id !== null ||
+        this.dataFromInputs.transfer_acc_code_id !== ""
+      ) {
+        getAccountChilds(this, this.dataFromInputs.transfer_acc_code_id);
+      }
+      return this.allGroupAccounts;
+    },
     formTitle() {
       var temp = null;
       if (this.editedIndex === -1 && this.viewLoanOpen == false) {
@@ -771,6 +803,12 @@ export default {
   },
 
   methods: {
+    transferCodeNname(item) {
+      return `${item.acc_name} - ${item.acc_code}`;
+    },
+    transferNoNname(item) {
+      return `${item.acc_name} - ${item.acc_code}`;
+    },
     maturityDate() {
       var date = this.dataFromInputs.issue_date;
       var monthsToAdd = parseInt(this.dataFromInputs.issue_duration, 10);
