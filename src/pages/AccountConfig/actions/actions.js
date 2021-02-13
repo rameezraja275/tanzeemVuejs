@@ -24,7 +24,6 @@ export async function fetchAccountHolders(vueObj) {
 
 export async function newAccountHolder(vueObj) {
   vueObj.loading = true;
-  console.log(vueObj.dataFromInputs, "datra before sending");
   const variables = {
     ...vueObj.dataFromInputs
   };

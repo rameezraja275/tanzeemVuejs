@@ -109,7 +109,6 @@
                                     label="Issue Date"
                                     prepend-icon="mdi-calendar"
                                     :disabled="disableAndReadonly"
-                                    :allowed-dates="allowedDates"
                                     v-bind="attrs"
                                     v-on="on"
                                     required
@@ -184,15 +183,6 @@
                                   : null
                               "
                             >
-                              <!-- <v-text-field
-                                v-model="dataFromInputs.transfer_acc_no_id"
-                                :disabled="dataFromInputs.loan_type == 1"
-                                label="Transfer A/C No"
-                                type="number"
-                                :readonly="disableAndReadonly"
-                                :required="dataFromInputs.loan_type == 2"
-                                :error-messages="errors"
-                              ></v-text-field> -->
                               <v-autocomplete
                                 v-model="dataFromInputs.transfer_acc_no_id"
                                 :items="childsAfterSelection"
@@ -686,10 +676,7 @@ export default {
 
   computed: {
     getChildsOfSelected() {
-      if (
-        this.dataFromInputs.transfer_acc_code_id !== null ||
-        this.dataFromInputs.transfer_acc_code_id !== ""
-      ) {
+      if (this.dataFromInputs.transfer_acc_code_id) {
         getAccountChilds(this, this.dataFromInputs.transfer_acc_code_id);
       }
       return this.allGroupAccounts;
@@ -783,7 +770,6 @@ export default {
       } else {
         finalDate = `${yy}-${mm}-${dd}`;
       }
-      console.log(finalDate);
       return finalDate;
     }
   },
@@ -941,10 +927,6 @@ export default {
       fetchLoanIssuesById(this, item.id);
       this.onNextPage = false;
       this.disableAndReadonly = true;
-    },
-
-    allowedDates(val) {
-      console.log("asfd", val);
     }
   },
 

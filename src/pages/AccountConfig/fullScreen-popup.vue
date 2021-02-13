@@ -243,7 +243,7 @@
                   <v-col md="4">
                     <v-text-field
                       label="Guarantor Name"
-                      v-model="setGuarantors1.name"
+                      v-model="setGuarantors1.guarantor_name"
                       :readonly="disableAndReadonly"
                       :disabled="idIsNotDefined1"
                     ></v-text-field>
@@ -252,7 +252,7 @@
                   <v-col md="4">
                     <v-text-field
                       label="Guarantor Contact"
-                      v-model="setGuarantors1.cell"
+                      v-model="setGuarantors1.contact"
                       :readonly="disableAndReadonly"
                       :disabled="idIsNotDefined1"
                     ></v-text-field>
@@ -289,7 +289,7 @@
                   <v-col md="4">
                     <v-text-field
                       label="Guarantor Name"
-                      v-model="setGuarantors2.name"
+                      v-model="setGuarantors2.guarantor_name"
                       :readonly="disableAndReadonly"
                       :disabled="idIsNotDefined2"
                     ></v-text-field>
@@ -299,7 +299,7 @@
                     <v-text-field
                       label="Guarantor Contact"
                       :readonly="disableAndReadonly"
-                      v-model="setGuarantors2.cell"
+                      v-model="setGuarantors2.contact"
                       :disabled="idIsNotDefined2"
                     ></v-text-field>
                   </v-col>
@@ -448,11 +448,11 @@ export default {
     formTitle() {
       var temp = null;
       if (this.editedIndex === -1 && this.disableAndReadonly == false) {
-        temp = "New Loan";
+        temp = "New A/C Holder";
       } else if (this.editedIndex !== -1 && this.disableAndReadonly == false) {
-        temp = "Edit Loan";
+        temp = "Edit A/C Holder";
       } else if (this.disableAndReadonly == true) {
-        temp = "View Loan";
+        temp = "View A/C Holder";
       }
       return temp;
     },
@@ -492,10 +492,7 @@ export default {
 
     setGuarantors1() {
       var temp = {};
-      if (
-        this.guarantorObj1.acc_no_id !== 0 &&
-        this.guarantorObj1.acc_no_id !== null
-      ) {
+      if (this.guarantorObj1.acc_no_id) {
         this.accountHoldersData.forEach(element => {
           if (element.id == this.guarantorObj1.acc_no_id) {
             this.guarantorObj1.guarantor_name = element.first_name;
@@ -506,20 +503,17 @@ export default {
             } else {
               temp.middleName = element.middle_name;
             }
-            temp.name = `${element.first_name} ${temp.middleName} ${element.last_name}`;
+            temp.guarantor_name = `${element.first_name} ${temp.middleName} ${element.last_name}`;
             temp.cnic = element.cnic;
-            temp.cell = element.cell;
+            temp.contact = element.cell;
           }
         });
       }
-      return temp;
+      return temp.guarantor_name ? temp : this.guarantorObj1;
     },
     setGuarantors2() {
       var temp = {};
-      if (
-        this.guarantorObj2.acc_no_id !== 0 &&
-        this.guarantorObj2.acc_no_id !== null
-      ) {
+      if (this.guarantorObj2.acc_no_id) {
         this.accountHoldersData.forEach(element => {
           if (element.id == this.guarantorObj2.acc_no_id) {
             this.guarantorObj2.guarantor_name = element.first_name;
@@ -530,13 +524,13 @@ export default {
             } else {
               temp.middleName = element.middle_name;
             }
-            temp.name = `${element.first_name} ${temp.middleName} ${element.last_name}`;
+            temp.guarantor_name = `${element.first_name} ${temp.middleName} ${element.last_name}`;
             temp.cnic = element.cnic;
-            temp.cell = element.cell;
+            temp.contact = element.cell;
           }
         });
       }
-      return temp;
+      return temp.guarantor_name ? temp : this.guarantorObj2;
     }
   },
 
@@ -552,6 +546,7 @@ export default {
       this.dataFromInputs.opening_date = this.date2;
     },
     validate() {
+      console.log(this.guarantorObj1);
       this.$refs.form.validate();
       if (this.$refs.form.validate()) {
         this.submitData();
