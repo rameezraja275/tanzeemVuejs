@@ -753,7 +753,7 @@ export default {
       }
       return temp;
     },
-    testing() {
+    changeInDates() {
       var temp = null;
       if (
         this.dataFromInputs.issue_date !== null &&
@@ -795,7 +795,7 @@ export default {
     dialogDelete(val) {
       val || this.closeDelete();
     },
-    testing(val) {
+    changeInDates(val) {
       if (val === true) {
         this.maturityDate();
       }

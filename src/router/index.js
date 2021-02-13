@@ -99,6 +99,12 @@ const routes = [
     name: "Loan",
     component: () => import("../pages/loan/"),
     meta: { layout: Layout }
+  },
+  {
+    path: "/loanInstalment",
+    name: "Loan Instalment",
+    component: () => import("../pages/loan-instalment/"),
+    meta: { layout: Layout }
   }
 ];
 

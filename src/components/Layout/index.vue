@@ -57,7 +57,12 @@ export default {
           icon: "mdi-account-group-outline",
           to: "/accountconfig"
         },
-        { title: "Loan", icon: "mdi-home-city", to: "/loan" }
+        { title: "Loan", icon: "mdi-home-city", to: "/loan" },
+        {
+          title: "Loan Instalment",
+          icon: "mdi-home-city",
+          to: "/loanInstalment"
+        }
       ],
       mini: true
     };
