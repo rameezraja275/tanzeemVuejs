@@ -7,6 +7,7 @@ import {
 } from "../../../graphql/quries";
 
 export async function fetchAccountHolders(vueObj) {
+  vueObj.tableLoading = true;
   try {
     const result = await vueObj.$apollo.query({
       query: GET_ACCOUNT_HOLDERS,
@@ -20,10 +21,11 @@ export async function fetchAccountHolders(vueObj) {
   } catch (e) {
     vueObj.message = e;
   }
+  vueObj.tableLoading = false;
 }
 
 export async function newAccountHolder(vueObj) {
-  vueObj.loading = true;
+  vueObj.btnLoader = true;
   const variables = {
     ...vueObj.dataFromInputs
   };
@@ -40,16 +42,23 @@ export async function newAccountHolder(vueObj) {
     if (result.errors) {
       throw result.errors[0].message;
     } else {
-      vueObj.snackbarSuccess = true;
+      // vueObj.snackbarSuccess = true;
+      vueObj.snackBarText = "Successfully added new account holder";
+      vueObj.snackBarColor = "success";
     }
   } catch (e) {
-    vueObj.snackbar = true;
     vueObj.message = e;
+    vueObj.snackBarColor = "red";
+    var error = e.toString();
+    error = error.replace("Error: GraphQL error: ", "");
+    vueObj.snackBarText = error;
   }
-  vueObj.loading = false;
+  vueObj.btnLoader = false;
+  vueObj.snackBarModel = true;
 }
 
 export async function deleteAccountHolder(vueObj) {
+  vueObj.tableLoading = true;
   const variables = {
     id: vueObj.id
   };
@@ -61,16 +70,23 @@ export async function deleteAccountHolder(vueObj) {
     if (result.errors) {
       throw result.errors[0].message;
     } else {
-      vueObj.deleteAlert = true;
+      vueObj.snackBarText = "Successfully deleted account holder";
+      vueObj.snackBarColor = "success";
     }
   } catch (e) {
     vueObj.message = e;
-    vueObj.snackbar = true;
+    vueObj.message = e;
+    vueObj.snackBarColor = "red";
+    var error = e.toString();
+    error = error.replace("Error: GraphQL error: ", "");
+    vueObj.snackBarText = error;
   }
+  vueObj.snackBarModel = true;
+  vueObj.tableLoading = false;
 }
 
 export async function updateAccountHolder(vueObj) {
-  vueObj.loading = true;
+  vueObj.btnLoader = true;
   const variables = {
     ...vueObj.dataFromInputs
   };
@@ -87,17 +103,25 @@ export async function updateAccountHolder(vueObj) {
         fetchPolicy: "network-only"
       });
       vueObj.accountHoldersData = result.data.getAccountHolders;
-      console.log(vueObj.accountHoldersData, "received data");
-      vueObj.editDataAlert = true;
+      vueObj.snackBarText = "Successfully updated account holder";
+      vueObj.snackBarColor = "success";
     }
   } catch (e) {
     vueObj.message = e;
-    vueObj.snackbar = true;
+    vueObj.message = e;
+    vueObj.message = e;
+    vueObj.snackBarColor = "red";
+    var error = e.toString();
+    error = error.replace("Error: GraphQL error: ", "");
+    vueObj.snackBarText = error;
   }
-  vueObj.loading = false;
+
+  vueObj.snackBarModel = true;
+  vueObj.btnLoader = false;
 }
 
 export async function getAccountHolderById(vueObj, itemID) {
+  vueObj.tableLoading = true;
   const variables = {
     id: itemID
   };
@@ -116,6 +140,5 @@ export async function getAccountHolderById(vueObj, itemID) {
   } catch (e) {
     vueObj.message = e;
   }
-  vueObj.loading = false;
-  vueObj.editingMode = false;
+  vueObj.tableLoading = false;
 }

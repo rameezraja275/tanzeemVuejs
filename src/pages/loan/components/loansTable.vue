@@ -2,54 +2,13 @@
   <div class="mt-10 container">
     <!-- add new response -->
     <v-snackbar
-      v-model="snackbarSuccessLoan"
+      v-model="snackBarModel"
+      absolute
       top
-      color="success"
+      :color="snackBarColor"
       :timeout="snackbarTime"
     >
-      {{ successTextNewLoan }}
-    </v-snackbar>
-    <v-snackbar
-      v-model="snackbarFailedLoan"
-      top
-      color="red"
-      :timeout="snackbarTime"
-    >
-      {{ failedTextNewLoan }}
-    </v-snackbar>
-    <!-- edit response -->
-    <v-snackbar
-      v-model="snackbarSuccessEdit"
-      top
-      color="success"
-      :timeout="snackbarTime"
-    >
-      {{ successTextNewEdit }}
-    </v-snackbar>
-    <v-snackbar
-      v-model="snackbarFailedEdit"
-      top
-      color="red"
-      :timeout="snackbarTime"
-    >
-      {{ failedTextNewEdit }}
-    </v-snackbar>
-    <!-- delete response -->
-    <v-snackbar
-      v-model="snackbarSuccessDelete"
-      top
-      color="success"
-      :timeout="snackbarTime"
-    >
-      {{ successTextDelete }}
-    </v-snackbar>
-    <v-snackbar
-      v-model="snackbarFailedDelete"
-      top
-      color="red"
-      :timeout="snackbarTime"
-    >
-      {{ failedTextDelete }}
+      {{ snackBarText }}
     </v-snackbar>
 
     <v-data-table
@@ -562,7 +521,7 @@ export default {
         value: "loan_acc_name",
         sortable: false
       },
-      { text: "Loan Amount", value: "loan_amount" },
+      { text: "Loan Amount", value: "loan_amount", sortable: false },
       {
         text: "Markup Percentage",
         value: "markup_percentage",
@@ -634,23 +593,9 @@ export default {
     loanAccounts: null,
 
     // snackbars new loan
-    snackbarSuccessLoan: false,
-    snackbarFailedLoan: false,
-    successTextNewLoan: "Successfully Issued New Loan",
-    failedTextNewLoan: "There seems to be an error, failed to issue new loan",
-
-    // snackbars edit loan
-    snackbarSuccessEdit: false,
-    snackbarFailedEdit: false,
-    successTextNewEdit: "Successfully edited",
-    failedTextNewEdit: "There seems to be an error, failed to edit",
-
-    // snackbars delete
-    snackbarSuccessDelete: false,
-    snackbarFailedDelete: false,
-    successTextDelete: "Successfully deleted",
-    failedTextDelete: "There seems to be an error, failed to delete",
-
+    snackBarModel: false,
+    snackBarColor: null,
+    snackBarText: null,
     snackbarTime: 2500,
     // For view complete info
     disableAndReadonly: false,
@@ -694,10 +639,7 @@ export default {
     },
     setGuarantor1() {
       var temp = {};
-      if (
-        this.guarantor1.acc_no_id !== null ||
-        this.guarantor1.accaccountHoldersData_no_id !== ""
-      ) {
+      if (this.guarantor1.acc_no_id) {
         this.accountHoldersData.forEach(element => {
           if (element.id == this.guarantor1.acc_no_id) {
             this.guarantor1.guarantor_name = element.first_name;
@@ -718,10 +660,7 @@ export default {
     },
     setGuarantor2() {
       var temp = {};
-      if (
-        this.guarantor2.acc_no_id !== null ||
-        this.guarantor2.acc_no_id !== ""
-      ) {
+      if (this.guarantor2.acc_no_id) {
         this.accountHoldersData.forEach(element => {
           if (element.id == this.guarantor2.acc_no_id) {
             this.guarantor2.guarantor_name = element.first_name;

@@ -118,6 +118,7 @@ export async function fetchMarkUpDetails(vueObj) {
 }
 
 export async function fetchLoanInstalments(vueObj) {
+  vueObj.tableLoading = true;
   try {
     const result = await vueObj.$apollo.query({
       query: GET_LOAN_INSTALMENTS
@@ -130,6 +131,7 @@ export async function fetchLoanInstalments(vueObj) {
   } catch (e) {
     vueObj.message = e;
   }
+  vueObj.tableLoading = false;
 }
 
 export async function deleteLoanInstalment(vueObj, ID) {

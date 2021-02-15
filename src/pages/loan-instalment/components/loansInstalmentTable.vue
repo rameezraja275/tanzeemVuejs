@@ -12,6 +12,7 @@
       :headers="headers"
       :items="loanInstalments"
       sort-by="calories"
+      :loading="tableLoading"
       class="elevation-1"
     >
       <template v-slot:top>
@@ -331,7 +332,7 @@ export default {
     dialogDelete: false,
     headers: [
       {
-        text: "Date",
+        text: "Deposit Date",
         align: "start",
         sortable: false,
         value: "deposit_date"
@@ -388,7 +389,10 @@ export default {
     submitLoading: false,
 
     // for delete
-    deleteId: null
+    deleteId: null,
+
+    // loader for table
+    tableLoading: false
   }),
 
   computed: {

@@ -41,10 +41,10 @@ export async function fetchLoanIssuesById(vueObj, ID) {
       throw result.errors[0].message;
     } else {
       vueObj.dataFromInputs = result.data.getLoanIssueById.loan_issue;
-      if (result.data.getLoanIssueById.guarantors.length !== 0) {
-        vueObj.guarantor1 = result.data.getLoanIssueById.guarantors[0];
-        vueObj.guarantor2 = result.data.getLoanIssueById.guarantors[1];
-      }
+
+      vueObj.guarantor1 = result.data.getLoanIssueById.guarantors[0];
+      vueObj.guarantor2 = result.data.getLoanIssueById.guarantors[1];
+      console.log(result.data.getLoanIssueById, "getLoanIssueById");
       vueObj.dialog = true;
     }
   } catch (e) {
@@ -55,6 +55,7 @@ export async function fetchLoanIssuesById(vueObj, ID) {
 
 export async function addNewLoanIssue(vueObj) {
   vueObj.submitLoading = true;
+  var snackBarTxt = null;
   console.log(vueObj.loanAccountDetails, "loan account details");
   let variables = {
     issue_date: vueObj.dataFromInputs.issue_date,
@@ -74,8 +75,6 @@ export async function addNewLoanIssue(vueObj) {
     variables.transfer_acc_no_id = 0;
   }
 
-  console.log(variables, "new loan data before sending");
-
   try {
     const result = await vueObj.$apollo.mutate({
       mutation: ADD_LOAN_ISSUE,
@@ -84,20 +83,26 @@ export async function addNewLoanIssue(vueObj) {
     if (result.errors) {
       throw result.errors[0].message;
     } else {
-      console.log("successfully added new loan");
       vueObj.loanAccountDetails.push(result.data.addLoanIssue);
-      vueObj.snackbarSuccessLoan = true;
+      snackBarTxt = "Successfully added new loan issue";
+      vueObj.snackBarColor = "success";
+      vueObj.close();
     }
   } catch (e) {
     vueObj.message = e;
-    vueObj.snackbarFailedLoan = true;
+    vueObj.snackBarColor = "red";
+    var error = e.toString();
+    error = error.replace("Error: GraphQL error: ", "");
+    snackBarTxt = error;
   }
   vueObj.submitLoading = false;
-  vueObj.close();
+  vueObj.snackBarText = snackBarTxt;
+  vueObj.snackBarModel = true;
 }
 
 export async function updateLoanIssue(vueObj, itemId) {
   vueObj.submitLoading = true;
+  var snackBarTxt = null;
   var dataToSend = omitTypeOff(vueObj.dataFromInputs);
   const variables = {
     id: itemId,
@@ -122,15 +127,20 @@ export async function updateLoanIssue(vueObj, itemId) {
     if (result.errors) {
       throw result.errors[0].message;
     } else {
-      console.log("successfully edited");
-      vueObj.snackbarSuccessEdit = true;
+      vueObj.snackBarColor = "success";
+      snackBarTxt = "Successfully updated loan issue";
     }
   } catch (e) {
     vueObj.message = e;
-    vueObj.snackbarFailedEdit = true;
+    vueObj.snackBarColor = "red";
+    var error = e.toString();
+    error = error.replace("Error: GraphQL error: ", "");
+    snackBarTxt = error;
     console.log("error");
   }
   vueObj.submitLoading = false;
+  vueObj.snackBarText = snackBarTxt;
+  vueObj.snackBarModel = true;
   vueObj.close();
 }
 
@@ -148,11 +158,18 @@ export async function deleteLoanIssue(vueObj, ID) {
     if (result.errors) {
       throw result.errors[0].message;
     } else {
-      vueObj.snackbarSuccessDelete = true;
+      vueObj.snackBarText = "Successfully deleted loan issue";
+      vueObj.snackBarColor = "success";
+      vueObj.snackBarModel = true;
     }
   } catch (e) {
     vueObj.message = e;
-    vueObj.snackbarFailedDelete = true;
+    // vueObj.snackBarFailedDelete = true;
+    vueObj.snackBarColor = "red";
+    var error = e.toString();
+    error = error.replace("Error: GraphQL error: ", "");
+    vueObj.snackBarText = error;
+    vueObj.snackBarModel = true;
   }
   vueObj.loaderOn = false;
 }

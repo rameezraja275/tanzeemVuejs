@@ -1,5 +1,13 @@
 <template>
   <v-card tile>
+    <v-snackbar
+      v-model="snackBarModel"
+      top
+      :color="snackBarColor"
+      :timeout="snackBarTime"
+    >
+      {{ snackBarText }}
+    </v-snackbar>
     <v-toolbar flat dark color="primary">
       <v-btn icon dark @click="closePopup()">
         <v-icon>mdi-close</v-icon>
@@ -14,30 +22,6 @@
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-card-title class="title font-weight-regular justify-space-between">
             <span>{{ formTitle }}</span>
-            <v-snackbar
-              v-model="snackbar"
-              top
-              color="red"
-              :timeout="snackbarTime"
-            >
-              {{ text }}
-            </v-snackbar>
-            <v-snackbar
-              v-model="snackbarSuccess"
-              top
-              color="green"
-              :timeout="snackbarTime"
-            >
-              Added Successfully!
-            </v-snackbar>
-            <v-snackbar
-              v-model="editDataAlert"
-              top
-              color="green"
-              :timeout="snackbarTime"
-            >
-              {{ editSuccess }}
-            </v-snackbar>
             <v-avatar
               color="primary lighten-2"
               class="subheading white--text"
@@ -156,14 +140,14 @@
 
                 <v-row>
                   <v-col md="4">
-                    <v-select
+                    <v-autocomplete
                       :items="genderOptions"
                       v-model="dataFromInputs.gender"
                       label="Gender"
                       :rules="rules"
                       required
                       :readonly="disableAndReadonly"
-                    ></v-select>
+                    ></v-autocomplete>
                   </v-col>
                   <v-col md="4">
                     <v-menu
@@ -208,7 +192,7 @@
                     >
                       <template v-slot:activator="{ on, attrs }">
                         <v-text-field
-                          v-model="date2"
+                          v-model="dataFromInputs.opening_date"
                           label="Account Opening Date"
                           prepend-icon="mdi-calendar"
                           v-bind="attrs"
@@ -218,15 +202,10 @@
                           :readonly="disableAndReadonly"
                         ></v-text-field>
                       </template>
-                      <v-date-picker v-model="date2" no-title scrollable>
-                        <v-spacer></v-spacer>
-                        <v-btn text color="primary" @click="menu2 = false">
-                          Cancel
-                        </v-btn>
-                        <v-btn text color="primary" @click="setDate2()">
-                          OK
-                        </v-btn>
-                      </v-date-picker>
+                      <v-date-picker
+                        v-model="dataFromInputs.opening_date"
+                        @input="menu2 = false"
+                      ></v-date-picker>
                     </v-menu>
                   </v-col>
                 </v-row>
@@ -270,14 +249,14 @@
 
                 <v-row>
                   <v-col md="4">
-                    <v-select
+                    <v-autocomplete
                       :items="returnAccountHolders"
                       item-text="first_name"
                       item-value="id"
                       v-model="guarantorObj1.acc_no_id"
                       label="Account Number ID"
                       :readonly="disableAndReadonly"
-                    ></v-select>
+                    ></v-autocomplete>
                   </v-col>
                 </v-row>
 
@@ -316,14 +295,14 @@
 
                 <v-row>
                   <v-col md="4">
-                    <v-select
+                    <v-autocomplete
                       :items="returnAccountHolders"
                       item-text="first_name"
                       item-value="id"
                       v-model="guarantorObj2.acc_no_id"
                       label="Account Number ID's"
                       :readonly="disableAndReadonly"
-                    ></v-select>
+                    ></v-autocomplete>
                   </v-col>
                 </v-row>
               </v-card-text>
@@ -342,7 +321,7 @@
               color="success"
               depressed
               @click="validate"
-              :loading="loading"
+              :btnLoader="btnLoader"
             >
               Submit
             </v-btn>
@@ -382,7 +361,7 @@ export default {
     step: 1,
     valid: true,
     rules: [value => !!value || "Required."],
-    genderOptions: ["Male", "Female", "Other"],
+    genderOptions: ["Male", "Female"],
     date: null,
     menu: false,
     date2: new Date().toISOString().substr(0, 10),
@@ -422,13 +401,13 @@ export default {
     },
 
     // button loader
-    loading: false,
+    btnLoader: false,
 
     // snackbar
-    snackbar: false,
-    text: "There seems to be an error, please try again!",
-    snackbarSuccess: false,
-    snackbarTime: 2500,
+    snackBarModel: false,
+    snackBarText: null,
+    snackBarColor: null,
+    snackBarTime: 2100,
 
     editDataAlert: false,
     editSuccess: "Edited successfully!"
@@ -536,14 +515,11 @@ export default {
 
   methods: {
     closePopup() {
+      this.reset();
       this.hideOrShowForm(false);
     },
     save(date) {
       this.$refs.menu.save(date);
-    },
-    setDate2() {
-      this.$refs.menu2.save(this.date2);
-      this.dataFromInputs.opening_date = this.date2;
     },
     validate() {
       console.log(this.guarantorObj1);
@@ -575,7 +551,19 @@ export default {
     },
 
     reset() {
-      this.$refs.form.reset();
+      (this.guarantorObj1 = {
+        acc_no_id: "",
+        guarantor_name: "",
+        cnic: "",
+        contact: ""
+      }),
+        (this.guarantorObj2 = {
+          acc_no_id: "",
+          guarantor_name: "",
+          cnic: "",
+          contact: ""
+        }),
+        this.$refs.form.reset();
     },
 
     deleteTypeName() {
@@ -588,6 +576,11 @@ export default {
     }
   },
   watch: {
+    snackBarModel(val) {
+      if (!val) {
+        this.closePopup();
+      }
+    },
     menu(val) {
       val && setTimeout(() => (this.$refs.picker.activePicker = "YEAR"));
     },

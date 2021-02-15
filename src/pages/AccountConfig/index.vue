@@ -1,15 +1,17 @@
 <template>
   <div class="mt-10 container">
-    <v-snackbar v-model="deleteAlert" top color="green" :timeout="snackbarTime">
-      {{ deleteSuccess }}
-    </v-snackbar>
-
-    <v-snackbar v-model="snackbar" top color="red" :timeout="snackbarTime">
-      {{ text }}
+    <v-snackbar
+      v-model="snackBarModel"
+      top
+      :color="snackBarColor"
+      :timeout="snackBarTime"
+    >
+      {{ snackBarText }}
     </v-snackbar>
 
     <v-data-table
       :headers="headers"
+      :loading="tableLoading"
       :items="accountHoldersData"
       sort-by="calories"
       class="elevation-1"
@@ -62,17 +64,10 @@
         </v-toolbar>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
-        <v-icon small class="mr-2" v-if="!editingMode" @click="editItem(item)">
+        <v-icon small class="mr-2" @click="editItem(item)">
           mdi-pencil
         </v-icon>
-        <v-progress-circular
-          v-if="loading"
-          indeterminate
-          size="15"
-          width="1"
-          class="mr-2"
-        ></v-progress-circular>
-        <v-icon small class="mr-2" v-if="!deleteMode" @click="deleteItem(item)">
+        <v-icon small class="mr-2" @click="deleteItem(item)">
           mdi-delete
         </v-icon>
         <v-icon size="20" @click="showCompleteInfo(item)">
@@ -108,10 +103,10 @@ export default {
         value: "first_name",
         width: 400
       },
-      { text: "Cellphone Number", value: "cell" },
-      { text: "Gender", value: "gender" },
-      { text: "National Id", value: "cnic" },
-      { text: "Account Id", value: "id" },
+      { text: "Cellphone Number", value: "cell", sortable: false },
+      { text: "Gender", value: "gender", sortable: false },
+      { text: "National Id", value: "cnic", sortable: false },
+      { text: "Account Id", value: "id", sortable: false },
       { text: "Actions", value: "actions", sortable: false }
     ],
     accountHoldersData: [],
@@ -125,18 +120,15 @@ export default {
     // in form
     disableAndReadonly: false,
 
-    editingMode: false,
-    loading: false,
-    deleteMode: false,
     editedIndex: -1,
 
-    // delete alert
-    deleteAlert: false,
-    deleteSuccess: "Deleted successfully!",
+    // for snackbar
+    snackBarModel: false,
+    snackBarText: null,
+    snackBarColor: null,
+    snackBarTime: 2500,
 
-    snackbar: false,
-    snackbarTime: 2500,
-    text: "There seems to be an error, please try again!"
+    tableLoading: false
   }),
 
   computed: {
@@ -165,16 +157,12 @@ export default {
     },
 
     deleteItem(item) {
-      this.loading = true;
-      this.deleteMode = true;
       this.editedIndex = this.accountHoldersData.indexOf(item);
       this.id = item.id;
       this.dialogDelete = true;
     },
 
     deleteItemConfirm() {
-      this.loading = false;
-      this.deleteMode = false;
       this.accountHoldersData.splice(this.editedIndex, 1);
       deleteAccountHolder(this);
       this.closeDelete();
@@ -182,16 +170,12 @@ export default {
 
     closeDelete() {
       this.dialogDelete = false;
-      this.loading = false;
-      this.deleteMode = false;
       this.$nextTick(() => {
         this.editedIndex = -1;
       });
     },
 
     editItem(item) {
-      this.editingMode = true;
-      this.loading = true;
       this.editedIndex = this.accountHoldersData.indexOf(item);
       this.disableAndReadonly = false;
       getAccountHolderById(this, item.id);
