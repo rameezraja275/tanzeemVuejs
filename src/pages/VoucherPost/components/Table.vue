@@ -1,5 +1,11 @@
 <template>
   <div class="container pt-8">
+    <v-snackbar
+      v-model="snackbar"
+      :timeout="2500"
+      top
+      :color="snackBarColor"
+    ></v-snackbar>
     <v-data-table
       :headers="headers"
       :items="voucherGroup"
@@ -141,7 +147,12 @@ export default {
       cr: ""
     },
     accountTypes: AccountTypes,
-    delLoading: false
+    delLoading: false,
+
+    // for snackbar
+    message: null,
+    snackBarColor: null,
+    snackbar: false
   }),
 
   computed: {

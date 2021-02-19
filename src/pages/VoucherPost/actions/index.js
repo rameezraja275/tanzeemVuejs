@@ -28,6 +28,10 @@ export async function addUpdateVouchers(vueObj) {
     });
     if (result.errors) {
       throw result.errors[0].message;
+    } else {
+      vueObj.message = "Account added successfully";
+      vueObj.snackBarColor = "success";
+      vueObj.snackbar = true;
     }
     !vueObj.isEditMode &&
       (await vueObj.$apollo.query({
@@ -43,6 +47,12 @@ export async function addUpdateVouchers(vueObj) {
       }));
   } catch (e) {
     vueObj.message = e;
+    var temp = e.message.split(" ");
+    temp.slice(0, 3);
+    temp = temp.join(" ");
+    vueObj.message = temp;
+    vueObj.snackBarColor = "red";
+    vueObj.snackbar = true;
   }
   vueObj.mutationLoading = false;
 }

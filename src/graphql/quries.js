@@ -39,6 +39,19 @@ export const GET_ACCOUNTS_NO_ID = gql`
   }
 `;
 
+export const GET_ACCOUNTS_BY_ID = gql`
+  query getAccountById($id: Int!) {
+    getAccountById(id: $id) {
+      id
+      acc_code
+      acc_name
+      acc_parent
+      acc_type
+      acc_config
+    }
+  }
+`;
+
 export const GET_ACCOUNTS_PARENTS = gql`
   query {
     getAccountParents {

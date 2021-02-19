@@ -37,7 +37,7 @@
         >
           <v-select
             v-model="accParent"
-            :items="getGroupAccounts"
+            :items="groupAccounts"
             :error-messages="errors"
             label="Acc Parent"
             data-vv-name="select"
@@ -60,7 +60,6 @@
         <v-select
           v-model="accConfig"
           :items="configAccounts"
-          :error-messages="errors"
           label="Configure account"
           data-vv-name="select"
           item-text="label"
@@ -112,6 +111,7 @@ import {
   GET_ACCOUNTS,
   GET_ACCOUNTS_CHILDS,
   GET_ACCOUNTS_INFO_BY_ACCCODE,
+  GET_ACCOUNTS_NO_ID,
   UPDATE_ACCOUNT,
   DELETE_ACCOUNT,
   GET_ACCOUNTS_PARENTS,
@@ -147,7 +147,7 @@ export default {
     accParent: null,
     id: null,
     items: [],
-    getGroupAccounts: [],
+    groupAccounts: [],
     allAcounts: [],
     configAccounts: [],
     mutationLoading: false,
@@ -157,26 +157,23 @@ export default {
     DETAIL_ACCOUNTS
   }),
   apollo: {
-    getGroupAccounts: {
+    getAccounts: {
       query: GET_ACCOUNTS,
       variables: {
         acc_type: GROUP_ACCOUNTS
       },
       result({ data }) {
-        this.getGroupAccounts = data.getAccounts;
+        this.groupAccounts = data.getAccounts;
       }
     },
     getAllAccounts: {
-      query: GET_ACCOUNTS,
-      variables: {
-        acc_type: DETAIL_ACCOUNTS
-      },
+      query: GET_ACCOUNTS_NO_ID,
       result({ data }) {
         this.allAcounts = data.getAccounts;
         this.getCurrentAccount();
       }
     },
-    getConfigAccounts: {
+    getAccountConfig: {
       query: GET_ACCOUNTS_CONFIG,
       result({ data }) {
         this.configAccounts = data.getAccountConfig;
@@ -248,9 +245,17 @@ export default {
       const data = this.allAcounts;
       if (data) {
         const accounts = data;
-        const accountData = accounts.find(
-          account => account.acc_code == this.$route.params.acccode
-        );
+
+        // const accountData = accounts.find(
+        //   account => account.acc_code == this.$route.params.acccode
+        // );
+        var accountData = {};
+        accounts.forEach(element => {
+          if (element.acc_code == this.$route.params.acccode) {
+            accountData = element;
+          }
+        });
+
         const {
           acc_code,
           acc_name,
@@ -274,6 +279,7 @@ export default {
   },
   watch: {
     $route: function(newCode, oldCode) {
+      console.log(newCode, "change detected");
       if (newCode.params.acccode == "0") {
         this.onClear();
       }

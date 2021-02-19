@@ -25,6 +25,7 @@
             :key="item.title"
             :to="item.to"
             link
+            @click="checkForSignOut(item.title)"
           >
             <v-list-item-icon>
               <v-icon>{{ item.icon }}</v-icon>
@@ -62,10 +63,22 @@ export default {
           title: "Loan Instalment",
           icon: "mdi-home-city",
           to: "/loanInstalment"
-        }
+        },
+        { title: "Sign Out", icon: "mdi-exit-to-app" }
       ],
       mini: true
     };
+  },
+  methods: {
+    checkForSignOut(title) {
+      if (title == "Sign Out") {
+        this.signOut();
+      }
+    },
+    signOut() {
+      location.reload();
+      return window.localStorage.clear();
+    }
   },
   computed: {
     currentUser() {
