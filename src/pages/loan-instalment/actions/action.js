@@ -148,7 +148,7 @@ export async function deleteLoanInstalment(vueObj, ID) {
       throw result.errors[0].message;
     } else {
       vueObj.snackBarColor = "success";
-      vueObj.snackbarText = result.data.addLoanInstallment.message;
+      vueObj.snackbarText = result.data.deleteLoanInstallment.message;
       vueObj.snackbarModel = true;
     }
   } catch (e) {

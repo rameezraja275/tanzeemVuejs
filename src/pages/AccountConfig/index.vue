@@ -1,13 +1,11 @@
 <template>
   <div class="mt-10 container">
-    <v-snackbar
-      v-model="snackBarModel"
-      top
-      :color="snackBarColor"
-      :timeout="snackBarTime"
-    >
-      {{ snackBarText }}
-    </v-snackbar>
+    <snack-bar
+      :snackbarModel="snackBarModel"
+      :snackBarColor="snackBarColor"
+      :snackbarText="snackBarText"
+      :closeSnackbar="closeSnackbar"
+    ></snack-bar>
 
     <v-data-table
       :headers="headers"
@@ -85,11 +83,13 @@ import {
   getAccountHolderById
 } from "../AccountConfig/actions/actions";
 import popup from "./fullScreen-popup";
+import snackBarComp from "../../components/snackBar";
 
 export default {
   // name:"Account config",
   components: {
-    "pop-up": popup
+    "pop-up": popup,
+    "snack-bar": snackBarComp
   },
   data: () => ({
     dialogPopUp: false,
@@ -126,7 +126,6 @@ export default {
     snackBarModel: false,
     snackBarText: null,
     snackBarColor: null,
-    snackBarTime: 2500,
 
     tableLoading: false
   }),
@@ -163,7 +162,6 @@ export default {
     },
 
     deleteItemConfirm() {
-      this.accountHoldersData.splice(this.editedIndex, 1);
       deleteAccountHolder(this);
       this.closeDelete();
     },
@@ -194,6 +192,10 @@ export default {
       this.editedIndex = -1;
       this.disableAndReadonly = false;
       this.dialogPopUp = true;
+    },
+
+    closeSnackbar() {
+      this.snackBarModel = false;
     }
   }
 };

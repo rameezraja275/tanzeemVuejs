@@ -94,6 +94,7 @@ export const ADD_ACCOUNT = gql`
       acc_config: $acc_config
     ) {
       message
+      id
     }
   }
 `;
@@ -121,7 +122,8 @@ export const UPDATE_ACCOUNT = gql`
 export const DELETE_ACCOUNT = gql`
   mutation deleteAccount($id: Int!) {
     deleteAccount(id: $id) {
-      id
+      message
+      status
     }
   }
 `;
@@ -265,8 +267,21 @@ export const ADD_ACCOUNT_HOLDER = gql`
       opening_date: $opening_date
       guarantor: $guarantor
     ) {
-      message
-      status
+      id
+      acc_code_id
+      acc_no
+      first_name
+      middle_name
+      last_name
+      guardian_type
+      guardian_name
+      cell
+      landline_no
+      cnic
+      gender
+      dob
+      address
+      opening_date
     }
   }
 `;
@@ -311,8 +326,21 @@ export const UPDATE_ACCOUNT_HOLDER = gql`
       address: $address
       guarantor: $guarantor
     ) {
-      message
-      status
+      id
+      acc_code_id
+      acc_no
+      first_name
+      middle_name
+      last_name
+      guardian_type
+      guardian_name
+      cell
+      landline_no
+      cnic
+      gender
+      dob
+      address
+      opening_date
     }
   }
 `;

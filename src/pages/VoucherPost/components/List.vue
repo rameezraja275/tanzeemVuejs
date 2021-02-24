@@ -31,6 +31,19 @@
         </v-menu>
       </div>
       <v-list-item-group v-model="selectedItem" color="primary">
+        <v-progress-linear
+          :active="loading"
+          :indeterminate="loading"
+          bottom
+          color="#1976d2"
+        ></v-progress-linear>
+        <p
+          v-if="!vouchersGroups.length && !loading"
+          class="ml-5"
+          style="color: black;"
+        >
+          No Vouchers to show!
+        </p>
         <v-list-item
           v-for="(voucherGroup, i) in vouchersGroups"
           :key="i"
@@ -51,6 +64,7 @@
 import { getVoucherByDate } from "../actions/index";
 export default {
   data: () => ({
+    loading: false,
     selectedItem: 1,
     vouchersGroups: [],
     menu2: false,

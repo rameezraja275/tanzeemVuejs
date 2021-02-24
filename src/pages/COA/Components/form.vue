@@ -61,13 +61,17 @@
           v-model="accConfig"
           :items="configAccounts"
           label="Configure account"
+          :disabled="disableConfigureAC"
           data-vv-name="select"
           item-text="label"
           item-value="id"
         ></v-select>
-        <v-alert :value="message" dense elevation="2" type="error">
-          {{ message }}
-        </v-alert>
+        <snack-bar
+          :snackbarText="message"
+          :snackBarColor="snackBarColor"
+          :snackbarModel="snackbarModel"
+          :closeSnackbar="closeSnackbar"
+        ></snack-bar>
         <div class="text-right">
           <v-btn
             class="mr-4"
@@ -122,6 +126,7 @@ import {
   GROUP_ACCOUNTS,
   DETAIL_ACCOUNTS
 } from "../../../utils/constants";
+import snackBarComp from "../../../components/snackBar";
 
 setInteractionMode("eager");
 
@@ -138,7 +143,8 @@ extend("max", {
 export default {
   components: {
     ValidationProvider,
-    ValidationObserver
+    ValidationObserver,
+    "snack-bar": snackBarComp
   },
   data: () => ({
     acc_code: "",
@@ -154,7 +160,10 @@ export default {
     accConfig: null,
     message: null,
     GROUP_ACCOUNTS,
-    DETAIL_ACCOUNTS
+    DETAIL_ACCOUNTS,
+
+    snackbarModel: false,
+    snackBarColor: null
   }),
   apollo: {
     getAccounts: {
@@ -181,6 +190,16 @@ export default {
     }
   },
   computed: {
+    disableConfigureAC() {
+      var temp = null;
+      if (this.accType == DETAIL_ACCOUNTS) {
+        this.changeAccConfig();
+        temp = true;
+      } else {
+        temp = false;
+      }
+      return temp;
+    },
     isEditable() {
       return this.$route.params.acccode > 0;
     },
@@ -189,6 +208,9 @@ export default {
     }
   },
   methods: {
+    changeAccConfig() {
+      this.accConfig = "";
+    },
     async onSubmit() {
       this.$refs.observer.validate();
       this.mutationLoading = true;
@@ -199,7 +221,7 @@ export default {
         acc_config: this.accConfig
       };
 
-      if (variables.acc_config == null) {
+      if (!variables.acc_config) {
         variables.acc_config = 0;
       }
       try {
@@ -213,16 +235,42 @@ export default {
             : {
                 ...variables,
                 acc_code: Number(this.acc_code)
+              },
+          update: (cache, { result }) => {
+            const accountsData = cache.readQuery({
+              query: GET_ACCOUNTS_NO_ID
+            });
+
+            cache.writeQuery({
+              query: GET_ACCOUNTS_NO_ID,
+              data: {
+                getAccounts: [
+                  ...accountsData,
+                  {
+                    id: result.id,
+                    acc_code: this.acc_code,
+                    acc_parent: this.accParent,
+                    acc_name: this.accountName,
+                    acc_type: GROUP_ACCOUNTS,
+                    acc_config: this.accConfig
+                  }
+                ]
               }
+            });
+          }
         });
+
         if (result.errors) {
           throw result.errors[0].message;
+        } else {
+          this.message = "Successfully added new chart of account";
+          this.snackBarColor = "success";
+          this.snackbarModel = true;
         }
-        const asd = await this.$apollo.query({
-          query: GET_ACCOUNTS_PARENTS
-        });
       } catch (e) {
         this.message = e;
+        this.snackBarColor = "red";
+        this.snackbarModel = true;
       }
       this.mutationLoading = false;
     },
@@ -246,9 +294,6 @@ export default {
       if (data) {
         const accounts = data;
 
-        // const accountData = accounts.find(
-        //   account => account.acc_code == this.$route.params.acccode
-        // );
         var accountData = {};
         accounts.forEach(element => {
           if (element.acc_code == this.$route.params.acccode) {
@@ -271,6 +316,9 @@ export default {
         this.accConfig = acc_config;
         this.id = id;
       }
+    },
+    closeSnackbar() {
+      this.snackbarModel = false;
     }
   },
   created() {
@@ -279,7 +327,6 @@ export default {
   },
   watch: {
     $route: function(newCode, oldCode) {
-      console.log(newCode, "change detected");
       if (newCode.params.acccode == "0") {
         this.onClear();
       }

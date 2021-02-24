@@ -1,8 +1,8 @@
 <template>
-  <v-card class="flex">
+  <div class="flex" style="height:100%;">
     <Tree :parentAccounts="getAccountParents" />
     <Form :readOnlySTatus="readOnlySTatus" />
-  </v-card>
+  </div>
 </template>
 
 <script>

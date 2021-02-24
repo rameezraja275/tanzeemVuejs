@@ -12,8 +12,7 @@
           :items="items"
           :load-children="getChilds"
           :open.sync="open"
-          activatable
-          open-on-click
+          ref="treeReference"
           transition
         >
           <template v-slot:prepend="{ item }">
@@ -45,7 +44,12 @@ export default {
         }
       });
       const children = result.data.getAccountChilds;
+      let childNode;
+      const key = item.id;
+      const parentNode = this.$refs.treeReference.nodes[key];
       children.map(child => {
+        childNode = { ...parentNode, item: child, vnode: null };
+        this.$refs.treeReference.nodes[child.id] = childNode;
         if (child.acc_type == 1) {
           item.children.push({ ...child, children: [] });
         } else {

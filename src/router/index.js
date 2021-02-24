@@ -98,13 +98,31 @@ const routes = [
     path: "/loan",
     name: "Loan",
     component: () => import("../pages/loan/"),
-    meta: { layout: Layout }
+    meta: { layout: Layout },
+    beforeEnter(to, from, next) {
+      if (validateToken()) {
+        next();
+      } else {
+        next({
+          name: "Login"
+        });
+      }
+    }
   },
   {
     path: "/loanInstalment",
     name: "Loan Instalment",
     component: () => import("../pages/loan-instalment/"),
-    meta: { layout: Layout }
+    meta: { layout: Layout },
+    beforeEnter(to, from, next) {
+      if (validateToken()) {
+        next();
+      } else {
+        next({
+          name: "Login"
+        });
+      }
+    }
   }
 ];
 

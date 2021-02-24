@@ -1,16 +1,12 @@
 <template>
   <div class="mt-10 container">
     <!-- add new response -->
-    <v-snackbar
-      v-model="snackBarModel"
-      absolute
-      top
-      :color="snackBarColor"
-      :timeout="snackbarTime"
-    >
-      {{ snackBarText }}
-    </v-snackbar>
-
+    <snack-bar
+      :snackbarModel="snackBarModel"
+      :snackBarColor="snackBarColor"
+      :snackbarText="snackBarText"
+      :closeSnackbar="closeSnackbar"
+    ></snack-bar>
     <v-data-table
       :headers="headers"
       :loading="loaderOn"
@@ -498,6 +494,7 @@ import {
   ValidationProvider,
   setInteractionMode
 } from "vee-validate";
+import snackBarComp from "../../../components/snackBar";
 
 setInteractionMode("eager");
 
@@ -509,19 +506,20 @@ extend("required", {
 export default {
   components: {
     ValidationProvider,
-    ValidationObserver
+    ValidationObserver,
+    "snack-bar": snackBarComp
   },
   data: () => ({
     dialog: false,
     dialogDelete: false,
     headers: [
-      { text: "Loan Issue Date", value: "issue_date", sortable: false },
+      { text: "Issue Date", value: "issue_date", sortable: false },
       {
-        text: "Loan Account Name",
+        text: "Account Name",
         value: "loan_acc_name",
         sortable: false
       },
-      { text: "Loan Amount", value: "loan_amount", sortable: false },
+      { text: "Amount", value: "loan_amount", sortable: false },
       {
         text: "Markup Percentage",
         value: "markup_percentage",
@@ -596,7 +594,6 @@ export default {
     snackBarModel: false,
     snackBarColor: null,
     snackBarText: null,
-    snackbarTime: 2500,
     // For view complete info
     disableAndReadonly: false,
 
@@ -866,6 +863,10 @@ export default {
       fetchLoanIssuesById(this, item.id);
       this.onNextPage = false;
       this.disableAndReadonly = true;
+    },
+
+    closeSnackbar() {
+      this.snackBarModel = false;
     }
   },
 

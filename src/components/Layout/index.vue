@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <v-card class="flex">
+  <div style="height:100%;">
+    <v-card class="flex" height="100%">
       <v-navigation-drawer v-model="drawer" :mini-variant.sync="mini" permanent>
         <v-list-item class="px-2">
           <v-list-item-avatar>
@@ -27,11 +27,14 @@
             link
             @click="checkForSignOut(item.title)"
           >
-            <v-list-item-icon>
-              <v-icon>{{ item.icon }}</v-icon>
-            </v-list-item-icon>
+            <v-icon :color="colorOfSignOut(item)">{{ item.icon }}</v-icon>
 
-            <v-list-item-content class="ml-5">
+            <v-list-item-content
+              class="ml-5"
+              v-bind:class="{
+                signOut: item.title === 'Sign Out' ? true : false
+              }"
+            >
               <v-list-item-title>{{ item.title }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
@@ -50,18 +53,27 @@ export default {
     return {
       drawer: true,
       items: [
-        { title: "Dashboard", icon: "mdi-home-city", to: "/" },
-        { title: "Chart of accounts", icon: "mdi-home-city", to: "/coa" },
-        { title: "Post Voucher", icon: "mdi-account", to: "/voucherpost" },
+        { title: "Dashboard", icon: "mdi-monitor-dashboard", to: "/" },
+        {
+          title: "Chart of accounts",
+          icon: "mdi-file-table-box-multiple-outline",
+          to: "/coa"
+        },
+        // { title: "Post Voucher", icon: "mdi-account-circle-outline", to: "/voucherpost" },
+        {
+          title: "Post Voucher",
+          icon: "mdi-credit-card-plus-outline",
+          to: "/voucherpost"
+        },
         {
           title: "Account Holders",
           icon: "mdi-account-group-outline",
           to: "/accountconfig"
         },
-        { title: "Loan", icon: "mdi-home-city", to: "/loan" },
+        { title: "Loan", icon: "mdi-account-cash-outline", to: "/loan" },
         {
           title: "Loan Instalment",
-          icon: "mdi-home-city",
+          icon: "mdi-cash-plus",
           to: "/loanInstalment"
         },
         { title: "Sign Out", icon: "mdi-exit-to-app" }
@@ -78,6 +90,13 @@ export default {
     signOut() {
       location.reload();
       return window.localStorage.clear();
+    },
+    colorOfSignOut(item) {
+      if (item.title === "Sign Out") {
+        return "red";
+      } else {
+        return "rgba(0, 0, 0, 0.54)";
+      }
     }
   },
   computed: {
@@ -95,5 +114,9 @@ export default {
 }
 .mL-5 {
   margin-left: 5px;
+}
+
+.signOut {
+  color: red;
 }
 </style>

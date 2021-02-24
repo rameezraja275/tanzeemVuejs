@@ -1,13 +1,11 @@
 <template>
   <div class="mt-10 container">
-    <v-snackbar
-      v-model="snackbarModel"
-      top
-      :color="snackBarColor"
-      :timeout="snackbarTime"
-    >
-      {{ snackbarText }}
-    </v-snackbar>
+    <snack-bar
+      :closeSnackbar="closeSnackbar"
+      :snackbarModel="snackbarModel"
+      :snackBarColor="snackBarColor"
+      :snackbarText="snackbarText"
+    ></snack-bar>
     <v-data-table
       :headers="headers"
       :items="loanInstalments"
@@ -314,6 +312,7 @@ import {
   ValidationProvider,
   setInteractionMode
 } from "vee-validate";
+import snackBarComp from "../../../components/snackBar";
 
 setInteractionMode("eager");
 
@@ -325,7 +324,8 @@ extend("required", {
 export default {
   components: {
     ValidationProvider,
-    ValidationObserver
+    ValidationObserver,
+    "snack-bar": snackBarComp
   },
   data: () => ({
     dialog: false,
@@ -380,7 +380,6 @@ export default {
     receivedMarkupData: {},
 
     // for snackbars
-    snackbarTime: 2500,
     snackBarColor: null,
     snackbarText: null,
     snackbarModel: false,
@@ -523,10 +522,10 @@ export default {
 
     clear() {
       this.dataFromInputs = {
-        deposit_amount: "",
-        deposit_date: "",
-        deposit_type: "",
-        loan_acc_no_id: "",
+        deposit_amount: null,
+        deposit_date: null,
+        deposit_type: null,
+        loan_acc_no_id: null,
         markup_amount: "",
         markup_days: "",
         markup_receiveable: "",
@@ -540,7 +539,11 @@ export default {
         markup_receiveable: "",
         principal: ""
       };
-      // this.$refs.observer.reset();
+      this.$refs.observer.reset();
+    },
+
+    closeSnackbar() {
+      this.snackbarModel = false;
     }
   },
 

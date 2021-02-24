@@ -31,9 +31,6 @@
           </v-card-title>
           <v-window v-model="step">
             <v-window-item :value="1">
-              <!-- <span class="caption grey--text text--darken-1">
-                        This is the email you will use to login to your Vuetify account
-                        </span> -->
               <v-card-text>
                 <v-row>
                   <v-col md="4">
@@ -407,7 +404,7 @@ export default {
     snackBarModel: false,
     snackBarText: null,
     snackBarColor: null,
-    snackBarTime: 2100,
+    snackBarTime: 3000,
 
     editDataAlert: false,
     editSuccess: "Edited successfully!"
@@ -515,6 +512,7 @@ export default {
 
   methods: {
     closePopup() {
+      this.snackBarModel = false;
       this.reset();
       this.hideOrShowForm(false);
     },

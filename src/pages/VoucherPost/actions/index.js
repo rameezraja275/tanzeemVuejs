@@ -77,6 +77,7 @@ export async function deleteVouchers(vueObj) {
 }
 
 export async function getVoucherByGroupId(vueObj) {
+  vueObj.tableLoading = true;
   const result = await vueObj.$apollo.query({
     query: GET_VOUCHERS_BY_GROUPID,
     variables: {
@@ -88,16 +89,29 @@ export async function getVoucherByGroupId(vueObj) {
     result.data.getAccountVouchers.group_details.voucher_date;
   vueObj.voucherType =
     result.data.getAccountVouchers.group_details.voucher_type;
+
+  vueObj.tableLoading = false;
 }
 
 export async function getVoucherByDate(vueObj) {
-  const result = await vueObj.$apollo.query({
-    query: GET_VOUCHER_POST,
-    variables: {
-      voucher_date: vueObj.filterDate
+  vueObj.loading = true;
+  try {
+    const result = await vueObj.$apollo.query({
+      query: GET_VOUCHER_POST,
+      variables: {
+        voucher_date: vueObj.filterDate
+      }
+    });
+    if (result.errors) {
+      throw result.errors[0].message;
+    } else {
+      vueObj.vouchersGroups = result.data.getGroupVouchers;
+      vueObj.loading = false;
     }
-  });
-  vueObj.vouchersGroups = result.data.getGroupVouchers;
+  } catch (e) {
+    vueObj.message = e;
+    vueObj.loading = false;
+  }
 }
 
 export async function getAccountChilds(vueObj, item) {

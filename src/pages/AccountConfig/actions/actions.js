@@ -42,7 +42,7 @@ export async function newAccountHolder(vueObj) {
     if (result.errors) {
       throw result.errors[0].message;
     } else {
-      // vueObj.snackbarSuccess = true;
+      vueObj.accountHoldersData.push(result.data.addAccountHolder);
       vueObj.snackBarText = "Successfully added new account holder";
       vueObj.snackBarColor = "success";
     }
@@ -65,7 +65,25 @@ export async function deleteAccountHolder(vueObj) {
   try {
     const result = await vueObj.$apollo.mutate({
       mutation: DELETE_ACCOUNT_HOLDER,
-      variables: variables
+      variables: variables,
+      update: (cache, { result }) => {
+        let accountsData = cache.readQuery({
+          query: GET_ACCOUNT_HOLDERS
+        });
+        let temp = [...accountsData.getAccountHolders];
+        accountsData.getAccountHolders.forEach((element, index) => {
+          if (element.id == vueObj.id) {
+            console.log(element, temp[index], "item removed from list");
+            temp.splice(index, 1);
+          }
+        });
+        cache.writeQuery({
+          query: GET_ACCOUNT_HOLDERS,
+          data: {
+            getAccountHolders: [...temp]
+          }
+        });
+      }
     });
     if (result.errors) {
       throw result.errors[0].message;
@@ -74,7 +92,6 @@ export async function deleteAccountHolder(vueObj) {
       vueObj.snackBarColor = "success";
     }
   } catch (e) {
-    vueObj.message = e;
     vueObj.message = e;
     vueObj.snackBarColor = "red";
     var error = e.toString();
@@ -87,6 +104,7 @@ export async function deleteAccountHolder(vueObj) {
 
 export async function updateAccountHolder(vueObj) {
   vueObj.btnLoader = true;
+  console.log(vueObj.accountHoldersData, "account holders data after edit");
   const variables = {
     ...vueObj.dataFromInputs
   };
@@ -98,17 +116,10 @@ export async function updateAccountHolder(vueObj) {
     if (result.errors) {
       throw result.errors[0].message;
     } else {
-      const result = await vueObj.$apollo.query({
-        query: GET_ACCOUNT_HOLDERS,
-        fetchPolicy: "network-only"
-      });
-      vueObj.accountHoldersData = result.data.getAccountHolders;
       vueObj.snackBarText = "Successfully updated account holder";
       vueObj.snackBarColor = "success";
     }
   } catch (e) {
-    vueObj.message = e;
-    vueObj.message = e;
     vueObj.message = e;
     vueObj.snackBarColor = "red";
     var error = e.toString();
@@ -131,11 +142,12 @@ export async function getAccountHolderById(vueObj, itemID) {
       variables: variables,
       fetchPolicy: "no-cache"
     });
-    vueObj.editAccountDetails = result.data.getAccountHolderById;
-    vueObj.dialogPopUp = true;
 
     if (result.errors) {
       throw result.errors[0].message;
+    } else {
+      vueObj.editAccountDetails = result.data.getAccountHolderById;
+      vueObj.dialogPopUp = true;
     }
   } catch (e) {
     vueObj.message = e;

@@ -6,8 +6,9 @@
       pass: password
     }"
     @done="loginSuccess"
+    @error="receivedError"
   >
-    <template slot-scope="{ mutate, loading, error }" height=" 300px">
+    <template slot-scope="{ mutate, loading }" height=" 300px">
       <div class="loginForm">
         <v-card
           width="500px"
@@ -64,25 +65,13 @@
                     </span>
                   </v-btn>
                   <v-snackbar
-                    v-if="error"
                     v-model="snackbar"
                     :timeout="timeout"
-                    color="red"
+                    :color="snackBarColor"
                     top
                     center
                   >
-                    {{ error }}
-
-                    <template v-slot:action="{ attrs }">
-                      <v-btn
-                        color="white"
-                        text
-                        v-bind="attrs"
-                        @click="snackbar = false"
-                      >
-                        Close
-                      </v-btn>
-                    </template>
+                    {{ snackBarText }}
                   </v-snackbar>
                 </div>
               </v-card-actions>
@@ -102,11 +91,12 @@ export default {
   data: () => ({
     loginQuery: LOGIN,
     snackbar: false,
+    snackBarColor: null,
     isValid: false,
     showPassword: false,
     loading: true,
     timeout: 3000,
-    error: null,
+    snackBarText: null,
     email: "",
     password: "",
     emailRules: [
@@ -118,14 +108,19 @@ export default {
   }),
   methods: {
     loginSuccess(data) {
-      console.log("done", data);
       const current_data = data.data.userLogin.user;
       const token = data.data.userLogin.token;
+      this.snackBarColor = "success";
+      this.snackBarText = "Successfully logged in";
       this.snackbar = true;
-      console.log(token, current_data);
       localStorageService.setCurrentUser(current_data);
       localStorageService.setToken(token);
       location.reload();
+    },
+    receivedError(error) {
+      this.snackBarColor = "red";
+      this.snackBarText = error;
+      this.snackbar = true;
     }
   }
 };
@@ -138,16 +133,6 @@ export default {
   width: 100%;
   height: 100vh;
 }
-/* .button {
-  display: flex;
-  flex-flow: row-reverse;
-  /* margin: 0; */
-/* } */
-/* .Error {
-  text-align: start;
-  color: rgb(233, 47, 47);
-  margin-right: 30px;
-} */
 .custom-loader {
   animation: loader 1s infinite;
   display: flex;

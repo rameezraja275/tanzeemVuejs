@@ -1,12 +1,14 @@
 <template>
   <div class="container pt-8">
-    <v-snackbar
-      v-model="snackbar"
-      :timeout="2500"
-      top
-      :color="snackBarColor"
-    ></v-snackbar>
+    <snack-bar
+      :closeSnackbar="closeSnackbar"
+      :snackbarModel="snackbar"
+      :snackBarColor="snackBarColor"
+      :snackbarText="message"
+    ></snack-bar>
+
     <v-data-table
+      :loading="tableLoading"
       :headers="headers"
       :items="voucherGroup"
       sort-by="Acc Code"
@@ -52,14 +54,19 @@
             item-text="name"
             item-value="id"
           ></v-select>
-
-          <VoucherForm
-            :editedItem="editedItem"
-            :close="close"
-            :save="save"
-            :dialog="dialog"
-            :formTitle="formTitle"
-          />
+          <v-dialog v-model="dialog" max-width="500px">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
+                Add Voucher
+              </v-btn>
+            </template>
+            <VoucherForm
+              :editedItem="editedItem"
+              :close="close"
+              :save="save"
+              :formTitle="formTitle"
+            />
+          </v-dialog>
           <DeleteAlert
             :dialogDelete="dialogDelete"
             :closeDelete="closeDelete"
@@ -103,14 +110,16 @@
 import VoucherForm from "./VoucherForm.vue";
 import DeleteAlert from "./alert.vue";
 import AccountTypes from "../../../utils/accountTypes";
+import snackBarComp from "../../../components/snackBar";
 import {
   addUpdateVouchers,
   deleteVouchers,
   getVoucherByGroupId
 } from "../actions";
 export default {
-  components: { VoucherForm, DeleteAlert },
+  components: { VoucherForm, DeleteAlert, "snack-bar": snackBarComp },
   data: () => ({
+    tableLoading: false,
     voucherType: 1,
     dialog: false,
     dialogDelete: false,
@@ -177,13 +186,16 @@ export default {
     $route: function(newRoute, oldRoute) {
       if (newRoute.params.vpid == undefined) {
         this.onClear();
+      } else {
+        getVoucherByGroupId(this);
       }
-      getVoucherByGroupId(this);
     }
   },
   created() {
     this.initialize();
-    getVoucherByGroupId(this);
+    if (this.$route.params.vpid) {
+      getVoucherByGroupId(this);
+    }
   },
   methods: {
     initialize() {
@@ -238,6 +250,10 @@ export default {
         this.voucherGroup.push(this.editedItem);
       }
       this.close();
+    },
+
+    closeSnackbar() {
+      this.snackbar = false;
     }
   }
 };
