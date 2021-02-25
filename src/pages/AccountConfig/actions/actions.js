@@ -37,7 +37,21 @@ export async function newAccountHolder(vueObj) {
   try {
     const result = await vueObj.$apollo.mutate({
       mutation: ADD_ACCOUNT_HOLDER,
-      variables: variables
+      variables: variables,
+      update: (cache, { data: { addAccountHolder } }) => {
+        let accountHolders = cache.readQuery({
+          query: GET_ACCOUNT_HOLDERS
+        });
+        cache.writeQuery({
+          query: GET_ACCOUNT_HOLDERS,
+          data: {
+            getAccountHolders: [
+              ...accountHolders.getAccountHolders,
+              addAccountHolder
+            ]
+          }
+        });
+      }
     });
     if (result.errors) {
       throw result.errors[0].message;
@@ -57,7 +71,7 @@ export async function newAccountHolder(vueObj) {
   vueObj.snackBarModel = true;
 }
 
-export async function deleteAccountHolder(vueObj) {
+export async function deleteAccountHolder(vueObj, deleteIndex) {
   vueObj.tableLoading = true;
   const variables = {
     id: vueObj.id
@@ -66,14 +80,13 @@ export async function deleteAccountHolder(vueObj) {
     const result = await vueObj.$apollo.mutate({
       mutation: DELETE_ACCOUNT_HOLDER,
       variables: variables,
-      update: (cache, { result }) => {
-        let accountsData = cache.readQuery({
+      update: (cache, { data: { result } }) => {
+        let data = cache.readQuery({
           query: GET_ACCOUNT_HOLDERS
         });
-        let temp = [...accountsData.getAccountHolders];
-        accountsData.getAccountHolders.forEach((element, index) => {
+        let temp = [...data.getAccountHolders];
+        data.getAccountHolders.forEach((element, index) => {
           if (element.id == vueObj.id) {
-            console.log(element, temp[index], "item removed from list");
             temp.splice(index, 1);
           }
         });
@@ -83,6 +96,7 @@ export async function deleteAccountHolder(vueObj) {
             getAccountHolders: [...temp]
           }
         });
+        vueObj.removeItemFromList(deleteIndex);
       }
     });
     if (result.errors) {
@@ -102,22 +116,39 @@ export async function deleteAccountHolder(vueObj) {
   vueObj.tableLoading = false;
 }
 
-export async function updateAccountHolder(vueObj) {
+export async function updateAccountHolder(vueObj, editedIndex) {
   vueObj.btnLoader = true;
-  console.log(vueObj.accountHoldersData, "account holders data after edit");
   const variables = {
     ...vueObj.dataFromInputs
   };
   try {
     const result = await vueObj.$apollo.mutate({
       mutation: UPDATE_ACCOUNT_HOLDER,
-      variables: variables
+      variables: variables,
+      update: (cache, { data: { updateAccountHolder } }) => {
+        let data = cache.readQuery({
+          query: GET_ACCOUNT_HOLDERS
+        });
+        let temp = [...data.getAccountHolders];
+        data.getAccountHolders.forEach((element, index) => {
+          if (element.id == vueObj.id) {
+            temp[index] = updateAccountHolder;
+          }
+        });
+        cache.writeQuery({
+          query: GET_ACCOUNT_HOLDERS,
+          data: {
+            getAccountHolders: [...temp]
+          }
+        });
+      }
     });
     if (result.errors) {
       throw result.errors[0].message;
     } else {
       vueObj.snackBarText = "Successfully updated account holder";
       vueObj.snackBarColor = "success";
+      vueObj.updateList(editedIndex, variables);
     }
   } catch (e) {
     vueObj.message = e;

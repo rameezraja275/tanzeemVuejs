@@ -93,8 +93,8 @@
                   <v-col md="4">
                     <v-text-field
                       label="Guardian Name"
-                      :rules="rules"
                       v-model="dataFromInputs.guardian_name"
+                      :rules="rules"
                       required
                       :readonly="disableAndReadonly"
                     ></v-text-field>
@@ -130,6 +130,8 @@
                     <v-text-field
                       label="CNIC"
                       v-model="dataFromInputs.cnic"
+                      :rules="rules"
+                      required
                       :readonly="disableAndReadonly"
                     ></v-text-field>
                   </v-col>
@@ -352,7 +354,8 @@ export default {
     "editAccountDetails",
     "dialogPopUp",
     "disableAndReadonly",
-    "editedIndex"
+    "editedIndex",
+    "updateList"
   ],
   data: () => ({
     step: 1,
@@ -520,7 +523,6 @@ export default {
       this.$refs.menu.save(date);
     },
     validate() {
-      console.log(this.guarantorObj1);
       this.$refs.form.validate();
       if (this.$refs.form.validate()) {
         this.submitData();
@@ -528,21 +530,15 @@ export default {
     },
     submitData: function() {
       this.dataFromInputs.guarantor = [];
-      if (
-        this.guarantorObj1.guarantor_name !== "" &&
-        this.guarantorObj1.guarantor_name !== null
-      ) {
+      if (this.guarantorObj1) {
         this.dataFromInputs.guarantor.push(this.guarantorObj1);
       }
-      if (
-        this.guarantorObj2.guarantor_name !== "" &&
-        this.guarantorObj2.guarantor_name !== null
-      ) {
+      if (this.guarantorObj2) {
         this.dataFromInputs.guarantor.push(this.guarantorObj2);
       }
 
       if (this.editAccountDetails !== null) {
-        updateAccountHolder(this);
+        updateAccountHolder(this, this.editedIndex);
       } else {
         newAccountHolder(this);
       }
@@ -574,11 +570,6 @@ export default {
     }
   },
   watch: {
-    snackBarModel(val) {
-      if (!val) {
-        this.closePopup();
-      }
-    },
     menu(val) {
       val && setTimeout(() => (this.$refs.picker.activePicker = "YEAR"));
     },

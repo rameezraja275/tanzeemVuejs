@@ -251,8 +251,8 @@ export default {
                     acc_code: this.acc_code,
                     acc_parent: this.accParent,
                     acc_name: this.accountName,
-                    acc_type: GROUP_ACCOUNTS,
-                    acc_config: this.accConfig
+                    acc_config: this.accConfig,
+                    acc_type: GROUP_ACCOUNTS
                   }
                 ]
               }

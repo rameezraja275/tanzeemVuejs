@@ -515,7 +515,7 @@ export default {
       if (this.editedIndex > -1) {
         Object.assign(this.loanInstalments[this.editedIndex], this.editedItem);
       } else {
-        this.loanInstalments.push(this.editedItem);
+        this.loanInstalments.push(this.dataFromInputs);
       }
       addNewLoanInstalment(this);
     },

@@ -44,7 +44,6 @@ export async function fetchLoanIssuesById(vueObj, ID) {
 
       vueObj.guarantor1 = result.data.getLoanIssueById.guarantors[0];
       vueObj.guarantor2 = result.data.getLoanIssueById.guarantors[1];
-      console.log(result.data.getLoanIssueById, "getLoanIssueById");
       vueObj.dialog = true;
     }
   } catch (e) {
@@ -56,7 +55,6 @@ export async function fetchLoanIssuesById(vueObj, ID) {
 export async function addNewLoanIssue(vueObj) {
   vueObj.submitLoading = true;
   var snackBarTxt = null;
-  console.log(vueObj.loanAccountDetails, "loan account details");
   let variables = {
     issue_date: vueObj.dataFromInputs.issue_date,
     loan_type: Number(vueObj.dataFromInputs.loan_type),
@@ -78,7 +76,18 @@ export async function addNewLoanIssue(vueObj) {
   try {
     const result = await vueObj.$apollo.mutate({
       mutation: ADD_LOAN_ISSUE,
-      variables: variables
+      variables: variables,
+      update: (cache, { data: { addLoanIssue } }) => {
+        let currentLoanIssues = cache.readQuery({
+          query: GET_LOAN_ISSUES
+        });
+        cache.writeQuery({
+          query: GET_LOAN_ISSUES,
+          data: {
+            getLoanIssues: [...currentLoanIssues.getLoanIssues, addLoanIssue]
+          }
+        });
+      }
     });
     if (result.errors) {
       throw result.errors[0].message;
@@ -100,12 +109,12 @@ export async function addNewLoanIssue(vueObj) {
   vueObj.snackBarModel = true;
 }
 
-export async function updateLoanIssue(vueObj, itemId) {
+export async function updateLoanIssue(vueObj, editedIndex) {
   vueObj.submitLoading = true;
   var snackBarTxt = null;
   var dataToSend = omitTypeOff(vueObj.dataFromInputs);
   const variables = {
-    id: itemId,
+    id: vueObj.editId,
     issue_date: dataToSend.issue_date,
     loan_type: Number(dataToSend.loan_type),
     transfer_acc_code_id: Number(dataToSend.transfer_acc_code_id),
@@ -122,12 +131,34 @@ export async function updateLoanIssue(vueObj, itemId) {
   try {
     const result = await vueObj.$apollo.mutate({
       mutation: UPDATE_LOAN_ISSUE,
-      variables: variables
+      variables: variables,
+      update: (cache, { data: { updateLoanIssue } }) => {
+        let currentData = cache.readQuery({
+          query: GET_LOAN_ISSUES
+        });
+        let temp = [...currentData.getLoanIssues];
+        currentData.getLoanIssues.forEach((element, index) => {
+          if (element.id == variables.id) {
+            temp[index] = updateLoanIssue;
+          }
+        });
+        cache.writeQuery({
+          query: GET_LOAN_ISSUES,
+          data: {
+            getLoanIssues: [...temp]
+          }
+        });
+      }
     });
     if (result.errors) {
       throw result.errors[0].message;
     } else {
+      Object.assign(
+        vueObj.loanAccountDetails[editedIndex],
+        vueObj.dataFromInputs
+      );
       vueObj.snackBarColor = "success";
+      console.log(result, "result after update");
       snackBarTxt = "Successfully updated loan issue";
     }
   } catch (e) {
@@ -136,7 +167,6 @@ export async function updateLoanIssue(vueObj, itemId) {
     var error = e.toString();
     error = error.replace("Error: GraphQL error: ", "");
     snackBarTxt = error;
-    console.log("error");
   }
   vueObj.submitLoading = false;
   vueObj.snackBarText = snackBarTxt;
@@ -144,27 +174,46 @@ export async function updateLoanIssue(vueObj, itemId) {
   vueObj.close();
 }
 
-export async function deleteLoanIssue(vueObj, ID) {
+export async function deleteLoanIssue(vueObj, editedIndex) {
   vueObj.loaderOn = true;
   const variables = {
-    id: ID
+    id: vueObj.deleteId
   };
 
   try {
     const result = await vueObj.$apollo.mutate({
       mutation: DELETE_LOAN_ISSUE,
-      variables: variables
+      variables: variables,
+      update: (cache, { data: { result } }) => {
+        let currentData = cache.readQuery({
+          query: GET_LOAN_ISSUES
+        });
+
+        let temp = [...currentData.getLoanIssues];
+        currentData.getLoanIssues.forEach((element, index) => {
+          if (element.id == variables.id) {
+            temp.splice(index, 1);
+          }
+        });
+
+        cache.writeQuery({
+          query: GET_LOAN_ISSUES,
+          data: {
+            getLoanIssues: [...temp]
+          }
+        });
+      }
     });
     if (result.errors) {
       throw result.errors[0].message;
     } else {
+      vueObj.loanAccountDetails.splice(editedIndex, 1);
       vueObj.snackBarText = "Successfully deleted loan issue";
       vueObj.snackBarColor = "success";
       vueObj.snackBarModel = true;
     }
   } catch (e) {
     vueObj.message = e;
-    // vueObj.snackBarFailedDelete = true;
     vueObj.snackBarColor = "red";
     var error = e.toString();
     error = error.replace("Error: GraphQL error: ", "");
@@ -217,7 +266,6 @@ export async function getDetailAccounts(vueObj) {
 }
 
 export async function getAccountChilds(vueObj, accParent) {
-  console.log(accParent);
   const variables = {
     acc_parent: accParent
   };

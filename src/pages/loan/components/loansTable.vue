@@ -163,7 +163,7 @@
                               <v-autocomplete
                                 v-model="dataFromInputs.loan_acc_no_id"
                                 :items="loanAccounts"
-                                item-text="acc_code"
+                                :item-text="loanAcIdNdName"
                                 item-value="id"
                                 :readonly="disableAndReadonly"
                                 label="Loan A/C No"
@@ -427,7 +427,7 @@
                         color="success"
                         @click="submit"
                         depressed
-                        :disabled="!invalid && onNextPage ? false : true"
+                        :disabled="invalid && viewLoanOpen"
                         :loading="submitLoading"
                       >
                         Submit
@@ -572,6 +572,7 @@ export default {
 
     // account data
     dataFromInputs: {
+      loan_type: 1,
       guarantor: []
     },
     guarantor1: {},
@@ -617,6 +618,15 @@ export default {
   }),
 
   computed: {
+    submitDisabled() {
+      var temp = null;
+      if (this.onNextPage && !this.viewLoanOpen) {
+        temp = false;
+      } else {
+        temp = true;
+      }
+      return temp;
+    },
     getChildsOfSelected() {
       if (this.dataFromInputs.transfer_acc_code_id) {
         getAccountChilds(this, this.dataFromInputs.transfer_acc_code_id);
@@ -725,6 +735,9 @@ export default {
   },
 
   methods: {
+    loanAcIdNdName(item) {
+      return `${item.acc_code} - ${item.acc_name}`;
+    },
     transferCodeNname(item) {
       return `${item.acc_name} - ${item.acc_code}`;
     },
@@ -771,8 +784,7 @@ export default {
     },
 
     deleteItemConfirm() {
-      deleteLoanIssue(this, this.deleteId);
-      this.loanAccountDetails.splice(this.editedIndex, 1);
+      deleteLoanIssue(this, this.editedIndex);
       this.closeDelete();
     },
 
@@ -801,19 +813,10 @@ export default {
     submit() {
       this.dataFromInputs.guarantor = [];
       this.dataFromInputs.guarantor.push(this.guarantor1, this.guarantor2);
-      if (this.editedIndex > -1) {
-        Object.assign(
-          this.loanAccountDetails[this.editedIndex],
-          this.dataFromInputs
-        );
-      }
-      // else {
-      //   this.loanAccountDetails.push(this.dataFromInputs);
-      // }
       if (this.newLoan === true) {
         addNewLoanIssue(this);
       } else {
-        updateLoanIssue(this, this.editId);
+        updateLoanIssue(this, this.editedIndex);
       }
     },
 

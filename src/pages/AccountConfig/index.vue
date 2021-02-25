@@ -55,6 +55,7 @@
                   :editAccountDetails="editAccountDetails"
                   :disableAndReadonly="disableAndReadonly"
                   :editedIndex="editedIndex"
+                  :updateList="updateList"
                 ></pop-up>
               </v-dialog>
             </v-row>
@@ -93,7 +94,7 @@ export default {
   },
   data: () => ({
     dialogPopUp: false,
-    dialog: false,
+    // dialog: false,
     dialogDelete: false,
     headers: [
       {
@@ -137,9 +138,9 @@ export default {
   },
 
   watch: {
-    dialog(val) {
-      val || this.close();
-    },
+    // dialog(val) {
+    //   val || this.close();
+    // },
     dialogDelete(val) {
       val || this.closeDelete();
     }
@@ -162,8 +163,12 @@ export default {
     },
 
     deleteItemConfirm() {
-      deleteAccountHolder(this);
+      deleteAccountHolder(this, this.editedIndex);
       this.closeDelete();
+    },
+
+    removeItemFromList(deleteIndex) {
+      this.accountHoldersData.splice(deleteIndex, 1);
     },
 
     closeDelete() {
@@ -196,6 +201,10 @@ export default {
 
     closeSnackbar() {
       this.snackBarModel = false;
+    },
+
+    updateList(editedIndex, data) {
+      this.$set(this.accountHoldersData, editedIndex, data);
     }
   }
 };
