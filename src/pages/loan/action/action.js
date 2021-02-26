@@ -158,8 +158,8 @@ export async function updateLoanIssue(vueObj, editedIndex) {
         vueObj.dataFromInputs
       );
       vueObj.snackBarColor = "success";
-      console.log(result, "result after update");
       snackBarTxt = "Successfully updated loan issue";
+      vueObj.close();
     }
   } catch (e) {
     vueObj.message = e;
@@ -171,7 +171,6 @@ export async function updateLoanIssue(vueObj, editedIndex) {
   vueObj.submitLoading = false;
   vueObj.snackBarText = snackBarTxt;
   vueObj.snackBarModel = true;
-  vueObj.close();
 }
 
 export async function deleteLoanIssue(vueObj, editedIndex) {

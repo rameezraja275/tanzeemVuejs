@@ -6,6 +6,12 @@
           Add New Account
         </v-btn>
       </v-sheet>
+      <v-progress-linear
+        :active="loading"
+        :indeterminate="loading"
+        bottom
+        color="#1976d2"
+      ></v-progress-linear>
       <v-card-text>
         <v-treeview
           :active.sync="active"
@@ -29,7 +35,7 @@
 <script>
 import { GET_ACCOUNTS_CHILDS } from "../../../graphql/quries";
 export default {
-  props: ["parentAccounts"],
+  props: ["parentAccounts", "loading"],
   data: () => ({
     active: [],
     open: [],

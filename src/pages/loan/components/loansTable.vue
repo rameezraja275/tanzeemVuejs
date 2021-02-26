@@ -412,7 +412,14 @@
                         Cancel
                       </v-btn>
                       <v-spacer></v-spacer>
-                      <v-btn :disabled="step === 1" text @click="step--">
+                      <v-btn
+                        :disabled="step === 1"
+                        text
+                        @click="
+                          step--;
+                          onNextPage = false;
+                        "
+                      >
                         Back
                       </v-btn>
                       <v-btn
@@ -425,9 +432,10 @@
                       </v-btn>
                       <v-btn
                         color="success"
+                        v-if="onNextPage"
                         @click="submit"
                         depressed
-                        :disabled="invalid && viewLoanOpen"
+                        :disabled="testing(invalid)"
                         :loading="submitLoading"
                       >
                         Submit
@@ -735,6 +743,21 @@ export default {
   },
 
   methods: {
+    testing(isInvalid) {
+      var temp = null;
+      if (isInvalid) {
+        temp = true;
+      } else {
+        temp = false;
+        if (!this.onNextPage) {
+          temp = true;
+        }
+        if (this.viewLoanOpen) {
+          temp = true;
+        }
+      }
+      return temp;
+    },
     loanAcIdNdName(item) {
       return `${item.acc_code} - ${item.acc_name}`;
     },
@@ -772,7 +795,6 @@ export default {
       this.editId = item.id;
       this.editedIndex = this.loanAccountDetails.indexOf(item);
       this.editedItem = Object.assign({}, item);
-      this.onNextPage = true;
       fetchLoanIssuesById(this, item.id);
     },
 

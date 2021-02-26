@@ -1,5 +1,11 @@
 <template>
   <div class="container">
+    <snack-bar
+      :snackbarText="message"
+      :snackBarColor="snackBarColor"
+      :snackbarModel="snackbarModel"
+      :closeSnackbar="closeSnackbar"
+    ></snack-bar>
     <h3 class="my-5">{{ isEditable ? "Edit" : "Add" + " Account" }}</h3>
     <validation-observer ref="observer" v-slot="{ invalid }">
       <form @submit.prevent="onSubmit">
@@ -66,12 +72,6 @@
           item-text="label"
           item-value="id"
         ></v-select>
-        <snack-bar
-          :snackbarText="message"
-          :snackBarColor="snackBarColor"
-          :snackbarModel="snackbarModel"
-          :closeSnackbar="closeSnackbar"
-        ></snack-bar>
         <div class="text-right">
           <v-btn
             class="mr-4"
@@ -90,6 +90,8 @@
           <v-btn
             v-if="isEditable"
             @click="onDelete"
+            :loading="deleteBtnLoading"
+            :to="cleanUrl"
             color="error"
             elevation="5"
             medium
@@ -163,7 +165,10 @@ export default {
     DETAIL_ACCOUNTS,
 
     snackbarModel: false,
-    snackBarColor: null
+    snackBarColor: null,
+
+    deleteBtnLoading: false,
+    redirect: ""
   }),
   apollo: {
     getAccounts: {
@@ -205,6 +210,9 @@ export default {
     },
     routeName() {
       return this.$route.params.acccode;
+    },
+    cleanUrl() {
+      return this.redirect;
     }
   },
   methods: {
@@ -236,36 +244,20 @@ export default {
                 ...variables,
                 acc_code: Number(this.acc_code)
               },
-          update: (cache, { result }) => {
-            const accountsData = cache.readQuery({
-              query: GET_ACCOUNTS_NO_ID
-            });
-
-            cache.writeQuery({
-              query: GET_ACCOUNTS_NO_ID,
-              data: {
-                getAccounts: [
-                  ...accountsData,
-                  {
-                    id: result.id,
-                    acc_code: this.acc_code,
-                    acc_parent: this.accParent,
-                    acc_name: this.accountName,
-                    acc_config: this.accConfig,
-                    acc_type: GROUP_ACCOUNTS
-                  }
-                ]
-              }
-            });
-          }
+          update: this.updateCache(this.isEditable)
         });
 
         if (result.errors) {
           throw result.errors[0].message;
         } else {
-          this.message = "Successfully added new chart of account";
+          if (this.isEditable) {
+            this.message = "Account updated successfully ";
+          } else {
+            this.message = "Successfully added new account";
+          }
           this.snackBarColor = "success";
           this.snackbarModel = true;
+          this.onClear();
         }
       } catch (e) {
         this.message = e;
@@ -282,12 +274,72 @@ export default {
       this.$refs.observer.reset();
     },
     async onDelete() {
-      await this.$apollo.mutate({
-        mutation: DELETE_ACCOUNT,
-        variables: {
-          id: this.id
+      this.deleteBtnLoading = true;
+      try {
+        const result = await this.$apollo.mutate({
+          mutation: DELETE_ACCOUNT,
+          variables: { id: this.id },
+          update: (cache, { data }) => {
+            try {
+              // get in get account childs query
+              const currentData = cache.readQuery({
+                query: GET_ACCOUNTS_CHILDS,
+                variables: { acc_parent: this.accParent }
+              });
+              let temp = currentData.getAccountChilds;
+              currentData.getAccountChilds.forEach((element, index) => {
+                if (element.id == this.id) {
+                  temp.splice(index, 1);
+                }
+              });
+              cache.writeQuery({
+                query: GET_ACCOUNTS_CHILDS,
+                variables: { acc_parent: this.accParent },
+                data: {
+                  getAccountChilds: [temp]
+                }
+              });
+            } catch (error) {
+              console.log(
+                "error in update cache after delete get account childs"
+              );
+            }
+            try {
+              // add in get all accounts query
+              const currentData = cache.readQuery({
+                query: GET_ACCOUNTS_NO_ID
+              });
+              let temp = currentData.getAccounts;
+              currentData.getAccounts.forEach((element, index) => {
+                if (element.id == this.id) {
+                  temp.splice(index, 1);
+                }
+              });
+              cache.writeQuery({
+                query: GET_ACCOUNTS_NO_ID,
+                data: {
+                  getAccounts: [temp]
+                }
+              });
+            } catch (error) {
+              console.log("error in update cache get accounts query");
+            }
+          }
+        });
+        if (result.errors) {
+          throw result.errors[0].message;
+        } else {
+          this.message = "Successfully deleted account";
+          this.snackBarColor = "success";
+          this.snackbarModel = true;
+          this.onClear();
         }
-      });
+      } catch (e) {
+        this.message = e;
+        this.snackBarColor = "red";
+        this.snackbarModel = true;
+      }
+      this.deleteBtnLoading = false;
     },
     getCurrentAccount() {
       const data = this.allAcounts;
@@ -319,6 +371,106 @@ export default {
     },
     closeSnackbar() {
       this.snackbarModel = false;
+    },
+    updateCache(isEditable) {
+      if (!isEditable) {
+        let func = (cache, { data: { addAccount } }) => {
+          let temp = {
+            id: addAccount.id,
+            acc_code: this.acc_code,
+            acc_parent: this.accParent,
+            acc_name: this.accountName,
+            acc_config: this.accConfig,
+            acc_type: this.accType,
+            __typename: "Account"
+          };
+          try {
+            // get in get account childs query
+            const currentData = cache.readQuery({
+              query: GET_ACCOUNTS_CHILDS,
+              variables: {
+                acc_parent: this.accParent
+              }
+            });
+            cache.writeQuery({
+              query: GET_ACCOUNTS_CHILDS,
+              variables: {
+                acc_parent: this.accParent
+              },
+              data: {
+                getAccountChilds: [...currentData.getAccountChilds, temp]
+              }
+            });
+          } catch (error) {
+            console.log("error in update cache get account childs");
+          }
+          try {
+            // add in get all accounts query
+            const currentData = cache.readQuery({
+              query: GET_ACCOUNTS_NO_ID
+            });
+            cache.writeQuery({
+              query: GET_ACCOUNTS_NO_ID,
+              data: {
+                getAccounts: [...currentData.getAccounts, temp]
+              }
+            });
+          } catch (error) {
+            console.log("error in update cache get accounts query");
+          }
+        };
+        return func;
+      } else {
+        let func = (cache, { data: { updateAccount } }) => {
+          try {
+            // get in get account childs query
+            const currentData = cache.readQuery({
+              query: GET_ACCOUNTS_CHILDS,
+              variables: {
+                acc_parent: this.accParent
+              }
+            });
+            let temp = currentData.getAccountChilds;
+            currentData.getAccountChilds.forEach((element, index) => {
+              if (element.id == updateAccount.id) {
+                temp.splice(index, 1, updateAccount);
+              }
+            });
+            cache.writeQuery({
+              query: GET_ACCOUNTS_CHILDS,
+              variables: {
+                acc_parent: this.accParent
+              },
+              data: {
+                getAccountChilds: [...temp]
+              }
+            });
+          } catch (error) {
+            console.log("error in update cache get account childs");
+          }
+          try {
+            // add in get all accounts query
+            const currentData = cache.readQuery({
+              query: GET_ACCOUNTS_NO_ID
+            });
+            let temp = currentData.getAccounts;
+            currentData.getAccounts.forEach((element, index) => {
+              if (element.id == updateAccount.id) {
+                temp.splice(index, 1, updateAccount);
+              }
+            });
+            cache.writeQuery({
+              query: GET_ACCOUNTS_NO_ID,
+              data: {
+                getAccounts: [...temp]
+              }
+            });
+          } catch (error) {
+            console.log("error in update cache get accounts query");
+          }
+        };
+        return func;
+      }
     }
   },
   created() {
@@ -331,6 +483,12 @@ export default {
         this.onClear();
       }
       this.getCurrentAccount();
+    },
+    deleteBtnLoading(val) {
+      if (!val) {
+        console.log("testing");
+        this.redirect = "/coa";
+      }
     }
   }
 };

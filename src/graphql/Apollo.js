@@ -9,7 +9,7 @@ import localStorage from "../utils/localStorageService";
 const localStorageService = localStorage.getService();
 
 const httpLink = createHttpLink({
-  uri: "http://192.168.1.106:2000"
+  uri: "http://192.168.1.100:3000"
 });
 
 const authLink = setContext((_, { headers }) => {

@@ -1,6 +1,6 @@
 <template>
   <div class="flex" style="height:100%;">
-    <Tree :parentAccounts="getAccountParents" />
+    <Tree :parentAccounts="getAccountParents" :loading="loading" />
     <Form :readOnlySTatus="readOnlySTatus" />
   </div>
 </template>
@@ -19,13 +19,36 @@ export default {
   data() {
     return {
       getAccountParents: [],
-      readOnlySTatus: true
+      readOnlySTatus: true,
+      loading: false
     };
   },
-  apollo: {
-    getAccountParents: {
-      query: GET_ACCOUNTS_PARENTS
+  methods: {
+    async getParents() {
+      this.loading = true;
+      try {
+        const result = await this.$apollo.mutate({
+          mutation: GET_ACCOUNTS_PARENTS
+        });
+        if (result.errors) {
+          throw result.errors[0].message;
+        } else {
+          this.getAccountParents = result.data.getAccountParents;
+          this.loading = false;
+        }
+      } catch (error) {
+        console.log("error in get parents");
+        this.loading = false;
+      }
     }
+  },
+  // apollo: {
+  //   getAccountParents: {
+  //     query: GET_ACCOUNTS_PARENTS
+  //   }
+  // }
+  created() {
+    this.getParents();
   }
 };
 </script>

@@ -115,6 +115,11 @@ export const UPDATE_ACCOUNT = gql`
       acc_config: $acc_config
     ) {
       id
+      acc_code
+      acc_name
+      acc_parent
+      acc_type
+      acc_config
     }
   }
 `;
