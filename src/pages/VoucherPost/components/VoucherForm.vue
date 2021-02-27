@@ -87,7 +87,7 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="close">
+          <v-btn color="blue darken-1" text @click="closeForm()">
             Cancel
           </v-btn>
           <v-btn type="submit" :disabled="invalid" color="blue darken-1" text>
@@ -147,6 +147,11 @@ export default {
     submit() {
       this.$refs.observer.validate();
       this.save();
+      this.$refs.observer.reset();
+    },
+    closeForm() {
+      this.close();
+      this.$refs.observer.reset();
     }
   },
   computed: {

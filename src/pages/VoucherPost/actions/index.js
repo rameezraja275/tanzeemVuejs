@@ -23,8 +23,17 @@ export async function addUpdateVouchers(vueObj) {
             ...variables,
             acc_master_id: Number(vueObj.voucherGroupId)
           }
-        : variables,
-      fetchPolicy: "network-only"
+        : variables
+      // update: (cache) => {
+      //   let currentData = readQuery({
+      //     query: GET_VOUCHER_POST,
+      //     variables: {
+      //       voucher_date: vueObj.voucherPostDate
+      //     }
+      //   });
+
+      // }
+      // fetchPolicy: "network-only"
     });
     if (result.errors) {
       throw result.errors[0].message;
@@ -32,6 +41,7 @@ export async function addUpdateVouchers(vueObj) {
       vueObj.message = "Account added successfully";
       vueObj.snackBarColor = "success";
       vueObj.snackbar = true;
+      vueObj.onClear();
     }
     !vueObj.isEditMode &&
       (await vueObj.$apollo.query({

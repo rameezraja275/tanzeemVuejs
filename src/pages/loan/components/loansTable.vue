@@ -406,42 +406,44 @@
                         </v-row>
                       </v-card-text>
                     </v-window-item>
-
-                    <v-card-actions>
-                      <v-btn color="blue darken-1" text @click="close">
-                        Cancel
-                      </v-btn>
-                      <v-spacer></v-spacer>
-                      <v-btn
-                        :disabled="step === 1"
-                        text
-                        @click="
-                          step--;
-                          onNextPage = false;
-                        "
-                      >
-                        Back
-                      </v-btn>
-                      <v-btn
-                        :disabled="step === 2"
-                        color="primary"
-                        depressed
-                        @click="nextPage"
-                      >
-                        Next
-                      </v-btn>
-                      <v-btn
-                        color="success"
-                        v-if="onNextPage"
-                        @click="submit"
-                        depressed
-                        :disabled="testing(invalid)"
-                        :loading="submitLoading"
-                      >
-                        Submit
-                      </v-btn>
-                    </v-card-actions>
                   </v-window>
+
+                  <v-divider></v-divider>
+
+                  <v-card-actions>
+                    <v-btn color="blue darken-1" text @click="close">
+                      Cancel
+                    </v-btn>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      :disabled="step === 1"
+                      text
+                      @click="
+                        step--;
+                        onNextPage = false;
+                      "
+                    >
+                      Back
+                    </v-btn>
+                    <v-btn
+                      :disabled="step === 2"
+                      color="primary"
+                      depressed
+                      @click="nextPage"
+                    >
+                      Next
+                    </v-btn>
+                    <v-btn
+                      color="success"
+                      v-if="onNextPage"
+                      @click="submit"
+                      depressed
+                      :disabled="testing(invalid)"
+                      :loading="submitLoading"
+                    >
+                      Submit
+                    </v-btn>
+                  </v-card-actions>
                 </form>
               </validation-observer>
             </v-card>
@@ -451,7 +453,7 @@
           <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
               <div class="pt-6 text-center">
-                <p style="font-size: 23px;">
+                <p style="font-size: 23px">
                   Are you sure you want to delete this item?
                 </p>
               </div>
@@ -470,12 +472,8 @@
         </v-toolbar>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
-        <v-icon small class="mr-2" @click="editItem(item)">
-          mdi-pencil
-        </v-icon>
-        <v-icon small @click="deleteItem(item)">
-          mdi-delete
-        </v-icon>
+        <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
+        <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
         <v-icon size="20" class="ml-2" @click="showCompleteInfo(item)">
           mdi-account-details
         </v-icon>

@@ -360,7 +360,9 @@ export default {
       protein: 0
     },
 
-    dataFromInputs: {},
+    dataFromInputs: {
+      deposit_type: 1
+    },
 
     disableAndReadonly: false,
 
