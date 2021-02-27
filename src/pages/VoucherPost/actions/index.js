@@ -15,6 +15,7 @@ export async function addUpdateVouchers(vueObj) {
     voucher_type: vueObj.voucherType,
     data: omitTypeOff(vueObj.voucherGroup)
   };
+  console.log(variables, "data");
   try {
     const result = await vueObj.$apollo.mutate({
       mutation: vueObj.isEditMode ? UPDATE_POST_VOUCHER : ADD_POST_VOUCHER,
@@ -33,7 +34,6 @@ export async function addUpdateVouchers(vueObj) {
       //   });
 
       // }
-      // fetchPolicy: "network-only"
     });
     if (result.errors) {
       throw result.errors[0].message;

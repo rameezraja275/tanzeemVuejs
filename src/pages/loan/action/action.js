@@ -81,6 +81,7 @@ export async function addNewLoanIssue(vueObj) {
         let currentLoanIssues = cache.readQuery({
           query: GET_LOAN_ISSUES
         });
+        addLoanIssue.loan_acc_name = vueObj.accountName;
         cache.writeQuery({
           query: GET_LOAN_ISSUES,
           data: {
@@ -140,6 +141,7 @@ export async function updateLoanIssue(vueObj, editedIndex) {
         currentData.getLoanIssues.forEach((element, index) => {
           if (element.id == variables.id) {
             temp[index] = updateLoanIssue;
+            console.log(temp[index], "updated data");
           }
         });
         cache.writeQuery({

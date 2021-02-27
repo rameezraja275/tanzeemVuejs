@@ -4,7 +4,9 @@ import {
   ADD_LOAN_INSTALMENT,
   GET_MARKUP_DETAIL,
   GET_LOAN_INSTALMENTS,
-  DELETE_LOAN_INSTALMENT
+  DELETE_LOAN_INSTALMENT,
+  GET_LOAN_INSTALMENTS_BY_ID,
+  UPDATE_LOAN_INSTALMENT
 } from "../../../graphql/quries";
 // import { omitTypeOff } from "../../../utils/helpers";
 import { GROUP_ACCOUNTS } from "../../../utils/constants";
@@ -75,14 +77,31 @@ export async function addNewLoanInstalment(vueObj) {
   try {
     const result = await vueObj.$apollo.mutate({
       mutation: ADD_LOAN_INSTALMENT,
-      variables: variables
+      variables: variables,
+      update: (cache, { data: { addLoanInstallment } }) => {
+        let currentData = cache.readQuery({
+          query: GET_LOAN_INSTALMENTS
+        });
+        addLoanInstallment.loan_acc_name = vueObj.accountName;
+        cache.writeQuery({
+          query: GET_LOAN_INSTALMENTS,
+          data: {
+            getLoanInstallment: [
+              ...currentData.getLoanInstallment,
+              addLoanInstallment
+            ]
+          }
+        });
+      }
     });
     if (result.errors) {
       throw result.errors[0].message;
     } else {
       vueObj.snackBarColor = "success";
-      vueObj.snackbarText = result.data.addLoanInstallment.message;
+      vueObj.snackbarText = "Successfully added new loan instalment";
       vueObj.snackbarModel = true;
+      result.data.addLoanInstallment.loan_acc_name = vueObj.accountName;
+      vueObj.loanInstalments.push(result.data.addLoanInstallment);
       vueObj.close();
     }
   } catch (e) {
@@ -135,6 +154,7 @@ export async function fetchLoanInstalments(vueObj) {
 }
 
 export async function deleteLoanInstalment(vueObj, ID) {
+  vueObj.tableLoading = true;
   const variables = {
     id: ID
   };
@@ -142,7 +162,24 @@ export async function deleteLoanInstalment(vueObj, ID) {
   try {
     const result = await vueObj.$apollo.mutate({
       mutation: DELETE_LOAN_INSTALMENT,
-      variables: variables
+      variables: variables,
+      update: cache => {
+        let currentData = cache.readQuery({
+          query: GET_LOAN_INSTALMENTS
+        });
+        let temp = [...currentData.getLoanInstallment];
+        currentData.getLoanInstallment.forEach((element, index) => {
+          if (element.id === variables.id) {
+            temp.splice(index, 1);
+          }
+        });
+        cache.writeQuery({
+          query: GET_LOAN_INSTALMENTS,
+          data: {
+            getLoanInstallment: [...temp]
+          }
+        });
+      }
     });
     if (result.errors) {
       throw result.errors[0].message;
@@ -159,4 +196,82 @@ export async function deleteLoanInstalment(vueObj, ID) {
     vueObj.snackbarText = error;
     vueObj.snackbarModel = true;
   }
+  vueObj.tableLoading = false;
+}
+
+export async function getLoanInstalmentById(vueObj, item) {
+  vueObj.tableLoading = true;
+  const variables = {
+    id: item.id
+  };
+  try {
+    const result = await vueObj.$apollo.query({
+      query: GET_LOAN_INSTALMENTS_BY_ID,
+      variables: variables
+    });
+    if (result.errors) {
+      throw result.errors[0].message;
+    } else {
+      vueObj.dataFromInputs = result.data.getLoanInstallmentById;
+      vueObj.dialog = true;
+    }
+  } catch (e) {
+    vueObj.message = e;
+  }
+  vueObj.tableLoading = false;
+}
+
+export async function updateLoanInstalment(vueObj) {
+  vueObj.submitLoading = true;
+  const variables = {
+    id: vueObj.editId,
+    ...vueObj.dataFromInputs
+  };
+
+  try {
+    const result = await vueObj.$apollo.mutate({
+      mutation: UPDATE_LOAN_INSTALMENT,
+      variables: variables,
+      update: (cache, { data: { updateLoanInstallment } }) => {
+        let currentData = cache.readQuery({
+          query: GET_LOAN_INSTALMENTS
+        });
+        let temp = [...currentData.getLoanInstallment];
+        updateLoanInstallment.loan_acc_name = vueObj.accountName;
+        currentData.getLoanInstallment.forEach((element, index) => {
+          if (element.id === variables.id) {
+            temp.splice(index, 1, updateLoanInstallment);
+          }
+        });
+
+        cache.writeQuery({
+          query: GET_LOAN_INSTALMENTS,
+          data: {
+            getLoanInstallment: [...temp]
+          }
+        });
+      }
+    });
+    if (result.errors) {
+      throw result.errors[0].message;
+    } else {
+      vueObj.snackBarColor = "success";
+      vueObj.snackbarText = "Successfully updated loan instalment";
+      vueObj.snackbarModel = true;
+      vueObj.editedItem.loan_acc_name = vueObj.accountName;
+      Object.assign(
+        vueObj.loanInstalments[vueObj.editedIndex],
+        vueObj.editedItem
+      );
+      vueObj.close();
+    }
+  } catch (e) {
+    vueObj.message = e;
+    vueObj.snackBarColor = "red";
+    var error = e.toString();
+    error = error.replace("Error: GraphQL error: ", "");
+    vueObj.snackbarText = error;
+    vueObj.snackbarModel = true;
+  }
+  vueObj.submitLoading = false;
 }

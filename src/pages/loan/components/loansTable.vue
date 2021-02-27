@@ -285,7 +285,7 @@
                                 v-model="guarantor1.acc_no_id"
                                 :items="accountHoldersData"
                                 :readonly="disableAndReadonly"
-                                item-text="first_name"
+                                :item-text="AcNumIdNdName"
                                 item-value="id"
                                 label="Account Number ID"
                                 required
@@ -409,7 +409,6 @@
                   </v-window>
 
                   <v-divider></v-divider>
-
                   <v-card-actions>
                     <v-btn color="blue darken-1" text @click="close">
                       Cancel
@@ -438,7 +437,7 @@
                       v-if="onNextPage"
                       @click="submit"
                       depressed
-                      :disabled="testing(invalid)"
+                      :disabled="disableSubmitBtn(invalid)"
                       :loading="submitLoading"
                     >
                       Submit
@@ -620,7 +619,9 @@ export default {
     allGroupAccounts: null,
 
     // account childs
-    childsAfterSelection: null
+    childsAfterSelection: null,
+
+    accountName: ""
   }),
 
   computed: {
@@ -741,7 +742,10 @@ export default {
   },
 
   methods: {
-    testing(isInvalid) {
+    AcNumIdNdName(item) {
+      return `${item.first_name} - ${item.acc_code}`;
+    },
+    disableSubmitBtn(isInvalid) {
       var temp = null;
       if (isInvalid) {
         temp = true;
@@ -757,6 +761,7 @@ export default {
       return temp;
     },
     loanAcIdNdName(item) {
+      this.accountName = item.acc_name;
       return `${item.acc_code} - ${item.acc_name}`;
     },
     transferCodeNname(item) {

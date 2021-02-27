@@ -64,7 +64,7 @@
                       :items="accounts"
                       :rules="rules"
                       :readonly="disableAndReadonly"
-                      item-text="acc_code"
+                      :item-text="accountNameNdCode"
                       item-value="id"
                       label="Account"
                     ></v-autocomplete>
@@ -514,6 +514,9 @@ export default {
   },
 
   methods: {
+    accountNameNdCode(item) {
+      return `${item.acc_code} - ${item.acc_name}`;
+    },
     closePopup() {
       this.snackBarModel = false;
       this.reset();

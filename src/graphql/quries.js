@@ -548,8 +548,47 @@ export const ADD_LOAN_INSTALMENT = gql`
       deposit_amount: $deposit_amount
       narration: $narration
     ) {
-      message
-      status
+      id
+      deposit_date
+      deposit_type
+      transfer_acc_code_id
+      transfer_acc_no_id
+      loan_acc_no_id
+      loan_acc_name
+      principal
+      deposit_amount
+      markup_amount
+      markup_receiveable
+      markup_days
+      penalty_amount
+      penalty_days
+      narration
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+export const GET_LOAN_INSTALMENTS_BY_ID = gql`
+  query getLoanInstallmentById($id: Int) {
+    getLoanInstallmentById(id: $id) {
+      id
+      deposit_date
+      deposit_type
+      transfer_acc_code_id
+      transfer_acc_no_id
+      loan_acc_no_id
+      loan_acc_name
+      principal
+      deposit_amount
+      markup_amount
+      markup_receiveable
+      markup_days
+      penalty_amount
+      penalty_days
+      narration
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -577,6 +616,7 @@ export const GET_LOAN_INSTALMENTS = gql`
       transfer_acc_code_id
       transfer_acc_no_id
       loan_acc_no_id
+      loan_acc_name
       principal
       deposit_amount
       markup_amount
@@ -596,6 +636,60 @@ export const DELETE_LOAN_INSTALMENT = gql`
     deleteLoanInstallment(id: $id) {
       message
       status
+    }
+  }
+`;
+
+export const UPDATE_LOAN_INSTALMENT = gql`
+  mutation updateLoanInstallment(
+    $id: Int
+    $deposit_date: Date
+    $deposit_type: TinyInt
+    $transfer_acc_code_id: BigInt
+    $transfer_acc_no_id: BigInt
+    $loan_acc_code_id: BigInt
+    $loan_acc_no_id: BigInt
+    $deposit_amount: Decimal
+    $markup_amount: Decimal
+    $markup_receiveable: Decimal
+    $markup_days: Int
+    $penalty_amount: Decimal
+    $penalty_days: Int
+    $narration: String
+  ) {
+    updateLoanInstallment(
+      id: $id
+      deposit_date: $deposit_date
+      deposit_type: $deposit_type
+      transfer_acc_code_id: $transfer_acc_code_id
+      transfer_acc_no_id: $transfer_acc_no_id
+      loan_acc_code_id: $loan_acc_code_id
+      loan_acc_no_id: $loan_acc_no_id
+      deposit_amount: $deposit_amount
+      markup_amount: $markup_amount
+      markup_receiveable: $markup_receiveable
+      markup_days: $markup_days
+      penalty_amount: $penalty_amount
+      penalty_days: $penalty_days
+      narration: $narration
+    ) {
+      id
+      deposit_date
+      deposit_type
+      transfer_acc_code_id
+      transfer_acc_no_id
+      loan_acc_no_id
+      loan_acc_name
+      principal
+      deposit_amount
+      markup_amount
+      markup_receiveable
+      markup_days
+      penalty_amount
+      penalty_days
+      narration
+      createdAt
+      updatedAt
     }
   }
 `;

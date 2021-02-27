@@ -20,7 +20,14 @@
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="1000px" persistent>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
+              <v-btn
+                color="primary"
+                dark
+                class="mb-2"
+                v-bind="attrs"
+                v-on="on"
+                v-on:click="newLoanIns = true"
+              >
                 New Loan Instalment
               </v-btn>
             </template>
@@ -302,7 +309,9 @@ import {
   fetchMarkUpDetails,
   addNewLoanInstalment,
   fetchLoanInstalments,
-  deleteLoanInstalment
+  deleteLoanInstalment,
+  getLoanInstalmentById,
+  updateLoanInstalment
 } from "../actions/action";
 
 import { required } from "vee-validate/dist/rules";
@@ -338,7 +347,7 @@ export default {
         value: "deposit_date"
       },
       { text: "Loan A/C No", value: "loan_acc_no_id", sortable: false },
-      { text: "Loan A/C", value: "firstName", sortable: false },
+      { text: "Loan A/C", value: "loan_acc_name", sortable: false },
       { text: "Deposit Amount", value: "deposit_amount", sortable: false },
       { text: "Markup Amount", value: "markup_amount", sortable: false },
       { text: "Actions", value: "actions", sortable: false }
@@ -393,7 +402,12 @@ export default {
     deleteId: null,
 
     // loader for table
-    tableLoading: false
+    tableLoading: false,
+
+    accountName: "",
+
+    newLoanIns: false,
+    editId: null
   }),
 
   computed: {
@@ -469,6 +483,7 @@ export default {
       };
     },
     loanCodeNdName(item) {
+      this.accountName = item.acc_name;
       return `${item.acc_code} - ${item.acc_name}`;
     },
     transferCodeNname(item) {
@@ -480,7 +495,8 @@ export default {
     editItem(item) {
       this.editedIndex = this.loanInstalments.indexOf(item);
       this.editedItem = Object.assign({}, item);
-      this.dialog = true;
+      this.editId = item.id;
+      getLoanInstalmentById(this, item);
     },
 
     deleteItem(item) {
@@ -498,6 +514,7 @@ export default {
 
     close() {
       this.dialog = false;
+      this.newLoanIns = false;
       this.clear();
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
@@ -514,12 +531,11 @@ export default {
     },
 
     submit() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.loanInstalments[this.editedIndex], this.editedItem);
+      if (this.newLoanIns === true) {
+        addNewLoanInstalment(this);
       } else {
-        this.loanInstalments.push(this.dataFromInputs);
+        updateLoanInstalment(this);
       }
-      addNewLoanInstalment(this);
     },
 
     clear() {
