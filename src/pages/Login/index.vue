@@ -64,15 +64,20 @@
                       <v-icon light>mdi-cached</v-icon>
                     </span>
                   </v-btn>
-                  <v-snackbar
+                  <!-- <v-snackbar
                     v-model="snackbar"
-                    :timeout="timeout"
                     :color="snackBarColor"
                     top
                     center
                   >
                     {{ snackBarText }}
-                  </v-snackbar>
+                  </v-snackbar> -->
+                  <snack-bar
+                    :snackbarModel="snackBarModel"
+                    :snackBarColor="snackBarColor"
+                    :snackbarText="snackBarText"
+                    :closeSnackbar="closeSnackbar"
+                  ></snack-bar>
                 </div>
               </v-card-actions>
             </v-form>
@@ -85,12 +90,17 @@
 <script>
 import { LOGIN } from "../../graphql/quries";
 import localStorage from "../../utils/localStorageService";
+import snackbar from "../../components/snackBar";
 const localStorageService = localStorage.getService();
+
 export default {
   name: "App",
+  components: {
+    "snack-bar": snackbar
+  },
   data: () => ({
     loginQuery: LOGIN,
-    snackbar: false,
+    snackBarModel: false,
     snackBarColor: null,
     isValid: false,
     showPassword: false,
@@ -112,15 +122,20 @@ export default {
       const token = data.data.userLogin.token;
       this.snackBarColor = "success";
       this.snackBarText = "Successfully logged in";
-      this.snackbar = true;
+      this.snackBarModel = true;
       localStorageService.setCurrentUser(current_data);
       localStorageService.setToken(token);
       location.reload();
     },
     receivedError(error) {
       this.snackBarColor = "red";
-      this.snackBarText = error;
-      this.snackbar = true;
+      var newText = error.toString();
+      newText = newText.replace("Error: GraphQL error: ", "");
+      this.snackBarText = newText;
+      this.snackBarModel = true;
+    },
+    closeSnackbar() {
+      this.snackBarModel = false;
     }
   }
 };

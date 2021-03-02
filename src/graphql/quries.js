@@ -153,8 +153,7 @@ export const ADD_POST_VOUCHER = gql`
       voucher_type: $voucher_type
       data: $data
     ) {
-      message
-      status
+      id
     }
   }
 `;

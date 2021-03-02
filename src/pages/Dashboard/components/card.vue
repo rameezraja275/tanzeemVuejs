@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="cursor: pointer;">
     <v-hover v-slot="{ hover }">
       <v-card class="mt-5" width="320" :elevation="hover ? 8 : 2">
         <v-list-item three-line>

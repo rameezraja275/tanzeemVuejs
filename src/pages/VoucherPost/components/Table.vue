@@ -17,7 +17,7 @@
       <template v-slot:top>
         <v-toolbar flat>
           <v-toolbar-title>{{
-            isEditMode ? "Edit Vouchers" : "Add Voucher"
+            isEditMode ? "Edit Vouchers" : "Vouchers"
           }}</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
@@ -42,6 +42,7 @@
             </template>
             <v-date-picker
               v-model="voucherPostDate"
+              :max="new Date().toISOString().substr(0, 10)"
               @input="menu2 = false"
             ></v-date-picker>
           </v-menu>
@@ -67,11 +68,12 @@
               :formTitle="formTitle"
             />
           </v-dialog>
-          <DeleteAlert
-            :dialogDelete="dialogDelete"
-            :closeDelete="closeDelete"
-            :deleteItemConfirm="deleteItemConfirm"
-          />
+          <v-dialog v-model="dialogDelete" max-width="500px">
+            <DeleteAlert
+              :closeDelete="closeDelete"
+              :deleteItemConfirm="deleteItemConfirm"
+            />
+          </v-dialog>
         </v-toolbar>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
@@ -96,7 +98,7 @@
         >Done</v-btn
       >
       <v-btn
-        @click="onDelete"
+        @click="deleteWholeVoucher"
         :loading="delLoading"
         :disabled="delLoading"
         color="error"
@@ -166,7 +168,7 @@ export default {
 
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? "Add Voucher" : "Edit Voucher";
+      return this.editedIndex === -1 ? "Vouchers" : "Edit Voucher";
     },
     isEditMode() {
       return this.voucherGroupId ? true : false;
@@ -198,6 +200,9 @@ export default {
     }
   },
   methods: {
+    deleteWholeVoucher() {
+      this.dialogDelete = true;
+    },
     initialize() {
       this.voucherGroup = [];
     },
@@ -219,11 +224,11 @@ export default {
     deleteItem(item) {
       this.editedIndex = this.voucherGroup.indexOf(item);
       this.editedItem = Object.assign({}, item);
-      this.dialogDelete = true;
+      this.voucherGroup.splice(this.editedIndex, 1);
     },
 
     deleteItemConfirm() {
-      this.voucherGroup.splice(this.editedIndex, 1);
+      this.onDelete();
       this.closeDelete();
     },
 

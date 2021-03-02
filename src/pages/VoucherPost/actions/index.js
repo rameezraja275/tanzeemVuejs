@@ -15,7 +15,6 @@ export async function addUpdateVouchers(vueObj) {
     voucher_type: vueObj.voucherType,
     data: omitTypeOff(vueObj.voucherGroup)
   };
-  console.log(variables, "data");
   try {
     const result = await vueObj.$apollo.mutate({
       mutation: vueObj.isEditMode ? UPDATE_POST_VOUCHER : ADD_POST_VOUCHER,
@@ -24,16 +23,51 @@ export async function addUpdateVouchers(vueObj) {
             ...variables,
             acc_master_id: Number(vueObj.voucherGroupId)
           }
-        : variables
-      // update: (cache) => {
-      //   let currentData = readQuery({
-      //     query: GET_VOUCHER_POST,
-      //     variables: {
-      //       voucher_date: vueObj.voucherPostDate
-      //     }
-      //   });
+        : variables,
+      update: !vueObj.isEditMode
+        ? (cache, { data: { addAccountVoucher } }) => {
+            const currentData = cache.readQuery({
+              query: GET_VOUCHER_POST,
+              variables: {
+                voucher_date: vueObj.voucherPostDate
+              }
+            });
+            console.log(addAccountVoucher);
 
-      // }
+            cache.writeQuery({
+              query: GET_VOUCHER_POST,
+              variables: {
+                voucher_date: vueObj.voucherPostDate
+              },
+              data: {
+                getGroupVouchers: [
+                  ...currentData.getGroupVouchers,
+                  addAccountVoucher
+                ]
+              }
+            });
+          }
+        : (cache, { data: { updateAccountVoucher } }) => {
+            let currentData = cache.readQuery({
+              query: GET_VOUCHERS_BY_GROUPID,
+              variables: {
+                id: vueObj.voucherGroupId
+              }
+            });
+
+            cache.writeQuery({
+              query: GET_VOUCHERS_BY_GROUPID,
+              variables: {
+                id: vueObj.voucherGroupId
+              },
+              data: {
+                getGroupVouchers: [
+                  ...currentData.getAccountVouchers,
+                  updateAccountVoucher
+                ]
+              }
+            });
+          }
     });
     if (result.errors) {
       throw result.errors[0].message;
@@ -57,11 +91,10 @@ export async function addUpdateVouchers(vueObj) {
       }));
   } catch (e) {
     vueObj.message = e;
-    var temp = e.message.split(" ");
-    temp.slice(0, 3);
-    temp = temp.join(" ");
-    vueObj.message = temp;
     vueObj.snackBarColor = "red";
+    var newText = e.toString();
+    newText = newText.replace("Error: GraphQL error: ", "");
+    vueObj.message = newText;
     vueObj.snackbar = true;
   }
   vueObj.mutationLoading = false;
@@ -79,9 +112,18 @@ export async function deleteVouchers(vueObj) {
     });
     if (result.errors) {
       throw result.errors[0].message;
+    } else {
+      vueObj.snackBarColor = "success";
+      vueObj.message = "Successfully deleted Voucher";
+      vueObj.snackbar = true;
     }
   } catch (e) {
     vueObj.message = e;
+    vueObj.snackBarColor = "red";
+    var newText = e.toString();
+    newText = newText.replace("Error: GraphQL error: ", "");
+    vueObj.message = newText;
+    vueObj.snackbar = true;
   }
   vueObj.delLoading = false;
 }

@@ -6,7 +6,9 @@
       :snackbarModel="snackbarModel"
       :closeSnackbar="closeSnackbar"
     ></snack-bar>
-    <h3 class="my-5">{{ isEditable ? "Edit" : "Add" + " Account" }}</h3>
+    <h3 class="my-5">
+      {{ isEditable ? "Edit" + " Account" : "Add" + " Account" }}
+    </h3>
     <validation-observer ref="observer" v-slot="{ invalid }">
       <form @submit.prevent="onSubmit">
         <validation-provider
@@ -41,16 +43,16 @@
           name="accParent"
           rules="required"
         >
-          <v-select
+          <v-autocomplete
             v-model="accParent"
             :items="groupAccounts"
             :error-messages="errors"
             label="Acc Parent"
             data-vv-name="select"
             required
-            item-text="acc_name"
+            :item-text="accNameAccCode"
             item-value="id"
-          ></v-select>
+          ></v-autocomplete>
         </validation-provider>
         <p>Account Type</p>
         <validation-provider
@@ -76,7 +78,7 @@
           <v-btn
             class="mr-4"
             type="submit"
-            :disabled="invalid || mutationLoading"
+            :disabled="invalid || mutationLoading || disableDeleteNdSave"
             color="primary"
             elevation="5"
             medium
@@ -89,7 +91,8 @@
           </v-btn>
           <v-btn
             v-if="isEditable"
-            @click="onDelete"
+            @click="dialogDelete = true"
+            :disabled="disableDeleteNdSave"
             :loading="deleteBtnLoading"
             :to="cleanUrl"
             color="error"
@@ -99,6 +102,27 @@
             Delete
           </v-btn>
         </div>
+        <v-dialog v-model="dialogDelete" max-width="500px">
+          <v-card>
+            <v-card-title class="headline"
+              >Are you sure you want to delete this item?</v-card-title
+            >
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="closeDelete"
+                >Cancel</v-btn
+              >
+              <v-btn
+                color="blue darken-1"
+                text
+                @click="onDelete"
+                :loading="mutationLoading"
+                >OK</v-btn
+              >
+              <v-spacer></v-spacer>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </form>
     </validation-observer>
   </div>
@@ -168,7 +192,11 @@ export default {
     snackBarColor: null,
 
     deleteBtnLoading: false,
-    redirect: ""
+    redirect: "",
+
+    dialogDelete: false,
+
+    isMainAccount: false
   }),
   apollo: {
     getAccounts: {
@@ -195,6 +223,19 @@ export default {
     }
   },
   computed: {
+    disableDeleteNdSave() {
+      var temp = null;
+      if (this.isEditable) {
+        if (this.isMainAccount) {
+          temp = true;
+        } else {
+          temp = false;
+        }
+      } else {
+        temp = false;
+      }
+      return temp;
+    },
     disableConfigureAC() {
       var temp = null;
       if (this.accType == DETAIL_ACCOUNTS) {
@@ -216,6 +257,12 @@ export default {
     }
   },
   methods: {
+    closeDelete() {
+      this.dialogDelete = false;
+    },
+    accNameAccCode(item) {
+      return `${item.acc_code} - ${item.acc_name}`;
+    },
     changeAccConfig() {
       this.accConfig = "";
     },
@@ -260,8 +307,10 @@ export default {
           this.onClear();
         }
       } catch (e) {
-        this.message = e;
         this.snackBarColor = "red";
+        var newText = e.toString();
+        newText = newText.replace("Error: GraphQL error: ", "");
+        this.message = newText;
         this.snackbarModel = true;
       }
       this.mutationLoading = false;
@@ -279,14 +328,14 @@ export default {
         const result = await this.$apollo.mutate({
           mutation: DELETE_ACCOUNT,
           variables: { id: this.id },
-          update: (cache, { data }) => {
+          update: cache => {
             try {
               // get in get account childs query
               const currentData = cache.readQuery({
                 query: GET_ACCOUNTS_CHILDS,
                 variables: { acc_parent: this.accParent }
               });
-              let temp = currentData.getAccountChilds;
+              let temp = [...currentData.getAccountChilds];
               currentData.getAccountChilds.forEach((element, index) => {
                 if (element.id == this.id) {
                   temp.splice(index, 1);
@@ -296,7 +345,7 @@ export default {
                 query: GET_ACCOUNTS_CHILDS,
                 variables: { acc_parent: this.accParent },
                 data: {
-                  getAccountChilds: [temp]
+                  getAccountChilds: [...temp]
                 }
               });
             } catch (error) {
@@ -318,11 +367,37 @@ export default {
               cache.writeQuery({
                 query: GET_ACCOUNTS_NO_ID,
                 data: {
-                  getAccounts: [temp]
+                  getAccounts: [...temp]
                 }
               });
             } catch (error) {
               console.log("error in update cache get accounts query");
+            }
+            try {
+              const currentData = cache.readQuery({
+                query: GET_ACCOUNTS,
+                variables: {
+                  acc_type: this.accType
+                }
+              });
+
+              let temp = currentData.getAccounts;
+              currentData.getAccounts.forEach((element, index) => {
+                if (element.id == this.id) {
+                  temp.splice(index, 1);
+                }
+              });
+              cache.writeQuery({
+                query: GET_ACCOUNTS,
+                variables: {
+                  acc_type: this.accType
+                },
+                data: {
+                  getAccounts: [...temp]
+                }
+              });
+            } catch (error) {
+              console.log("error in update delete using get account");
             }
           }
         });
@@ -333,6 +408,8 @@ export default {
           this.snackBarColor = "success";
           this.snackbarModel = true;
           this.onClear();
+          this.closeDelete();
+          this.$router.push({ path: `/coa` });
         }
       } catch (e) {
         this.message = e;
@@ -345,11 +422,17 @@ export default {
       const data = this.allAcounts;
       if (data) {
         const accounts = data;
-
         var accountData = {};
         accounts.forEach(element => {
           if (element.acc_code == this.$route.params.acccode) {
             accountData = element;
+            if (this.isEditable) {
+              if (element.acc_parent === 0) {
+                this.isMainAccount = true;
+              } else {
+                this.isMainAccount = false;
+              }
+            }
           }
         });
 
@@ -375,6 +458,9 @@ export default {
     updateCache(isEditable) {
       if (!isEditable) {
         let func = (cache, { data: { addAccount } }) => {
+          if (!this.accConfig) {
+            this.accConfig = 0;
+          }
           let temp = {
             id: addAccount.id,
             acc_code: this.acc_code,
@@ -486,7 +572,6 @@ export default {
     },
     deleteBtnLoading(val) {
       if (!val) {
-        console.log("testing");
         this.redirect = "/coa";
       }
     }

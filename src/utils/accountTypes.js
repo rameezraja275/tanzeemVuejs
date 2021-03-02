@@ -4,15 +4,15 @@ const accountType = [
     id: 1
   },
   {
-    name: "Withdrwal",
+    name: "Withdrawal",
     id: 2
   },
   {
-    name: "Trferans",
+    name: "Transfer",
     id: 3
   },
   {
-    name: "Javi",
+    name: "JV",
     id: 4
   }
 ];

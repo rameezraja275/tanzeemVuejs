@@ -8,48 +8,34 @@
         <v-card-text>
           <v-container>
             <v-row>
-              <v-col cols="12" sm="6" md="4">
+              <v-col cols="12" sm="6" md="6">
                 <validation-provider
                   v-slot="{ errors }"
                   name="Account"
                   rules="required"
                 >
-                  <v-select
+                  <v-autocomplete
                     v-model="editedItem.acc_code_id"
                     :items="accounts"
                     :error-messages="errors"
                     label="Account"
                     data-vv-name="select"
                     required
-                    item-text="acc_name"
+                    :item-text="accountNameNdCode"
                     item-value="id"
-                  ></v-select>
+                  ></v-autocomplete>
                 </validation-provider>
               </v-col>
-              <v-col cols="12" sm="6" md="4">
-                <v-select
+              <v-col cols="12" sm="6" md="6">
+                <v-autocomplete
                   v-model="editedItem.acc_no_id"
                   :items="accounts_child"
                   label="Sub Account"
-                  item-text="acc_name"
+                  :item-text="accountNameNdCode"
                   item-value="id"
-                ></v-select>
+                ></v-autocomplete>
               </v-col>
-              <v-col cols="12" sm="6" md="4">
-                <validation-provider
-                  v-slot="{ errors }"
-                  name="Narration"
-                  rules="required"
-                >
-                  <v-text-field
-                    v-model="editedItem.narration"
-                    label="Narration"
-                    :error-messages="errors"
-                    required
-                  ></v-text-field>
-                </validation-provider>
-              </v-col>
-              <v-col cols="12" sm="6" md="4">
+              <v-col cols="12" sm="6" md="6">
                 <validation-provider
                   v-slot="{ errors }"
                   name="debit"
@@ -57,15 +43,14 @@
                 >
                   <v-text-field
                     v-model.number="editedItem.dr"
-                    label="dr"
+                    label="DR"
                     :error-messages="errors"
                     required
-                    prefix="Rs."
                     type="number"
                   ></v-text-field>
                 </validation-provider>
               </v-col>
-              <v-col cols="12" sm="6" md="4">
+              <v-col cols="12" sm="6" md="6">
                 <validation-provider
                   v-slot="{ errors }"
                   name="credit"
@@ -73,13 +58,21 @@
                 >
                   <v-text-field
                     v-model.number="editedItem.cr"
-                    label="cr"
+                    label="CR"
                     :error-messages="errors"
                     required
-                    prefix="Rs."
                     type="number"
                   ></v-text-field>
                 </validation-provider>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" sm="6" md="12">
+                <v-textarea
+                  label="Narration"
+                  v-model="editedItem.narration"
+                  rows="1"
+                ></v-textarea>
               </v-col>
             </v-row>
           </v-container>
@@ -144,6 +137,9 @@ export default {
     }
   },
   methods: {
+    accountNameNdCode(item) {
+      return `${item.acc_code} - ${item.acc_name}`;
+    },
     submit() {
       this.$refs.observer.validate();
       this.save();

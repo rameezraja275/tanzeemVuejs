@@ -55,7 +55,7 @@ export default {
       items: [
         { title: "Dashboard", icon: "mdi-monitor-dashboard", to: "/" },
         {
-          title: "Chart of accounts",
+          title: "Chart Of Accounts",
           icon: "mdi-file-table-box-multiple-outline",
           to: "/coa"
         },

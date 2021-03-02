@@ -89,7 +89,7 @@ const routes = [
         next();
       } else {
         next({
-          name: "COA"
+          name: "dashboard"
         });
       }
     }

@@ -47,22 +47,22 @@ export default {
   data() {
     return {
       cardTitle1: "Loan Issue",
-      cardTextContent1: "Rs 10,00,000",
+      cardTextContent1: "10,00,000",
       iconName1: "mdi-account-cash-outline",
       sheetColor1: "green",
 
       cardTitle2: "Loan Receivable",
-      cardTextContent2: "Rs 16,000",
+      cardTextContent2: "16,000",
       iconName2: "mdi-cash-plus",
       sheetColor2: "blue",
 
       cardTitle3: "Some other thing",
-      cardTextContent3: "Rs 12,000",
+      cardTextContent3: "12,000",
       iconName3: "mdi-cash-plus",
       sheetColor3: "orange",
 
       cardTitle4: "Another thing",
-      cardTextContent4: "Rs 22,000",
+      cardTextContent4: "22,000",
       iconName4: "mdi-cash-plus",
       sheetColor4: "red"
     };
