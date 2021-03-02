@@ -72,6 +72,7 @@
             <DeleteAlert
               :closeDelete="closeDelete"
               :deleteItemConfirm="deleteItemConfirm"
+              :delLoading="delLoading"
             />
           </v-dialog>
         </v-toolbar>
@@ -88,6 +89,7 @@
         <h4>No Vouchers found</h4>
       </template>
     </v-data-table>
+
     <div class="text-right mx-5 my-5">
       <v-btn
         class="mr-4"
@@ -99,8 +101,7 @@
       >
       <v-btn
         @click="deleteWholeVoucher"
-        :loading="delLoading"
-        :disabled="delLoading"
+        :disabled="delLoading || voucherGroup == 0 || !voucherGroupId"
         color="error"
         >Delete</v-btn
       >
@@ -119,6 +120,7 @@ import {
   getVoucherByGroupId
 } from "../actions";
 export default {
+  props: ["addNewVoucherToList", "removeFromList"],
   components: { VoucherForm, DeleteAlert, "snack-bar": snackBarComp },
   data: () => ({
     tableLoading: false,
@@ -229,7 +231,6 @@ export default {
 
     deleteItemConfirm() {
       this.onDelete();
-      this.closeDelete();
     },
 
     close() {

@@ -10,7 +10,7 @@
       {{ isEditable ? "Edit" + " Account" : "Add" + " Account" }}
     </h3>
     <validation-observer ref="observer" v-slot="{ invalid }">
-      <form @submit.prevent="onSubmit">
+      <form @submit.prevent="onSubmit" autocomplete="off">
         <validation-provider
           v-slot="{ errors }"
           name="Acc Code"
@@ -91,10 +91,9 @@
           </v-btn>
           <v-btn
             v-if="isEditable"
-            @click="dialogDelete = true"
+            @click="openDeleteDialog"
             :disabled="disableDeleteNdSave"
             :loading="deleteBtnLoading"
-            :to="cleanUrl"
             color="error"
             elevation="5"
             medium
@@ -192,7 +191,6 @@ export default {
     snackBarColor: null,
 
     deleteBtnLoading: false,
-    redirect: "",
 
     dialogDelete: false,
 
@@ -251,12 +249,13 @@ export default {
     },
     routeName() {
       return this.$route.params.acccode;
-    },
-    cleanUrl() {
-      return this.redirect;
     }
   },
   methods: {
+    openDeleteDialog() {
+      this.dialogDelete = true;
+      console.log(this.dialogDelete, "model");
+    },
     closeDelete() {
       this.dialogDelete = false;
     },
@@ -407,6 +406,7 @@ export default {
           this.message = "Successfully deleted account";
           this.snackBarColor = "success";
           this.snackbarModel = true;
+          console.log(result);
           this.onClear();
           this.closeDelete();
           this.$router.push({ path: `/coa` });
@@ -504,6 +504,26 @@ export default {
           } catch (error) {
             console.log("error in update cache get accounts query");
           }
+          try {
+            const currentData = cache.readQuery({
+              query: GET_ACCOUNTS,
+              variables: {
+                acc_type: this.accType
+              }
+            });
+            console.log(currentData);
+            cache.writeQuery({
+              query: GET_ACCOUNTS,
+              variables: {
+                acc_type: this.accType
+              },
+              data: {
+                getAccounts: [...currentData.getAccounts, temp]
+              }
+            });
+          } catch (error) {
+            console.log(error);
+          }
         };
         return func;
       } else {
@@ -569,11 +589,6 @@ export default {
         this.onClear();
       }
       this.getCurrentAccount();
-    },
-    deleteBtnLoading(val) {
-      if (!val) {
-        this.redirect = "/coa";
-      }
     }
   }
 };

@@ -24,50 +24,29 @@ export async function addUpdateVouchers(vueObj) {
             acc_master_id: Number(vueObj.voucherGroupId)
           }
         : variables,
-      update: !vueObj.isEditMode
-        ? (cache, { data: { addAccountVoucher } }) => {
-            const currentData = cache.readQuery({
-              query: GET_VOUCHER_POST,
-              variables: {
-                voucher_date: vueObj.voucherPostDate
-              }
-            });
-            console.log(addAccountVoucher);
-
-            cache.writeQuery({
-              query: GET_VOUCHER_POST,
-              variables: {
-                voucher_date: vueObj.voucherPostDate
-              },
-              data: {
-                getGroupVouchers: [
-                  ...currentData.getGroupVouchers,
-                  addAccountVoucher
-                ]
-              }
-            });
-          }
-        : (cache, { data: { updateAccountVoucher } }) => {
-            let currentData = cache.readQuery({
-              query: GET_VOUCHERS_BY_GROUPID,
-              variables: {
-                id: vueObj.voucherGroupId
-              }
-            });
-
-            cache.writeQuery({
-              query: GET_VOUCHERS_BY_GROUPID,
-              variables: {
-                id: vueObj.voucherGroupId
-              },
-              data: {
-                getGroupVouchers: [
-                  ...currentData.getAccountVouchers,
-                  updateAccountVoucher
-                ]
-              }
-            });
-          }
+      update: (cache, { data: { addAccountVoucher } }) => {
+        const temp = new Date().toISOString().substr(0, 10);
+        if (!vueObj.isEditMode && vueObj.voucherPostDate == temp) {
+          const currentData = cache.readQuery({
+            query: GET_VOUCHER_POST,
+            variables: {
+              voucher_date: vueObj.voucherPostDate
+            }
+          });
+          cache.writeQuery({
+            query: GET_VOUCHER_POST,
+            variables: {
+              voucher_date: vueObj.voucherPostDate
+            },
+            data: {
+              getGroupVouchers: [
+                ...currentData.getGroupVouchers,
+                addAccountVoucher
+              ]
+            }
+          });
+        }
+      }
     });
     if (result.errors) {
       throw result.errors[0].message;
@@ -75,6 +54,10 @@ export async function addUpdateVouchers(vueObj) {
       vueObj.message = "Account added successfully";
       vueObj.snackBarColor = "success";
       vueObj.snackbar = true;
+      const temp = new Date().toISOString().substr(0, 10);
+      if (!vueObj.isEditMode && vueObj.voucherPostDate == temp) {
+        vueObj.addNewVoucherToList(result.data.addAccountVoucher);
+      }
       vueObj.onClear();
     }
     !vueObj.isEditMode &&
@@ -108,7 +91,31 @@ export async function deleteVouchers(vueObj) {
   try {
     const result = await vueObj.$apollo.mutate({
       mutation: DELETE_POST_VOUCHER,
-      variables: variables
+      variables: variables,
+      update: cache => {
+        console.log(vueObj.voucherPostDate, "date in delete");
+        let currentData = cache.readQuery({
+          query: GET_VOUCHER_POST,
+          variables: {
+            voucher_date: vueObj.voucherPostDate
+          }
+        });
+        let temp = [...currentData.getGroupVouchers];
+        currentData.getGroupVouchers.forEach((element, index) => {
+          if (element.id === variables.id) {
+            temp.splice(index, 1);
+          }
+        });
+        cache.writeQuery({
+          query: GET_VOUCHER_POST,
+          variables: {
+            voucher_date: vueObj.voucherPostDate
+          },
+          data: {
+            getGroupVouchers: [...temp]
+          }
+        });
+      }
     });
     if (result.errors) {
       throw result.errors[0].message;
@@ -116,6 +123,10 @@ export async function deleteVouchers(vueObj) {
       vueObj.snackBarColor = "success";
       vueObj.message = "Successfully deleted Voucher";
       vueObj.snackbar = true;
+      vueObj.removeFromList(vueObj.voucherGroupId);
+      vueObj.onClear();
+      vueObj.$router.push({ path: `/voucherpost` });
+      vueObj.closeDelete();
     }
   } catch (e) {
     vueObj.message = e;
@@ -134,14 +145,14 @@ export async function getVoucherByGroupId(vueObj) {
     query: GET_VOUCHERS_BY_GROUPID,
     variables: {
       id: Number(vueObj.voucherGroupId)
-    }
+    },
+    fetchPolicy: "network-only"
   });
   vueObj.voucherGroup = result.data.getAccountVouchers.vouchers;
   vueObj.voucherPostDate =
     result.data.getAccountVouchers.group_details.voucher_date;
   vueObj.voucherType =
     result.data.getAccountVouchers.group_details.voucher_type;
-
   vueObj.tableLoading = false;
 }
 
@@ -157,7 +168,8 @@ export async function getVoucherByDate(vueObj) {
     if (result.errors) {
       throw result.errors[0].message;
     } else {
-      vueObj.vouchersGroups = result.data.getGroupVouchers;
+      // vueObj.vouchersGroups = result.data.getGroupVouchers;
+      vueObj.voucherGroupsList(result.data.getGroupVouchers);
       vueObj.loading = false;
     }
   } catch (e) {

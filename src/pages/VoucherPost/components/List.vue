@@ -17,7 +17,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-text-field
               v-model="filterDate"
-              label="Picker without buttons"
+              label="Filter by date"
               prepend-icon="mdi-calendar"
               readonly
               v-bind="attrs"
@@ -63,10 +63,10 @@
 <script>
 import { getVoucherByDate } from "../actions/index";
 export default {
+  props: ["vouchersGroups", "voucherGroupsList"],
   data: () => ({
     loading: false,
     selectedItem: 1,
-    vouchersGroups: [],
     menu2: false,
     filterDate: new Date().toISOString().substr(0, 10)
   }),

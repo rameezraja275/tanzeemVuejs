@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <validation-observer ref="observer" v-slot="{ invalid }">
-      <form @submit.prevent="submit">
+      <form @submit.prevent="submit" autocomplete="off">
         <v-card-title>
           <span class="headline">{{ formTitle }}</span>
         </v-card-title>
@@ -176,6 +176,11 @@ export default {
       if (val) {
         this.editedItem.cr = 0;
       }
+    }
+  },
+  created() {
+    if (this.editedItem.acc_code_id) {
+      getAccountChilds(this, this.editedItem);
     }
   }
 };

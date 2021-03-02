@@ -6,7 +6,13 @@
     <v-card-actions>
       <v-spacer></v-spacer>
       <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
-      <v-btn color="blue darken-1" text @click="deleteItemConfirm">OK</v-btn>
+      <v-btn
+        color="blue darken-1"
+        text
+        @click="deleteItemConfirm"
+        :loading="delLoading"
+        >OK</v-btn
+      >
       <v-spacer></v-spacer>
     </v-card-actions>
   </v-card>
@@ -14,6 +20,6 @@
 
 <script>
 export default {
-  props: ["closeDelete", "deleteItemConfirm"]
+  props: ["closeDelete", "deleteItemConfirm", "delLoading"]
 };
 </script>
