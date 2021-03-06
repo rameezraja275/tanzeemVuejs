@@ -32,6 +32,8 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
+                ref="voucherDate"
+                v-on:blur="dateOutOfFocus"
                 v-model="voucherPostDate"
                 label="Date Picker"
                 prepend-icon="mdi-calendar"
@@ -55,7 +57,7 @@
             item-text="name"
             item-value="id"
           ></v-select>
-          <v-dialog v-model="dialog" max-width="500px">
+          <v-dialog v-model="dialog" max-width="500px" persistent>
             <template v-slot:activator="{ on, attrs }">
               <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
                 Add Voucher
@@ -119,6 +121,8 @@ import {
   deleteVouchers,
   getVoucherByGroupId
 } from "../actions";
+import { mapActions, mapState } from "vuex";
+
 export default {
   props: ["addNewVoucherToList", "removeFromList"],
   components: { VoucherForm, DeleteAlert, "snack-bar": snackBarComp },
@@ -130,15 +134,15 @@ export default {
     mutationLoading: false,
     headers: [
       {
-        text: "Acc Code",
+        text: "A/C Code",
         align: "start",
         sortable: false,
         value: "acc_code_id"
       },
-      { text: "A/C No", value: "acc_no_id" },
-      { text: "Narration", value: "narration" },
-      { text: "Dr", value: "dr", sortable: false },
-      { text: "Cr", value: "cr", sortable: false },
+      { text: "A/C No", value: "acc_no_id", sortable: false },
+      { text: "Narration", value: "narration", sortable: false },
+      { text: "DR", value: "dr", sortable: false },
+      { text: "CR", value: "cr", sortable: false },
       { text: "Actions", value: "actions", sortable: false }
     ],
     voucherGroup: [],
@@ -169,8 +173,11 @@ export default {
   }),
 
   computed: {
+    ...mapState({
+      focusOnDate: state => state.auth_module.focusOnDate
+    }),
     formTitle() {
-      return this.editedIndex === -1 ? "Vouchers" : "Edit Voucher";
+      return this.editedIndex === -1 ? "Add Vouchers" : "Edit Voucher";
     },
     isEditMode() {
       return this.voucherGroupId ? true : false;
@@ -189,9 +196,15 @@ export default {
     },
     $route: function(newRoute, oldRoute) {
       if (newRoute.params.vpid == undefined) {
+        this.tableLoading = false;
         this.onClear();
       } else {
         getVoucherByGroupId(this);
+      }
+    },
+    focusOnDate(val) {
+      if (val) {
+        this.$refs.voucherDate.focus();
       }
     }
   },
@@ -202,6 +215,10 @@ export default {
     }
   },
   methods: {
+    ...mapActions(["changeFocusOnDate"]),
+    dateOutOfFocus() {
+      this.changeFocusOnDate(false);
+    },
     deleteWholeVoucher() {
       this.dialogDelete = true;
     },

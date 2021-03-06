@@ -19,7 +19,7 @@
     <!-- FORMM -->
     <v-app id="inspire">
       <v-card class="mx-auto mt-10 mb-10" max-width="1200" width="100%">
-        <v-form ref="form" v-model="valid" lazy-validation>
+        <v-form ref="form" v-model="valid" lazy-validation autocomplete="off">
           <v-card-title class="title font-weight-regular justify-space-between">
             <span>{{ formTitle }}</span>
             <v-avatar
@@ -107,6 +107,8 @@
                       label="Cell Phone"
                       v-model="dataFromInputs.cell"
                       :readonly="disableAndReadonly"
+                      :rules="rules"
+                      required
                     ></v-text-field>
                   </v-col>
                   <v-col md="4">

@@ -266,7 +266,7 @@
                       depressed
                       @click="submit"
                       :loading="submitLoading"
-                      :disabled="invalid"
+                      :disabled="invalid || viewLoanInstalment"
                     >
                       Submit
                     </v-btn>
@@ -297,6 +297,9 @@
       <template v-slot:[`item.actions`]="{ item }">
         <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
         <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+        <v-icon size="20" class="ml-2" @click="showCompleteInfo(item)">
+          mdi-account-details
+        </v-icon>
       </template>
     </v-data-table>
   </div>
@@ -407,7 +410,8 @@ export default {
     accountName: "",
 
     newLoanIns: false,
-    editId: null
+    editId: null,
+    viewLoanInstalment: false
   }),
 
   computed: {
@@ -429,7 +433,15 @@ export default {
     },
 
     formTitle() {
-      return this.editedIndex === -1 ? "New Instalment" : "Edit Instalment";
+      var temp = null;
+      if (this.editedIndex === -1) {
+        temp = "New Instalment";
+      } else if (this.editedIndex !== -1 && this.viewLoanInstalment) {
+        temp = "View Instalment";
+      } else {
+        temp = "Edit Instalment";
+      }
+      return temp;
     },
     getChildsOfSelected() {
       if (this.dataFromInputs.transfer_acc_code_id) {
@@ -498,6 +510,13 @@ export default {
       this.editId = item.id;
       getLoanInstalmentById(this, item);
     },
+    showCompleteInfo(item) {
+      this.viewLoanInstalment = true;
+      this.editedIndex = this.loanInstalments.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.editId = item.id;
+      getLoanInstalmentById(this, item);
+    },
 
     deleteItem(item) {
       this.editedIndex = this.loanInstalments.indexOf(item);
@@ -514,6 +533,7 @@ export default {
 
     close() {
       this.dialog = false;
+      this.viewLoanInstalment = false;
       this.newLoanIns = false;
       this.clear();
       this.$nextTick(() => {

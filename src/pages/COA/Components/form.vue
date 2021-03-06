@@ -18,6 +18,8 @@
         >
           <v-text-field
             :disabled="isEditable"
+            ref="accCode"
+            v-on:blur="accCodeOutOfFocus"
             v-model="acc_code"
             :counter="4"
             :error-messages="errors"
@@ -129,6 +131,7 @@
 
 <script>
 import { required, digits, email, max, regex } from "vee-validate/dist/rules";
+import { mapActions, mapState } from "vuex";
 import {
   extend,
   ValidationObserver,
@@ -221,6 +224,9 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      acCodeFocus: state => state.auth_module.acCodeFocus
+    }),
     disableDeleteNdSave() {
       var temp = null;
       if (this.isEditable) {
@@ -252,6 +258,10 @@ export default {
     }
   },
   methods: {
+    ...mapActions(["changeInChildsDetected", "changeFocusOnAccInput"]),
+    accCodeOutOfFocus() {
+      this.changeFocusOnAccInput(false);
+    },
     openDeleteDialog() {
       this.dialogDelete = true;
       console.log(this.dialogDelete, "model");
@@ -304,6 +314,7 @@ export default {
           this.snackBarColor = "success";
           this.snackbarModel = true;
           this.onClear();
+          this.changeInChildsDetected(variables.acc_parent);
         }
       } catch (e) {
         this.snackBarColor = "red";
@@ -406,7 +417,6 @@ export default {
           this.message = "Successfully deleted account";
           this.snackBarColor = "success";
           this.snackbarModel = true;
-          console.log(result);
           this.onClear();
           this.closeDelete();
           this.$router.push({ path: `/coa` });
@@ -511,7 +521,6 @@ export default {
                 acc_type: this.accType
               }
             });
-            console.log(currentData);
             cache.writeQuery({
               query: GET_ACCOUNTS,
               variables: {
@@ -589,6 +598,13 @@ export default {
         this.onClear();
       }
       this.getCurrentAccount();
+    },
+    acCodeFocus(val) {
+      if (val) {
+        setTimeout(() => {
+          this.$refs.accCode.focus();
+        }, 50);
+      }
     }
   }
 };

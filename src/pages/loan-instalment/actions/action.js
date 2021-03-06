@@ -186,6 +186,7 @@ export async function deleteLoanInstalment(vueObj, ID) {
     } else {
       vueObj.snackBarColor = "success";
       vueObj.snackbarText = result.data.deleteLoanInstallment.message;
+      vueObj.loanInstalments.splice(vueObj.editedIndex, 1);
       vueObj.snackbarModel = true;
     }
   } catch (e) {
@@ -217,6 +218,7 @@ export async function getLoanInstalmentById(vueObj, item) {
     }
   } catch (e) {
     vueObj.message = e;
+    vueObj.viewLoanInstalment = false;
   }
   vueObj.tableLoading = false;
 }

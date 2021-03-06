@@ -4,9 +4,11 @@ import {
   GET_VOUCHER_POST,
   DELETE_POST_VOUCHER,
   GET_VOUCHERS_BY_GROUPID,
-  GET_ACCOUNTS_CHILDS
+  GET_ACCOUNTS_CHILDS,
+  GET_ACCOUNTS
 } from "../../../graphql/quries";
 import { omitTypeOff } from "../../../utils/helpers";
+import { GROUP_ACCOUNTS } from "../../../utils/constants";
 
 export async function addUpdateVouchers(vueObj) {
   vueObj.mutationLoading = true;
@@ -179,6 +181,9 @@ export async function getVoucherByDate(vueObj) {
 }
 
 export async function getAccountChilds(vueObj, item) {
+  if (vueObj.accounts.length > 0) {
+    vueObj.selectLoadingSubAc = true;
+  }
   const result = await vueObj.$apollo.query({
     query: GET_ACCOUNTS_CHILDS,
     variables: {
@@ -186,4 +191,25 @@ export async function getAccountChilds(vueObj, item) {
     }
   });
   vueObj.accounts_child = result.data.getAccountChilds;
+  vueObj.selectLoadingSubAc = false;
+}
+
+export async function getGroupAccounts(vueObj) {
+  vueObj.selectLoadingACCode = true;
+  try {
+    const result = await vueObj.$apollo.query({
+      query: GET_ACCOUNTS,
+      variables: {
+        acc_type: GROUP_ACCOUNTS
+      }
+    });
+    if (result.errors) {
+      throw result.errors[0].message;
+    } else {
+      vueObj.accounts = result.data.getAccounts;
+    }
+  } catch (error) {
+    vueObj.message = error;
+  }
+  vueObj.selectLoadingACCode = false;
 }

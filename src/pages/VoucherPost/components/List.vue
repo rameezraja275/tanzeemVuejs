@@ -3,7 +3,7 @@
     <v-list shaped>
       <v-subheader>Vouchers</v-subheader>
       <div class="px-5">
-        <v-btn block plain to="/voucherpost" class="primary">
+        <v-btn block plain @click="addNewVoucherPost()" class="primary">
           Add New Vouchers
         </v-btn>
         <v-menu
@@ -61,6 +61,7 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 import { getVoucherByDate } from "../actions/index";
 export default {
   props: ["vouchersGroups", "voucherGroupsList"],
@@ -79,6 +80,15 @@ export default {
         getVoucherByDate(this);
       },
       deep: true
+    }
+  },
+  methods: {
+    ...mapActions(["changeFocusOnDate"]),
+    addNewVoucherPost() {
+      if (this.$route.params.vpid) {
+        this.$router.push({ path: "/voucherpost" });
+      }
+      this.changeFocusOnDate(true);
     }
   }
 };

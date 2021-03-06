@@ -23,7 +23,8 @@ export default {
   },
   data() {
     return {
-      vouchersGroups: []
+      vouchersGroups: [],
+      focusOnDate: false
     };
   },
   methods: {

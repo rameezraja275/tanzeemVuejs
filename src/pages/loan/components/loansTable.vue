@@ -355,7 +355,7 @@
                                 v-model="guarantor2.acc_no_id"
                                 :items="accountHoldersData"
                                 :readonly="disableAndReadonly"
-                                item-text="first_name"
+                                :item-text="AcNumIdNdName"
                                 item-value="id"
                                 label="Account Number ID"
                                 required
@@ -743,7 +743,7 @@ export default {
 
   methods: {
     AcNumIdNdName(item) {
-      return `${item.first_name} - ${item.acc_code}`;
+      return `${item.first_name} - ${item.acc_no}`;
     },
     disableSubmitBtn(isInvalid) {
       var temp = null;

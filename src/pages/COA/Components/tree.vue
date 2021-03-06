@@ -2,7 +2,7 @@
   <v-card max-width="500" height="100%">
     <div>
       <v-sheet class="pa-4 lighten-2 rounded-0" width="250">
-        <v-btn block plain to="/coa" class="primary">
+        <v-btn block plain @click="addNew" class="primary">
           Add New Account
         </v-btn>
       </v-sheet>
@@ -34,6 +34,8 @@
 
 <script>
 import { GET_ACCOUNTS_CHILDS } from "../../../graphql/quries";
+import { mapActions, mapState } from "vuex";
+
 export default {
   props: ["parentAccounts", "loading"],
   data: () => ({
@@ -42,7 +44,9 @@ export default {
     true: false
   }),
   methods: {
+    ...mapActions(["changeFocusOnAccInput"]),
     async getChilds(item) {
+      console.log("get childs called");
       const result = await this.$apollo.query({
         query: GET_ACCOUNTS_CHILDS,
         variables: {
@@ -50,6 +54,7 @@ export default {
         }
       });
       const children = result.data.getAccountChilds;
+      console.log(children, "children");
       let childNode;
       const key = item.id;
       const parentNode = this.$refs.treeReference.nodes[key];
@@ -62,9 +67,18 @@ export default {
           item.children.push({ ...child });
         }
       });
+    },
+    addNew() {
+      if (this.$route.params.acccode) {
+        this.$router.push({ path: "/coa" });
+      }
+      this.changeFocusOnAccInput(true);
     }
   },
   computed: {
+    ...mapState({
+      childsChanged: state => state.auth_module.childsChanged
+    }),
     items() {
       const newArray = this.parentAccounts.map(account => {
         return {
@@ -73,6 +87,20 @@ export default {
         };
       });
       return newArray;
+    },
+    returnChildsChanged() {
+      return this.childsChanged.status;
+    }
+  },
+  watch: {
+    returnChildsChanged(val) {
+      if (val) {
+        var temp = {
+          id: this.childsChanged.parent,
+          children: []
+        };
+        this.getChilds(temp);
+      }
     }
   }
 };
