@@ -4,7 +4,12 @@
       <v-subheader>Vouchers</v-subheader>
       <div class="px-5">
         <v-btn block plain @click="addNewVoucherPost()" class="primary">
-          Add New Vouchers
+          <span
+            >A<span class="text-lowercase">dd </span>N<span
+              class="text-lowercase"
+              >ew </span
+            >V<span class="text-lowercase">oucher</span></span
+          >
         </v-btn>
         <v-menu
           v-model="menu2"

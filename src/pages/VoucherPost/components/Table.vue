@@ -35,7 +35,7 @@
                 ref="voucherDate"
                 v-on:blur="dateOutOfFocus"
                 v-model="voucherPostDate"
-                label="Date Picker"
+                label="Voucher Date"
                 prepend-icon="mdi-calendar"
                 readonly
                 v-bind="attrs"
@@ -59,8 +59,19 @@
           ></v-select>
           <v-dialog v-model="dialog" max-width="500px" persistent>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
-                Add Voucher
+              <v-btn
+                color="primary"
+                class="mb-2"
+                v-bind="attrs"
+                v-on="on"
+                :disabled="voucherType && voucherPostDate ? false : true"
+              >
+                <span
+                  >A<span class="text-lowercase">dd </span>V<span
+                    class="text-lowercase"
+                    >oucher</span
+                  ></span
+                >
               </v-btn>
             </template>
             <VoucherForm
@@ -68,6 +79,7 @@
               :close="close"
               :save="save"
               :formTitle="formTitle"
+              :setAccCode="setAccCode"
             />
           </v-dialog>
           <v-dialog v-model="dialogDelete" max-width="500px">
@@ -99,13 +111,13 @@
         :loading="mutationLoading"
         :disabled="mutationLoading || voucherGroup == 0"
         color="primary"
-        >Done</v-btn
+        >S<span class="text-lowercase">ave</span></v-btn
       >
       <v-btn
         @click="deleteWholeVoucher"
         :disabled="delLoading || voucherGroup == 0 || !voucherGroupId"
         color="error"
-        >Delete</v-btn
+        >D<span class="text-lowercase">elete</span></v-btn
       >
     </div>
   </div>
@@ -128,7 +140,7 @@ export default {
   components: { VoucherForm, DeleteAlert, "snack-bar": snackBarComp },
   data: () => ({
     tableLoading: false,
-    voucherType: 1,
+    voucherType: null,
     dialog: false,
     dialogDelete: false,
     mutationLoading: false,
@@ -137,7 +149,7 @@ export default {
         text: "A/C Code",
         align: "start",
         sortable: false,
-        value: "acc_code_id"
+        value: "acc_code"
       },
       { text: "A/C No", value: "acc_no_id", sortable: false },
       { text: "Narration", value: "narration", sortable: false },
@@ -149,6 +161,7 @@ export default {
     editedIndex: -1,
     menu2: false,
     editedItem: {
+      acc_code: "",
       acc_code_id: "",
       acc_no_id: "",
       narration: "",
@@ -169,7 +182,9 @@ export default {
     // for snackbar
     message: null,
     snackBarColor: null,
-    snackbar: false
+    snackbar: false,
+
+    itemToDelete: null
   }),
 
   computed: {
@@ -177,7 +192,7 @@ export default {
       focusOnDate: state => state.auth_module.focusOnDate
     }),
     formTitle() {
-      return this.editedIndex === -1 ? "Add Vouchers" : "Edit Voucher";
+      return this.editedIndex === -1 ? "Add Voucher" : "Edit Voucher";
     },
     isEditMode() {
       return this.voucherGroupId ? true : false;
@@ -229,25 +244,33 @@ export default {
       this.voucherGroup = [];
     },
     onSubmit() {
+      this.voucherGroup.forEach(element => {
+        delete element.acc_code;
+      });
       addUpdateVouchers(this);
     },
     async onDelete() {
       deleteVouchers(this);
     },
     editItem(item) {
-      this.editedIndex = this.voucherGroup.indexOf(item);
-      this.editedItem = Object.assign({}, item);
       this.dialog = true;
+      this.editedItem = item;
     },
 
     deleteItem(item) {
-      this.editedIndex = this.voucherGroup.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.voucherGroup.splice(this.editedIndex, 1);
+      this.dialogDelete = true;
+      this.itemToDelete = item;
     },
 
     deleteItemConfirm() {
-      this.onDelete();
+      if (this.itemToDelete) {
+        this.editedIndex = this.voucherGroup.indexOf(this.itemToDelete);
+        this.editedItem = Object.assign({}, this.itemToDelete);
+        this.voucherGroup.splice(this.editedIndex, 1);
+      } else {
+        this.onDelete();
+      }
+      this.closeDelete();
     },
 
     close() {
@@ -277,6 +300,11 @@ export default {
 
     closeSnackbar() {
       this.snackbar = false;
+    },
+
+    setAccCode(code) {
+      console.log(code, "asdasdf");
+      this.editedItem.acc_code = code;
     }
   }
 };

@@ -25,6 +25,7 @@
                     required
                     :item-text="accountNameNdCode"
                     item-value="id"
+                    v-on:blur="getAccCode"
                   ></v-autocomplete>
                 </validation-provider>
               </v-col>
@@ -50,6 +51,7 @@
                     :error-messages="errors"
                     required
                     type="number"
+                    :step="allowedDecimalPlaces"
                     :rules="
                       editedItem.dr !== ``
                         ? [
@@ -73,6 +75,7 @@
                     :error-messages="errors"
                     required
                     type="number"
+                    :step="allowedDecimalPlaces"
                     :rules="
                       editedItem.cr !== ``
                         ? [
@@ -90,7 +93,7 @@
                 <v-textarea
                   label="Narration"
                   v-model="editedItem.narration"
-                  rows="1"
+                  rows="4"
                 ></v-textarea>
               </v-col>
             </v-row>
@@ -126,7 +129,7 @@ import {
   setInteractionMode
 } from "vee-validate";
 import { getAccountChilds, getGroupAccounts } from "../actions/index";
-
+import { ALLOWED_DECIMALS } from "../../../utils/constants";
 setInteractionMode("eager");
 
 extend("digits", {
@@ -147,13 +150,14 @@ export default {
     ValidationProvider,
     ValidationObserver
   },
-  props: ["editedItem", "close", "save", "formTitle"],
+  props: ["editedItem", "close", "save", "formTitle", "setAccCode"],
   data: () => ({
     accounts: [],
     accounts_child: [],
     crDrEqual: false,
     selectLoadingACCode: false,
-    selectLoadingSubAc: false
+    selectLoadingSubAc: false,
+    allowedDecimalPlaces: ALLOWED_DECIMALS
   }),
   // apollo: {
   //   getAccounts: {
@@ -167,6 +171,15 @@ export default {
   //   }
   // },
   methods: {
+    getAccCode() {
+      if (this.editedItem.acc_code_id) {
+        this.accounts.forEach(element => {
+          if (element.id == this.editedItem.acc_code_id) {
+            this.setAccCode(element.acc_code);
+          }
+        });
+      }
+    },
     accountNameNdCode(item) {
       return `${item.acc_code} - ${item.acc_name}`;
     },

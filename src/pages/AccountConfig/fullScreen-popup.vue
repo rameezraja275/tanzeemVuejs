@@ -36,6 +36,7 @@
                   <v-col md="4">
                     <v-text-field
                       label="First Name"
+                      ref="firstNameFocus"
                       :rules="rules"
                       v-model="dataFromInputs.first_name"
                       :readonly="disableAndReadonly"
@@ -580,6 +581,9 @@ export default {
     },
     dialogPopUp(val) {
       if (val === true) {
+        setTimeout(() => {
+          this.$refs.firstNameFocus.focus();
+        }, 280);
         if (
           this.editAccountDetails !== null &&
           this.editAccountDetails.account_holder.first_name !== ""
@@ -615,6 +619,11 @@ export default {
         this.guarantorObj2 = this.editAccountDetails.guarantors[1];
       }
     }
+  },
+  mounted() {
+    setTimeout(() => {
+      this.$refs.firstNameFocus.focus();
+    }, 280);
   },
   apollo: {
     getGroupAccounts: {

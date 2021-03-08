@@ -195,6 +195,7 @@ export const GET_VOUCHERS_BY_GROUPID = gql`
       vouchers {
         id
         acc_master_id
+        acc_code
         acc_code_id
         acc_no_id
         narration

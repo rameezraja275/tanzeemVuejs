@@ -60,6 +60,7 @@ export async function addUpdateVouchers(vueObj) {
       if (!vueObj.isEditMode && vueObj.voucherPostDate == temp) {
         vueObj.addNewVoucherToList(result.data.addAccountVoucher);
       }
+      vueObj.$router.push({ path: `/voucherpost` });
       vueObj.onClear();
     }
     !vueObj.isEditMode &&
