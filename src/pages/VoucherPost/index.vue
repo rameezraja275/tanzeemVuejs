@@ -32,7 +32,7 @@ export default {
       this.vouchersGroups = [...data];
     },
     addNewVoucherToList(data) {
-      this.vouchersGroups.push(data);
+      this.vouchersGroups.unshift(data);
     },
     removeFromList(voucherId) {
       let temp = [...this.vouchersGroups];

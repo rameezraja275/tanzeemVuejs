@@ -20,7 +20,12 @@
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
           <v-btn color="primary" dark class="mb-2" @click="newUser()">
-            New Account
+            <span
+              >N<span class="text-lowercase">ew </span>A<span
+                class="text-lowercase"
+                >ccount</span
+              ></span
+            >
           </v-btn>
           <v-dialog v-model="dialogDelete" max-width="500">
             <v-card>

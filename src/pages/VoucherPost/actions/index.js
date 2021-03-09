@@ -12,10 +12,20 @@ import { GROUP_ACCOUNTS } from "../../../utils/constants";
 
 export async function addUpdateVouchers(vueObj) {
   vueObj.mutationLoading = true;
+  const temp = [];
+  for (var i = 0; i < vueObj.voucherGroup.length; i++) {
+    temp[i] = {};
+    for (var prop in vueObj.voucherGroup[i]) {
+      temp[i][prop] = vueObj.voucherGroup[i][prop];
+    }
+  }
+  temp.forEach(element => {
+    delete element.acc_code;
+  });
   const variables = {
     voucher_date: vueObj.voucherPostDate,
     voucher_type: vueObj.voucherType,
-    data: omitTypeOff(vueObj.voucherGroup)
+    data: omitTypeOff(temp)
   };
   try {
     const result = await vueObj.$apollo.mutate({
@@ -128,7 +138,9 @@ export async function deleteVouchers(vueObj) {
       vueObj.snackbar = true;
       vueObj.removeFromList(vueObj.voucherGroupId);
       vueObj.onClear();
-      vueObj.$router.push({ path: `/voucherpost` });
+      if (vueObj.$route.params.newRoute.params.vpid) {
+        vueObj.$router.push({ path: `/voucherpost` });
+      }
       vueObj.closeDelete();
     }
   } catch (e) {
@@ -144,18 +156,27 @@ export async function deleteVouchers(vueObj) {
 
 export async function getVoucherByGroupId(vueObj) {
   vueObj.tableLoading = true;
-  const result = await vueObj.$apollo.query({
-    query: GET_VOUCHERS_BY_GROUPID,
-    variables: {
-      id: Number(vueObj.voucherGroupId)
-    },
-    fetchPolicy: "network-only"
-  });
-  vueObj.voucherGroup = result.data.getAccountVouchers.vouchers;
-  vueObj.voucherPostDate =
-    result.data.getAccountVouchers.group_details.voucher_date;
-  vueObj.voucherType =
-    result.data.getAccountVouchers.group_details.voucher_type;
+  try {
+    const result = await vueObj.$apollo.query({
+      query: GET_VOUCHERS_BY_GROUPID,
+      variables: {
+        id: Number(vueObj.voucherGroupId)
+      },
+      fetchPolicy: "network-only"
+    });
+    if (result.errors) {
+      throw result.errors[0].message;
+    } else {
+      console.log(result.data.getAccountVouchers.vouchers, "vouchers");
+      vueObj.voucherGroup = result.data.getAccountVouchers.vouchers;
+      vueObj.voucherPostDate =
+        result.data.getAccountVouchers.group_details.voucher_date;
+      vueObj.voucherType =
+        result.data.getAccountVouchers.group_details.voucher_type;
+    }
+  } catch (e) {
+    vueObj.message = e;
+  }
   vueObj.tableLoading = false;
 }
 

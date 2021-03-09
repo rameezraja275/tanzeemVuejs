@@ -325,7 +325,7 @@
               @click="validate"
               :btnLoader="btnLoader"
             >
-              Submit
+              S<span class="text-lowercase">ubmit</span>
             </v-btn>
 
             <v-btn
@@ -334,7 +334,7 @@
               depressed
               @click="step++"
             >
-              Next
+              N<span class="text-lowercase">ext</span>
             </v-btn>
           </v-card-actions>
         </v-form>

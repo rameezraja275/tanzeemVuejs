@@ -29,7 +29,12 @@
                 v-on="on"
                 v-on:click="newLoanRequired"
               >
-                New Loan
+                <span
+                  >N<span class="text-lowercase">ew </span>L<span
+                    class="text-lowercase"
+                    >oan</span
+                  ></span
+                >
               </v-btn>
             </template>
 
@@ -411,7 +416,7 @@
                   <v-divider></v-divider>
                   <v-card-actions>
                     <v-btn color="blue darken-1" text @click="close">
-                      Cancel
+                      C<span class="text-lowercase">ancel</span>
                     </v-btn>
                     <v-spacer></v-spacer>
                     <v-btn
@@ -422,7 +427,7 @@
                         onNextPage = false;
                       "
                     >
-                      Back
+                      B<span class="text-lowercase">ack</span>
                     </v-btn>
                     <v-btn
                       :disabled="step === 2"
@@ -430,7 +435,7 @@
                       depressed
                       @click="nextPage"
                     >
-                      Next
+                      N<span class="text-lowercase">ext</span>
                     </v-btn>
                     <v-btn
                       color="success"
@@ -440,7 +445,7 @@
                       :disabled="disableSubmitBtn(invalid)"
                       :loading="submitLoading"
                     >
-                      Submit
+                      S<span class="text-lowercase">ubmit</span>
                     </v-btn>
                   </v-card-actions>
                 </form>

@@ -15,7 +15,6 @@
                   rules="required"
                 >
                   <v-autocomplete
-                    autofocus
                     v-model="editedItem.acc_code_id"
                     :items="accounts"
                     :error-messages="errors"
@@ -159,17 +158,6 @@ export default {
     selectLoadingSubAc: false,
     allowedDecimalPlaces: ALLOWED_DECIMALS
   }),
-  // apollo: {
-  //   getAccounts: {
-  //     query: GET_ACCOUNTS,
-  //     variables: {
-  //       acc_type: 1
-  //     },
-  //     result({ data }) {
-  //       this.accounts = data.getAccounts;
-  //     }
-  //   }
-  // },
   methods: {
     getAccCode() {
       if (this.editedItem.acc_code_id) {
@@ -185,6 +173,7 @@ export default {
     },
     submit() {
       this.$refs.observer.validate();
+      this.accounts_child = [];
       this.save();
       this.$refs.observer.reset();
     },

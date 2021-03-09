@@ -3,7 +3,12 @@
     <div>
       <v-sheet class="pa-4 lighten-2 rounded-0" width="250">
         <v-btn block plain @click="addNew" class="primary">
-          Add New Account
+          <span
+            >A<span class="text-lowercase">dd </span>N<span
+              class="text-lowercase"
+              >ew </span
+            >A<span class="text-lowercase">ccount </span></span
+          >
         </v-btn>
       </v-sheet>
       <v-progress-linear

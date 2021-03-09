@@ -212,6 +212,8 @@ export default {
     $route: function(newRoute, oldRoute) {
       if (newRoute.params.vpid == undefined) {
         this.tableLoading = false;
+        this.voucherPostDate = new Date().toISOString().substr(0, 10);
+        this.voucherType = null;
         this.onClear();
       } else {
         getVoucherByGroupId(this);
@@ -244,9 +246,6 @@ export default {
       this.voucherGroup = [];
     },
     onSubmit() {
-      this.voucherGroup.forEach(element => {
-        delete element.acc_code;
-      });
       addUpdateVouchers(this);
     },
     async onDelete() {
@@ -255,6 +254,8 @@ export default {
     editItem(item) {
       this.dialog = true;
       this.editedItem = item;
+      this.editedIndex = this.voucherGroup.indexOf(item);
+      console.log(this.editedIndex, "index");
     },
 
     deleteItem(item) {
@@ -303,7 +304,6 @@ export default {
     },
 
     setAccCode(code) {
-      console.log(code, "asdasdf");
       this.editedItem.acc_code = code;
     }
   }

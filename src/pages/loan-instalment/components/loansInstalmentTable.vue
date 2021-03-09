@@ -28,7 +28,12 @@
                 v-on="on"
                 v-on:click="newLoanIns = true"
               >
-                New Loan Instalment
+                <span
+                  >N<span class="text-lowercase">ew </span>L<span
+                    class="text-lowercase"
+                    >oan </span
+                  >I<span class="text-lowercase">nstalment </span>
+                </span>
               </v-btn>
             </template>
 
@@ -259,7 +264,7 @@
                   <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="blue darken-1" text @click="close">
-                      Cancel
+                      C<span class="text-lowercase">ancel</span>
                     </v-btn>
                     <v-btn
                       color="success"
@@ -268,7 +273,7 @@
                       :loading="submitLoading"
                       :disabled="invalid || viewLoanInstalment"
                     >
-                      Submit
+                      S<span class="text-lowercase">ubmit</span>
                     </v-btn>
                   </v-card-actions>
                 </form>
