@@ -1,7 +1,15 @@
 <template>
   <div class="flex" style="height:100%;">
-    <Tree :parentAccounts="getAccountParents" :loading="loading" />
-    <Form :readOnlySTatus="readOnlySTatus" />
+    <Tree
+      :parentAccounts="getAccountParents"
+      :loading="loading"
+      :getParents="getParents"
+    />
+    <Form
+      :readOnlySTatus="readOnlySTatus"
+      :addInParentArray="addInParentArray"
+      :removeItemFromArray="removeItemFromArray"
+    />
   </div>
 </template>
 
@@ -20,7 +28,8 @@ export default {
     return {
       getAccountParents: [],
       readOnlySTatus: true,
-      loading: false
+      loading: false,
+      newId: null
     };
   },
   methods: {
@@ -33,13 +42,51 @@ export default {
         if (result.errors) {
           throw result.errors[0].message;
         } else {
-          this.getAccountParents = result.data.getAccountParents;
+          // this.getAccountParents = result.data.getAccountParents;
+          this.getAccountParents = result.data.getAccountParents.map(
+            account => {
+              return {
+                ...account,
+                children: []
+              };
+            }
+          );
           this.loading = false;
         }
       } catch (error) {
-        console.log("error in get parents");
         this.loading = false;
       }
+    },
+    addInParentArray(data, editMode) {
+      if (!editMode) {
+        this.getAccountParents.forEach(element => {
+          if (element.id == data.acc_parent) {
+            element.children.push(data);
+          }
+        });
+      } else {
+        this.getAccountParents.forEach(element => {
+          if (element.children) {
+            for (let i = 0; i < element.children.length; i++) {
+              if (element.children[i].id === data.id) {
+                element.children.splice(i, 1, data);
+              }
+            }
+          }
+        });
+        console.log(this.getAccountParents, data);
+      }
+    },
+    removeItemFromArray(ID) {
+      this.getAccountParents.forEach(element => {
+        if (element.children) {
+          for (let i = 0; i < element.children.length; i++) {
+            if (element.children[i].id == ID) {
+              element.children.splice(i, 1);
+            }
+          }
+        }
+      });
     }
   },
   // apollo: {

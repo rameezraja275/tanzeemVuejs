@@ -18,6 +18,9 @@ const actions = {
   },
   changeFocusOnAccInput({ commit }, payload) {
     commit("changeFocusAccCode", payload);
+  },
+  changeChildStatusToFalse({ commit }) {
+    commit("childsChangedFalse", false);
   }
 };
 
@@ -30,6 +33,10 @@ const mutations = {
   },
   changeFocusAccCode: (state, payload) => {
     state.acCodeFocus = payload;
+  },
+  childsChangedFalse: (state, payload) => {
+    state.childsChanged.status = payload;
+    state.childsChanged.parent = null;
   }
 };
 

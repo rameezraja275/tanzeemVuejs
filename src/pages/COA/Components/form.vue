@@ -25,6 +25,7 @@
             :error-messages="errors"
             label="Acc Code"
             required
+            type="number"
           ></v-text-field>
         </validation-provider>
         <validation-provider
@@ -169,6 +170,7 @@ extend("max", {
 });
 
 export default {
+  props: ["addInParentArray", "removeItemFromArray"],
   components: {
     ValidationProvider,
     ValidationObserver,
@@ -264,7 +266,6 @@ export default {
     },
     openDeleteDialog() {
       this.dialogDelete = true;
-      console.log(this.dialogDelete, "model");
     },
     closeDelete() {
       this.dialogDelete = false;
@@ -288,6 +289,10 @@ export default {
       if (!variables.acc_config) {
         variables.acc_config = 0;
       }
+      var test = {
+        ...variables,
+        acc_code: this.acc_code
+      };
       try {
         const result = await this.$apollo.mutate({
           mutation: this.isEditable ? UPDATE_ACCOUNT : ADD_ACCOUNT,
@@ -313,8 +318,16 @@ export default {
           }
           this.snackBarColor = "success";
           this.snackbarModel = true;
+          if (!this.isEditable) {
+            test.id = result.data.addAccount.id;
+          } else {
+            test.id = result.data.updateAccount.id;
+          }
+          if (test.acc_type === GROUP_ACCOUNTS) {
+            test.children = [];
+          }
+          this.addInParentArray(test, this.isEditable);
           this.onClear();
-          this.changeInChildsDetected(variables.acc_parent);
         }
       } catch (e) {
         this.snackBarColor = "red";
@@ -333,6 +346,7 @@ export default {
       this.$refs.observer.reset();
     },
     async onDelete() {
+      var temp = this.id;
       this.deleteBtnLoading = true;
       try {
         const result = await this.$apollo.mutate({
@@ -340,7 +354,6 @@ export default {
           variables: { id: this.id },
           update: cache => {
             try {
-              // get in get account childs query
               const currentData = cache.readQuery({
                 query: GET_ACCOUNTS_CHILDS,
                 variables: { acc_parent: this.accParent }
@@ -417,9 +430,11 @@ export default {
           this.message = "Successfully deleted account";
           this.snackBarColor = "success";
           this.snackbarModel = true;
-          this.onClear();
-          this.closeDelete();
+          // this.changeInChildsDetected(temp);
+          this.removeItemFromArray(temp);
           this.$router.push({ path: `/coa` });
+          this.closeDelete();
+          this.onClear();
         }
       } catch (e) {
         this.message = e;
@@ -445,7 +460,6 @@ export default {
             }
           }
         });
-
         const {
           acc_code,
           acc_name,

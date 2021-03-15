@@ -40,7 +40,7 @@ export const GET_ACCOUNTS_NO_ID = gql`
 `;
 
 export const GET_ACCOUNTS_BY_ID = gql`
-  query getAccountById($id: Int!) {
+  query getAccountById($id: ID!) {
     getAccountById(id: $id) {
       id
       acc_code

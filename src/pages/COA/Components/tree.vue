@@ -46,12 +46,13 @@ export default {
   data: () => ({
     active: [],
     open: [],
-    true: false
+    true: false,
+
+    newArray: []
   }),
   methods: {
-    ...mapActions(["changeFocusOnAccInput"]),
+    ...mapActions(["changeFocusOnAccInput", "changeChildStatusToFalse"]),
     async getChilds(item) {
-      console.log("get childs called");
       const result = await this.$apollo.query({
         query: GET_ACCOUNTS_CHILDS,
         variables: {
@@ -59,7 +60,6 @@ export default {
         }
       });
       const children = result.data.getAccountChilds;
-      console.log(children, "children");
       let childNode;
       const key = item.id;
       const parentNode = this.$refs.treeReference.nodes[key];
@@ -78,6 +78,14 @@ export default {
         this.$router.push({ path: "/coa" });
       }
       this.changeFocusOnAccInput(true);
+    },
+
+    addInParentArray(data) {
+      this.newArray.forEach(element => {
+        if (element.acc_parent == data.acc_parent) {
+          element.children.push(data);
+        }
+      });
     }
   },
   computed: {
@@ -85,27 +93,15 @@ export default {
       childsChanged: state => state.auth_module.childsChanged
     }),
     items() {
-      const newArray = this.parentAccounts.map(account => {
-        return {
-          ...account,
-          children: []
-        };
-      });
-      return newArray;
+      return this.parentAccounts;
     },
     returnChildsChanged() {
       return this.childsChanged.status;
     }
   },
   watch: {
-    returnChildsChanged(val) {
-      if (val) {
-        var temp = {
-          id: this.childsChanged.parent,
-          children: []
-        };
-        this.getChilds(temp);
-      }
+    parentAccounts() {
+      this.items;
     }
   }
 };

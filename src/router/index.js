@@ -123,7 +123,8 @@ const routes = [
         });
       }
     }
-  }
+  },
+  { path: "*", component: () => import("../pages/pageNotFound/") }
 ];
 
 const router = new VueRouter({
