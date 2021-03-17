@@ -1,5 +1,11 @@
 <template>
   <v-card max-width="500" tile>
+    <snack-bar
+      :snackbarModel="snackBarModel"
+      :snackBarColor="snackBarColor"
+      :snackbarText="snackBarText"
+      :closeSnackbar="closeSnackbar"
+    ></snack-bar>
     <v-list shaped>
       <v-subheader>Vouchers</v-subheader>
       <div class="px-5">
@@ -69,13 +75,21 @@
 <script>
 import { mapActions } from "vuex";
 import { getVoucherByDate } from "../actions/index";
+import snackBarComp from "../../../components/snackBar";
 export default {
   props: ["vouchersGroups", "voucherGroupsList"],
+  components: {
+    "snack-bar": snackBarComp
+  },
   data: () => ({
     loading: false,
     selectedItem: 1,
     menu2: false,
-    filterDate: new Date().toISOString().substr(0, 10)
+    filterDate: new Date().toISOString().substr(0, 10),
+
+    snackBarColor: "",
+    snackBarText: "",
+    snackBarModel: false
   }),
   created() {
     getVoucherByDate(this);
@@ -95,6 +109,9 @@ export default {
         this.$router.push({ path: "/voucherpost" });
       }
       this.changeFocusOnDate(true);
+    },
+    closeSnackbar() {
+      this.snackBarModel = false;
     }
   }
 };

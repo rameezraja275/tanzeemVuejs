@@ -5,8 +5,13 @@ import {
   UPDATE_ACCOUNT_HOLDER,
   GET_ACCOUNT_HOLDERS_BY_ID
 } from "../../../graphql/quries";
+import {
+  removeGraphQlTagFromErrors,
+  omitTypeOff
+} from "../../../utils/helpers";
 
 export async function fetchAccountHolders(vueObj) {
+  vueObj.slctLoadingOnAcHolders = true;
   vueObj.tableLoading = true;
   try {
     const result = await vueObj.$apollo.query({
@@ -19,9 +24,13 @@ export async function fetchAccountHolders(vueObj) {
       vueObj.accountHoldersData = result.data.getAccountHolders;
     }
   } catch (e) {
-    vueObj.message = e;
+    var temp = e.toString();
+    vueObj.snackBarText = temp;
+    vueObj.snackBarColor = "red";
+    vueObj.snackBarModel = true;
   }
   vueObj.tableLoading = false;
+  vueObj.slctLoadingOnAcHolders = false;
 }
 
 export async function newAccountHolder(vueObj) {
@@ -63,9 +72,9 @@ export async function newAccountHolder(vueObj) {
   } catch (e) {
     vueObj.message = e;
     vueObj.snackBarColor = "red";
-    var error = e.toString();
-    error = error.replace("Error: GraphQL error: ", "");
-    vueObj.snackBarText = error;
+    // var error = e.toString();
+    // error = error.replace("Error: GraphQL error: ", "");
+    vueObj.snackBarText = removeGraphQlTagFromErrors(e);
   }
   vueObj.btnLoader = false;
   vueObj.snackBarModel = true;
@@ -108,9 +117,9 @@ export async function deleteAccountHolder(vueObj, deleteIndex) {
   } catch (e) {
     vueObj.message = e;
     vueObj.snackBarColor = "red";
-    var error = e.toString();
-    error = error.replace("Error: GraphQL error: ", "");
-    vueObj.snackBarText = error;
+    // var error = e.toString();
+    // error = error.replace("Error: GraphQL error: ", "");
+    vueObj.snackBarText = removeGraphQlTagFromErrors(e);
   }
   vueObj.snackBarModel = true;
   vueObj.tableLoading = false;
@@ -153,11 +162,10 @@ export async function updateAccountHolder(vueObj, editedIndex) {
   } catch (e) {
     vueObj.message = e;
     vueObj.snackBarColor = "red";
-    var error = e.toString();
-    error = error.replace("Error: GraphQL error: ", "");
-    vueObj.snackBarText = error;
+    // var error = e.toString();
+    // error = error.replace("Error: GraphQL error: ", "");
+    vueObj.snackBarText = removeGraphQlTagFromErrors(e);
   }
-
   vueObj.snackBarModel = true;
   vueObj.btnLoader = false;
 }
@@ -177,7 +185,7 @@ export async function getAccountHolderById(vueObj, itemID) {
     if (result.errors) {
       throw result.errors[0].message;
     } else {
-      vueObj.editAccountDetails = result.data.getAccountHolderById;
+      vueObj.editAccountDetails = omitTypeOff(result.data.getAccountHolderById);
       vueObj.dialogPopUp = true;
     }
   } catch (e) {

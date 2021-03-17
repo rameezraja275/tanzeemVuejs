@@ -8,7 +8,7 @@ import {
   GET_LOAN_INSTALMENTS_BY_ID,
   UPDATE_LOAN_INSTALMENT
 } from "../../../graphql/quries";
-// import { omitTypeOff } from "../../../utils/helpers";
+import { removeGraphQlTagFromErrors } from "../../../utils/helpers";
 import { GROUP_ACCOUNTS } from "../../../utils/constants";
 
 export async function fetchAccounts(vueObj) {
@@ -107,9 +107,9 @@ export async function addNewLoanInstalment(vueObj) {
   } catch (e) {
     vueObj.message = e;
     vueObj.snackBarColor = "red";
-    var error = e.toString();
-    error = error.replace("Error: GraphQL error: ", "");
-    vueObj.snackbarText = error;
+    // var error = e.toString();
+    // error = error.replace("Error: GraphQL error: ", "");
+    vueObj.snackbarText = removeGraphQlTagFromErrors(e);
     vueObj.snackbarModel = true;
   }
 
@@ -192,9 +192,9 @@ export async function deleteLoanInstalment(vueObj, ID) {
   } catch (e) {
     vueObj.message = e;
     vueObj.snackBarColor = "red";
-    var error = e.toString();
-    error = error.replace("Error: GraphQL error: ", "");
-    vueObj.snackbarText = error;
+    // var error = e.toString();
+    // error = error.replace("Error: GraphQL error: ", "");
+    vueObj.snackbarText = removeGraphQlTagFromErrors(e);
     vueObj.snackbarModel = true;
   }
   vueObj.tableLoading = false;
@@ -270,9 +270,9 @@ export async function updateLoanInstalment(vueObj) {
   } catch (e) {
     vueObj.message = e;
     vueObj.snackBarColor = "red";
-    var error = e.toString();
-    error = error.replace("Error: GraphQL error: ", "");
-    vueObj.snackbarText = error;
+    // var error = e.toString();
+    // error = error.replace("Error: GraphQL error: ", "");
+    vueObj.snackbarText = removeGraphQlTagFromErrors(e);
     vueObj.snackbarModel = true;
   }
   vueObj.submitLoading = false;

@@ -39,7 +39,7 @@
 
 <script>
 import { GET_ACCOUNTS_CHILDS } from "../../../graphql/quries";
-import { mapActions, mapState } from "vuex";
+import { mapActions } from "vuex";
 
 export default {
   props: ["parentAccounts", "loading"],
@@ -51,7 +51,7 @@ export default {
     newArray: []
   }),
   methods: {
-    ...mapActions(["changeFocusOnAccInput", "changeChildStatusToFalse"]),
+    ...mapActions(["changeFocusOnAccInput"]),
     async getChilds(item) {
       const result = await this.$apollo.query({
         query: GET_ACCOUNTS_CHILDS,
@@ -89,18 +89,13 @@ export default {
     }
   },
   computed: {
-    ...mapState({
-      childsChanged: state => state.auth_module.childsChanged
-    }),
     items() {
       return this.parentAccounts;
-    },
-    returnChildsChanged() {
-      return this.childsChanged.status;
     }
   },
   watch: {
     parentAccounts() {
+      console.log(this.parentAccounts, "parent accounts");
       this.items;
     }
   }

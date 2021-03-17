@@ -90,6 +90,7 @@
 <script>
 import { LOGIN } from "../../graphql/quries";
 import localStorage from "../../utils/localStorageService";
+import removeGraphQlTagFromErrors from "../../utils/helpers";
 import snackbar from "../../components/snackBar";
 const localStorageService = localStorage.getService();
 
@@ -129,9 +130,9 @@ export default {
     },
     receivedError(error) {
       this.snackBarColor = "red";
-      var newText = error.toString();
-      newText = newText.replace("Error: GraphQL error: ", "");
-      this.snackBarText = newText;
+      // var newText = error.toString();
+      // newText = newText.replace("Error: GraphQL error: ", "");
+      this.snackBarText = removeGraphQlTagFromErrors(error);
       this.snackBarModel = true;
     },
     closeSnackbar() {

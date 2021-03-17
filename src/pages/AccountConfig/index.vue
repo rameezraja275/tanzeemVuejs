@@ -11,12 +11,11 @@
       :headers="headers"
       :loading="tableLoading"
       :items="accountHoldersData"
-      sort-by="calories"
       class="elevation-1"
     >
       <template v-slot:top>
         <v-toolbar flat>
-          <v-toolbar-title>Account Holders</v-toolbar-title>
+          <v-toolbar-title>A/C Holders</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
           <v-btn color="primary" dark class="mb-2" @click="newUser()">
@@ -61,6 +60,8 @@
                   :disableAndReadonly="disableAndReadonly"
                   :editedIndex="editedIndex"
                   :updateList="updateList"
+                  :clearEditAccObj="clearEditAccObj"
+                  :slctLoadingOnAcHolders="slctLoadingOnAcHolders"
                 ></pop-up>
               </v-dialog>
             </v-row>
@@ -103,16 +104,16 @@ export default {
     dialogDelete: false,
     headers: [
       {
-        text: "Account Holders Name",
+        text: "A/C Holders Name",
         align: "start",
         sortable: false,
         value: "first_name",
         width: 400
       },
-      { text: "Cellphone Number", value: "cell", sortable: false },
+      { text: "Cellphone No", value: "cell", sortable: false },
       { text: "Gender", value: "gender", sortable: false },
       { text: "National Id", value: "cnic", sortable: false },
-      { text: "Account Id", value: "id", sortable: false },
+      { text: "A/C Id", value: "id", sortable: false },
       { text: "Actions", value: "actions", sortable: false }
     ],
     accountHoldersData: [],
@@ -133,7 +134,10 @@ export default {
     snackBarText: null,
     snackBarColor: null,
 
-    tableLoading: false
+    tableLoading: false,
+
+    // for autocomplete loader
+    slctLoadingOnAcHolders: false
   }),
 
   computed: {
@@ -210,6 +214,12 @@ export default {
 
     updateList(editedIndex, data) {
       this.$set(this.accountHoldersData, editedIndex, data);
+    },
+
+    clearEditAccObj() {
+      this.editAccountDetails = {
+        guarantors: []
+      };
     }
   }
 };

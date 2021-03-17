@@ -525,7 +525,7 @@ export default {
     headers: [
       { text: "Issue Date", value: "issue_date", sortable: false },
       {
-        text: "Account Name",
+        text: "A/C Name",
         value: "loan_acc_name",
         sortable: false
       },

@@ -7,7 +7,10 @@ import {
   GET_ACCOUNTS_CHILDS,
   GET_ACCOUNTS
 } from "../../../graphql/quries";
-import { omitTypeOff } from "../../../utils/helpers";
+import {
+  omitTypeOff,
+  removeGraphQlTagFromErrors
+} from "../../../utils/helpers";
 import { GROUP_ACCOUNTS } from "../../../utils/constants";
 
 export async function addUpdateVouchers(vueObj) {
@@ -86,11 +89,10 @@ export async function addUpdateVouchers(vueObj) {
         }
       }));
   } catch (e) {
-    vueObj.message = e;
     vueObj.snackBarColor = "red";
-    var newText = e.toString();
-    newText = newText.replace("Error: GraphQL error: ", "");
-    vueObj.message = newText;
+    // var newText = e.toString();
+    // newText = newText.replace("Error: GraphQL error: ", "");
+    vueObj.message = removeGraphQlTagFromErrors(e);
     vueObj.snackbar = true;
   }
   vueObj.mutationLoading = false;
@@ -144,11 +146,10 @@ export async function deleteVouchers(vueObj) {
       vueObj.closeDelete();
     }
   } catch (e) {
-    vueObj.message = e;
     vueObj.snackBarColor = "red";
-    var newText = e.toString();
-    newText = newText.replace("Error: GraphQL error: ", "");
-    vueObj.message = newText;
+    // var newText = e.toString();
+    // newText = newText.replace("Error: GraphQL error: ", "");
+    vueObj.message = removeGraphQlTagFromErrors(e);
     vueObj.snackbar = true;
   }
   vueObj.delLoading = false;
@@ -198,6 +199,10 @@ export async function getVoucherByDate(vueObj) {
     }
   } catch (e) {
     vueObj.message = e;
+    var temp = e.toString();
+    vueObj.snackBarColor = "red";
+    vueObj.snackBarText = temp;
+    vueObj.snackBarModel = true;
     vueObj.loading = false;
   }
 }

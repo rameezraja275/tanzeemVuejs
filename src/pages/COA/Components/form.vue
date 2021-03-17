@@ -55,6 +55,7 @@
             required
             :item-text="accNameAccCode"
             item-value="id"
+            :loading="slctLoadingAcParents === 1"
           ></v-autocomplete>
         </validation-provider>
         <p>Account Type</p>
@@ -76,6 +77,7 @@
           data-vv-name="select"
           item-text="label"
           item-value="id"
+          :loading="slctLoadingCnfigAC === 1"
         ></v-select>
         <div class="text-right">
           <v-btn
@@ -89,14 +91,13 @@
           >
             Save
           </v-btn>
-          <v-btn class="mr-4" @click="onClear" elevation="5" medium>
+          <!-- <v-btn class="mr-4" @click="onClear" elevation="5" medium>
             Clear
-          </v-btn>
+          </v-btn> -->
           <v-btn
             v-if="isEditable"
             @click="openDeleteDialog"
             :disabled="disableDeleteNdSave"
-            :loading="deleteBtnLoading"
             color="error"
             elevation="5"
             medium
@@ -118,7 +119,7 @@
                 color="blue darken-1"
                 text
                 @click="onDelete"
-                :loading="mutationLoading"
+                :loading="deleteBtnLoading"
                 >OK</v-btn
               >
               <v-spacer></v-spacer>
@@ -155,6 +156,7 @@ import {
   GROUP_ACCOUNTS,
   DETAIL_ACCOUNTS
 } from "../../../utils/constants";
+import { removeGraphQlTagFromErrors } from "../../../utils/helpers";
 import snackBarComp from "../../../components/snackBar";
 
 setInteractionMode("eager");
@@ -199,7 +201,11 @@ export default {
 
     dialogDelete: false,
 
-    isMainAccount: false
+    isMainAccount: false,
+
+    // for autocomplete loader
+    slctLoadingAcParents: 0,
+    slctLoadingCnfigAC: 0
   }),
   apollo: {
     getAccounts: {
@@ -209,7 +215,19 @@ export default {
       },
       result({ data }) {
         this.groupAccounts = data.getAccounts;
-      }
+      },
+      error(error) {
+        var temp = error.toString();
+        // if(temp.includes("Network") && temp.includes("error")) {
+        //   this.message = temp.substring(7, 20);
+        //   this.snackBarColor = "red";
+        //   this.snackbarModel = true
+        // }
+        this.message = temp;
+        this.snackBarColor = "red";
+        this.snackbarModel = true;
+      },
+      loadingKey: "slctLoadingAcParents"
     },
     getAllAccounts: {
       query: GET_ACCOUNTS_NO_ID,
@@ -222,7 +240,8 @@ export default {
       query: GET_ACCOUNTS_CONFIG,
       result({ data }) {
         this.configAccounts = data.getAccountConfig;
-      }
+      },
+      loadingKey: "slctLoadingCnfigAC"
     }
   },
   computed: {
@@ -260,7 +279,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["changeInChildsDetected", "changeFocusOnAccInput"]),
+    ...mapActions(["changeFocusOnAccInput"]),
     accCodeOutOfFocus() {
       this.changeFocusOnAccInput(false);
     },
@@ -289,7 +308,7 @@ export default {
       if (!variables.acc_config) {
         variables.acc_config = 0;
       }
-      var test = {
+      var tempObj = {
         ...variables,
         acc_code: this.acc_code
       };
@@ -319,27 +338,30 @@ export default {
           this.snackBarColor = "success";
           this.snackbarModel = true;
           if (!this.isEditable) {
-            test.id = result.data.addAccount.id;
+            tempObj.id = result.data.addAccount.id;
           } else {
-            test.id = result.data.updateAccount.id;
+            tempObj.id = result.data.updateAccount.id;
           }
-          if (test.acc_type === GROUP_ACCOUNTS) {
-            test.children = [];
+          if (tempObj.acc_type === GROUP_ACCOUNTS) {
+            tempObj.children = [];
           }
-          this.addInParentArray(test, this.isEditable);
+          this.addInParentArray(tempObj, this.isEditable);
+          this.$router.push({ path: `/coa` });
           this.onClear();
         }
       } catch (e) {
         this.snackBarColor = "red";
         var newText = e.toString();
         newText = newText.replace("Error: GraphQL error: ", "");
-        this.message = newText;
+        this.message = removeGraphQlTagFromErrors(e);
         this.snackbarModel = true;
       }
       this.mutationLoading = false;
     },
     onClear() {
-      this.acc_code = "";
+      if (this.$route.params.acccode) {
+        this.acc_code = "";
+      }
       this.accountName = "";
       this.accParent = null;
       this.accType = GROUP_ACCOUNTS;
@@ -430,14 +452,13 @@ export default {
           this.message = "Successfully deleted account";
           this.snackBarColor = "success";
           this.snackbarModel = true;
-          // this.changeInChildsDetected(temp);
           this.removeItemFromArray(temp);
           this.$router.push({ path: `/coa` });
           this.closeDelete();
           this.onClear();
         }
       } catch (e) {
-        this.message = e;
+        this.message = removeGraphQlTagFromErrors(e);
         this.snackBarColor = "red";
         this.snackbarModel = true;
       }

@@ -7,7 +7,10 @@ import {
   GET_ACCOUNTS,
   GET_ACCOUNTS_CHILDS
 } from "../../../graphql/quries";
-import { omitTypeOff } from "../../../utils/helpers";
+import {
+  omitTypeOff,
+  removeGraphQlTagFromErrors
+} from "../../../utils/helpers";
 import { GROUP_ACCOUNTS } from "../../../utils/constants";
 
 export async function fetchLoanIssues(vueObj) {
@@ -101,9 +104,9 @@ export async function addNewLoanIssue(vueObj) {
   } catch (e) {
     vueObj.message = e;
     vueObj.snackBarColor = "red";
-    var error = e.toString();
-    error = error.replace("Error: GraphQL error: ", "");
-    snackBarTxt = error;
+    // var error = e.toString();
+    // error = error.replace("Error: GraphQL error: ", "");
+    snackBarTxt = removeGraphQlTagFromErrors(e);
   }
   vueObj.submitLoading = false;
   vueObj.snackBarText = snackBarTxt;
@@ -166,9 +169,9 @@ export async function updateLoanIssue(vueObj, editedIndex) {
   } catch (e) {
     vueObj.message = e;
     vueObj.snackBarColor = "red";
-    var error = e.toString();
-    error = error.replace("Error: GraphQL error: ", "");
-    snackBarTxt = error;
+    // var error = e.toString();
+    // error = error.replace("Error: GraphQL error: ", "");
+    snackBarTxt = removeGraphQlTagFromErrors(e);
   }
   vueObj.submitLoading = false;
   vueObj.snackBarText = snackBarTxt;
@@ -216,9 +219,9 @@ export async function deleteLoanIssue(vueObj, editedIndex) {
   } catch (e) {
     vueObj.message = e;
     vueObj.snackBarColor = "red";
-    var error = e.toString();
-    error = error.replace("Error: GraphQL error: ", "");
-    vueObj.snackBarText = error;
+    // var error = e.toString();
+    // error = error.replace("Error: GraphQL error: ", "");
+    vueObj.snackBarText = removeGraphQlTagFromErrors(e);
     vueObj.snackBarModel = true;
   }
   vueObj.loaderOn = false;
