@@ -21,14 +21,7 @@
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="900px" persistent>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                color="primary"
-                dark
-                class="mb-2"
-                v-bind="attrs"
-                v-on="on"
-                v-on:click="newLoanRequired"
-              >
+              <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
                 <span
                   >N<span class="text-lowercase">ew </span>L<span
                     class="text-lowercase"
@@ -41,7 +34,7 @@
             <!-- FORRMMM -->
             <v-card>
               <validation-observer ref="observer" v-slot="{ invalid }">
-                <form @submit.prevent="submit">
+                <form @submit.prevent="submit" autocomplete="off">
                   <v-card-title>
                     <span>{{ formTitle }}</span>
                   </v-card-title>
@@ -78,7 +71,7 @@
                               </template>
                               <v-date-picker
                                 v-model="dataFromInputs.issue_date"
-                                :max="getEndDate"
+                                :max="new Date().toISOString().substr(0, 10)"
                                 @input="menu = false"
                               ></v-date-picker>
                             </v-menu>
@@ -130,6 +123,10 @@
                                 label="Transfer A/C Code"
                                 :required="dataFromInputs.loan_type == 2"
                                 :error-messages="errors"
+                                :loading="
+                                  dataFromInputs.loan_type == 2 &&
+                                    slctTrnsfrAcCodeLoader
+                                "
                               ></v-autocomplete>
                             </validation-provider>
                           </v-col>
@@ -153,6 +150,10 @@
                                 label="Transfer A/C No"
                                 :required="dataFromInputs.loan_type == 2"
                                 :error-messages="errors"
+                                :loading="
+                                  dataFromInputs.loan_type == 2 &&
+                                    slctTrnsfrAccNoIdLoader
+                                "
                               ></v-autocomplete>
                             </validation-provider>
                           </v-col>
@@ -174,6 +175,7 @@
                                 label="Loan A/C No"
                                 required
                                 :error-messages="errors"
+                                :loading="slctLoanAcNoLoader"
                               ></v-autocomplete>
                             </validation-provider>
                           </v-col>
@@ -292,9 +294,10 @@
                                 :readonly="disableAndReadonly"
                                 :item-text="AcNumIdNdName"
                                 item-value="id"
-                                label="Account Number ID"
+                                label="A/C No ID"
                                 required
                                 :error-messages="errors"
+                                :loading="slctLoadingOnAcHolders"
                               ></v-autocomplete>
                             </validation-provider>
                           </v-col>
@@ -348,7 +351,7 @@
                           </v-col>
                         </v-row>
 
-                        <span>Please enter second guarantor info</span>
+                        <span>Please enter second guarantor details</span>
                         <v-row>
                           <v-col cols="12" sm="6" md="4">
                             <validation-provider
@@ -362,9 +365,10 @@
                                 :readonly="disableAndReadonly"
                                 :item-text="AcNumIdNdName"
                                 item-value="id"
-                                label="Account Number ID"
+                                label="A/C No ID"
                                 required
                                 :error-messages="errors"
+                                :loading="slctLoadingOnAcHolders"
                               ></v-autocomplete>
                             </validation-provider>
                           </v-col>
@@ -419,27 +423,20 @@
                       C<span class="text-lowercase">ancel</span>
                     </v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn
-                      :disabled="step === 1"
-                      text
-                      @click="
-                        step--;
-                        onNextPage = false;
-                      "
-                    >
+                    <v-btn :disabled="step === 1" text @click="step--">
                       B<span class="text-lowercase">ack</span>
                     </v-btn>
                     <v-btn
                       :disabled="step === 2"
                       color="primary"
                       depressed
-                      @click="nextPage"
+                      @click="step++"
                     >
                       N<span class="text-lowercase">ext</span>
                     </v-btn>
                     <v-btn
                       color="success"
-                      v-if="onNextPage"
+                      v-if="step === 2"
                       @click="submit"
                       depressed
                       :disabled="disableSubmitBtn(invalid)"
@@ -539,46 +536,47 @@ export default {
     ],
     loanAccountDetails: [],
     editedIndex: -1,
-    editedItem: {
-      id: "",
-      issue_date: "",
-      loan_type: "",
-      transfer_acc_code_id: "",
-      transfer_acc_no_id: "",
-      loan_acc_no_id: "",
-      loan_amount: "",
-      markup_percentage: "",
-      issue_duration: "",
-      maturity_date: "",
-      narration: "",
-      createdAt: "",
-      updatedAt: ""
-    },
-    defaultItem: {
-      id: "",
-      issue_date: "",
-      loan_type: "",
-      transfer_acc_code_id: "",
-      transfer_acc_no_id: "",
-      loan_acc_no_id: "",
-      loan_amount: "",
-      markup_percentage: "",
-      issue_duration: "",
-      maturity_date: "",
-      narration: "",
-      createdAt: "",
-      updatedAt: ""
-    },
+    // editedItem: {
+    //   id: "",
+    //   issue_date: "",
+    //   loan_type: "",
+    //   transfer_acc_code_id: "",
+    //   transfer_acc_no_id: "",
+    //   loan_acc_no_id: "",
+    //   loan_amount: "",
+    //   markup_percentage: "",
+    //   issue_duration: "",
+    //   maturity_date: "",
+    //   narration: "",
+    //   createdAt: "",
+    //   updatedAt: ""
+    // },
+    // defaultItem: {
+    //   id: "",
+    //   issue_date: "",
+    //   loan_type: "",
+    //   transfer_acc_code_id: "",
+    //   transfer_acc_no_id: "",
+    //   loan_acc_no_id: "",
+    //   loan_amount: "",
+    //   markup_percentage: "",
+    //   issue_duration: "",
+    //   maturity_date: "",
+    //   narration: "",
+    //   createdAt: "",
+    //   updatedAt: ""
+    // },
 
     // for form steps
     step: 1,
 
     // delete Id
-    deleteId: null,
-    editId: null,
+    selectedItemId: null,
+    // deleteId: null,
+    // editId: null,
 
     // new loan
-    newLoan: false,
+    // newLoan: false,
 
     // account data
     dataFromInputs: {
@@ -594,9 +592,6 @@ export default {
 
     // account holders data for guarantors
     accountHoldersData: null,
-
-    // for validation on next page
-    onNextPage: false,
 
     // get loan account codes
     loanAccounts: null,
@@ -615,10 +610,8 @@ export default {
     // show complete info
     viewLoanOpen: false,
 
-    newTest: new Date(),
-
     // banks
-    bankAccounts: null,
+    // bankAccounts: null,
 
     // all group accounts
     allGroupAccounts: null,
@@ -626,18 +619,24 @@ export default {
     // account childs
     childsAfterSelection: null,
 
-    accountName: ""
+    accountName: "",
+
+    // loader on autocomplete
+    slctLoanAcNoLoader: false,
+    slctTrnsfrAcCodeLoader: false,
+    slctTrnsfrAccNoIdLoader: false,
+    slctLoadingOnAcHolders: false
   }),
 
   computed: {
     submitDisabled() {
-      var temp = null;
-      if (this.onNextPage && !this.viewLoanOpen) {
-        temp = false;
-      } else {
-        temp = true;
-      }
-      return temp;
+      // var temp = null;
+      // if (this.step === 2 && !this.viewLoanOpen) {
+      //   temp = false;
+      // } else {
+      //   temp = true;
+      // }
+      return this.step === 2 && !this.viewLoanOpen ? false : true;
     },
     getChildsOfSelected() {
       if (this.dataFromInputs.transfer_acc_code_id) {
@@ -699,36 +698,35 @@ export default {
       return temp;
     },
     changeInDates() {
-      var temp = null;
-      if (
-        this.dataFromInputs.issue_date !== null &&
-        this.dataFromInputs.issue_date !== "" &&
-        this.dataFromInputs.issue_date !== undefined &&
-        this.dataFromInputs.issue_duration !== null &&
-        this.dataFromInputs.issue_duration !== "" &&
-        this.dataFromInputs.issue_duration !== undefined
-      ) {
-        temp = true;
-      } else {
-        temp = false;
-      }
-      return temp;
+      // var temp = null;
+      // if ( this.dataFromInputs.issue_date && this.dataFromInputs.issue_duration ) {
+      //   temp = true;
+      // } else {
+      //   temp = false;
+      // }
+      return this.dataFromInputs.issue_date &&
+        this.dataFromInputs.issue_duration
+        ? true
+        : false;
     },
-    getEndDate() {
-      var date = new Date();
-      var dd = date.getDate();
-      var mm = date.getMonth() + 1;
-      var yy = date.getFullYear();
-      var finalDate = null;
-      if (mm == 0) {
-        mm = 12;
-      }
-      if (mm < 10) {
-        finalDate = `${yy}-0${mm}-${dd}`;
-      } else {
-        finalDate = `${yy}-${mm}-${dd}`;
-      }
-      return finalDate;
+    // getEndDate() {
+    //   var date = new Date();
+    //   var dd = date.getDate();
+    //   var mm = date.getMonth() + 1;
+    //   var yy = date.getFullYear();
+    //   var finalDate = null;
+    //   if (mm == 0) {
+    //     mm = 12;
+    //   }
+    //   if (mm < 10) {
+    //     finalDate = `${yy}-0${mm}-${dd}`;
+    //   } else {
+    //     finalDate = `${yy}-${mm}-${dd}`;
+    //   }
+    //   return finalDate;
+    // }
+    returnLoanType() {
+      return this.dataFromInputs.loan_type;
     }
   },
 
@@ -743,6 +741,14 @@ export default {
       if (val === true) {
         this.maturityDate();
       }
+    },
+    returnLoanType(val) {
+      if (val === 1) {
+        this.slctTrnsfrAcCodeLoader = false;
+        this.slctTrnsfrAccNoIdLoader = false;
+        this.dataFromInputs.transfer_acc_code_id = 0;
+        this.dataFromInputs.transfer_acc_no_id = 0;
+      }
     }
   },
 
@@ -756,7 +762,7 @@ export default {
         temp = true;
       } else {
         temp = false;
-        if (!this.onNextPage) {
+        if (!this.step === 2) {
           temp = true;
         }
         if (this.viewLoanOpen) {
@@ -800,14 +806,14 @@ export default {
     },
 
     editItem(item) {
-      this.editId = item.id;
+      this.selectedItemId = item.id;
       this.editedIndex = this.loanAccountDetails.indexOf(item);
       this.editedItem = Object.assign({}, item);
       fetchLoanIssuesById(this, item.id);
     },
 
     deleteItem(item) {
-      this.deleteId = item.id;
+      this.selectedItemId = item.id;
       this.editedIndex = this.loanAccountDetails.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialogDelete = true;
@@ -824,7 +830,7 @@ export default {
       this.viewLoanOpen = false;
       this.disableAndReadonly = false;
       this.clear();
-      this.newLoan = false;
+      // this.newLoan = false;
       this.step = 1;
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
@@ -843,58 +849,29 @@ export default {
     submit() {
       this.dataFromInputs.guarantor = [];
       this.dataFromInputs.guarantor.push(this.guarantor1, this.guarantor2);
-      if (this.newLoan === true) {
+      if (this.formTitle === "New Loan") {
         addNewLoanIssue(this);
       } else {
         updateLoanIssue(this, this.editedIndex);
       }
     },
 
-    newLoanRequired() {
-      this.newLoan = true;
-      this.onNextPage = false;
-    },
-
-    nextPage() {
-      this.step++;
-      this.onNextPage = true;
-    },
+    // newLoanRequired() {
+    //   this.newLoan = true;
+    // },
 
     clear() {
       this.dataFromInputs = {
-        id: "",
-        issue_date: "",
-        loan_type: null,
-        transfer_acc_code_id: "",
-        transfer_acc_no_id: "",
-        loan_acc_no_id: "",
-        loan_amount: "",
-        markup_percentage: "",
-        issue_duration: "",
-        maturity_date: "",
-        narration: "",
-        createdAt: "",
-        updatedAt: ""
+        loan_type: 1
       };
-      this.guarantor1 = {
-        acc_no_id: null,
-        guarantor_name: "",
-        cnic: "",
-        contact: ""
-      };
-      this.guarantor2 = {
-        acc_no_id: null,
-        guarantor_name: "",
-        cnic: "",
-        contact: ""
-      };
+      this.guarantor1 = {};
+      this.guarantor2 = {};
       this.$refs.observer.reset();
     },
 
     showCompleteInfo(item) {
       this.viewLoanOpen = true;
       fetchLoanIssuesById(this, item.id);
-      this.onNextPage = false;
       this.disableAndReadonly = true;
     },
 

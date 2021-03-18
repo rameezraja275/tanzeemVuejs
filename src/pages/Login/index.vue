@@ -90,7 +90,7 @@
 <script>
 import { LOGIN } from "../../graphql/quries";
 import localStorage from "../../utils/localStorageService";
-import removeGraphQlTagFromErrors from "../../utils/helpers";
+import { removeGraphQlTagFromErrors } from "../../utils/helpers";
 import snackbar from "../../components/snackBar";
 const localStorageService = localStorage.getService();
 

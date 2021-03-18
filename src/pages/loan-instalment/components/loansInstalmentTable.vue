@@ -20,14 +20,7 @@
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="1000px" persistent>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                color="primary"
-                dark
-                class="mb-2"
-                v-bind="attrs"
-                v-on="on"
-                v-on:click="newLoanIns = true"
-              >
+              <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
                 <span
                   >N<span class="text-lowercase">ew </span>L<span
                     class="text-lowercase"
@@ -39,7 +32,7 @@
 
             <v-card>
               <validation-observer ref="observer" v-slot="{ invalid }">
-                <form @submit.prevent="submit">
+                <form @submit.prevent="submit" autocomplete="off">
                   <v-card-title>
                     <span class="headline">{{ formTitle }}</span>
                   </v-card-title>
@@ -77,6 +70,7 @@
                             </template>
                             <v-date-picker
                               v-model="dataFromInputs.deposit_date"
+                              :max="new Date().toISOString().substr(0, 10)"
                               @input="menu = false"
                             ></v-date-picker>
                           </v-menu>
@@ -127,6 +121,11 @@
                               label="Transfer A/C Code"
                               :required="dataFromInputs.deposit_type == 2"
                               :error-messages="errors"
+                              :loading="
+                                dataFromInputs.deposit_type == 2
+                                  ? slctTrnsfrAcCodeLoader
+                                  : false
+                              "
                             ></v-autocomplete>
                           </validation-provider>
                         </v-col>
@@ -150,6 +149,11 @@
                               :required="dataFromInputs.deposit_type == 2"
                               :error-messages="errors"
                               label="Transfer A/C No"
+                              :loading="
+                                dataFromInputs.deposit_type == 2
+                                  ? slctTrnsfrAcNoIdLoader
+                                  : false
+                              "
                             ></v-autocomplete>
                           </validation-provider>
                         </v-col>
@@ -171,6 +175,7 @@
                               label="Loan A/C No"
                               required
                               :error-messages="errors"
+                              :loading="slctloanAcNoIdLoader"
                             ></v-autocomplete>
                           </validation-provider>
                         </v-col>
@@ -199,6 +204,7 @@
                             label="Markup Days"
                             type="number"
                             readonly
+                            :loading="markUpDetailsLoading"
                           ></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="6" md="4">
@@ -207,6 +213,7 @@
                             label="Markup Amount"
                             type="number"
                             readonly
+                            :loading="markUpDetailsLoading"
                           ></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="6" md="4">
@@ -215,6 +222,7 @@
                             label="Markup Receiveable"
                             type="number"
                             readonly
+                            :loading="markUpDetailsLoading"
                           ></v-text-field>
                         </v-col>
                       </v-row>
@@ -226,6 +234,7 @@
                             label="Penalty Days"
                             type="number"
                             readonly
+                            :loading="markUpDetailsLoading"
                           ></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="6" md="4">
@@ -234,6 +243,7 @@
                             label="Penalty Charge"
                             type="number"
                             readonly
+                            :loading="markUpDetailsLoading"
                           ></v-text-field>
                         </v-col>
                       </v-row>
@@ -245,6 +255,7 @@
                             label="Principal"
                             type="number"
                             readonly
+                            :loading="markUpDetailsLoading"
                           ></v-text-field>
                         </v-col>
                       </v-row>
@@ -256,6 +267,7 @@
                           :readonly="disableAndReadonly"
                           rows="1"
                           class="mx-3"
+                          :loading="markUpDetailsLoading"
                         ></v-textarea>
                       </v-row>
                     </v-container>
@@ -362,20 +374,14 @@ export default {
     ],
     loanInstalments: [],
     editedIndex: -1,
-    editedItem: {
-      name: "",
-      calories: 0,
-      fat: 0,
-      carbs: 0,
-      protein: 0
-    },
-    defaultItem: {
-      name: "",
-      calories: 0,
-      fat: 0,
-      carbs: 0,
-      protein: 0
-    },
+    // editedItem: {},
+    // defaultItem: {
+    //   name: "",
+    //   calories: 0,
+    //   fat: 0,
+    //   carbs: 0,
+    //   protein: 0
+    // },
 
     dataFromInputs: {
       deposit_type: 1
@@ -392,7 +398,7 @@ export default {
     loanAccounts: null,
 
     // readonly section of form
-    receivedInsData: null,
+    // receivedInsData: null,
 
     markupDetails: null,
 
@@ -406,17 +412,26 @@ export default {
     // submit btn loading
     submitLoading: false,
 
-    // for delete
-    deleteId: null,
+    // for delete and edit
+    // deleteId: null,
+    // editId: null,
+    currentItemId: null,
 
     // loader for table
     tableLoading: false,
 
     accountName: "",
 
-    newLoanIns: false,
-    editId: null,
-    viewLoanInstalment: false
+    // newLoanIns: false,
+    viewLoanInstalment: false,
+
+    // loader on text fields
+    markUpDetailsLoading: false,
+
+    // loader on autocompletes
+    slctTrnsfrAcCodeLoader: false,
+    slctTrnsfrAcNoIdLoader: false,
+    slctloanAcNoIdLoader: false
   }),
 
   computed: {
@@ -511,38 +526,37 @@ export default {
     },
     editItem(item) {
       this.editedIndex = this.loanInstalments.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.editId = item.id;
+      // this.editedItem = Object.assign({}, item);
+      this.currentItemId = item.id;
       getLoanInstalmentById(this, item);
     },
     showCompleteInfo(item) {
       this.viewLoanInstalment = true;
       this.editedIndex = this.loanInstalments.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.editId = item.id;
+      // this.editedItem = Object.assign({}, item);
+      this.currentItemId = item.id;
       getLoanInstalmentById(this, item);
     },
 
     deleteItem(item) {
       this.editedIndex = this.loanInstalments.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.deleteId = item.id;
+      // this.editedItem = Object.assign({}, item);
+      this.currentItemId = item.id;
       this.dialogDelete = true;
     },
 
     deleteItemConfirm() {
-      this.loanInstalments.splice(this.editedIndex, 1);
-      deleteLoanInstalment(this, this.deleteId);
+      // this.loanInstalments.splice(this.editedIndex, 1);
+      deleteLoanInstalment(this, this.currentItemId);
       this.closeDelete();
     },
 
     close() {
       this.dialog = false;
       this.viewLoanInstalment = false;
-      this.newLoanIns = false;
       this.clear();
       this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
+        // this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
       });
     },
@@ -550,13 +564,13 @@ export default {
     closeDelete() {
       this.dialogDelete = false;
       this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
+        // this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
       });
     },
 
     submit() {
-      if (this.newLoanIns === true) {
+      if (this.editedIndex === -1 && !this.viewLoanInstalment) {
         addNewLoanInstalment(this);
       } else {
         updateLoanInstalment(this);
@@ -564,24 +578,8 @@ export default {
     },
 
     clear() {
-      this.dataFromInputs = {
-        deposit_amount: null,
-        deposit_date: null,
-        deposit_type: null,
-        loan_acc_no_id: null,
-        markup_amount: "",
-        markup_days: "",
-        markup_receiveable: "",
-        principal: "",
-        transfer_acc_code_id: "",
-        transfer_acc_no_id: ""
-      };
-      this.receivedMarkupData = {
-        markup_days: "",
-        markup_amount: "",
-        markup_receiveable: "",
-        principal: ""
-      };
+      this.dataFromInputs = { deposit_type: 1 };
+      this.receivedMarkupData = {};
       this.$refs.observer.reset();
     },
 

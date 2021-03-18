@@ -214,7 +214,6 @@ export default {
         this.tableLoading = false;
         this.voucherPostDate = new Date().toISOString().substr(0, 10);
         this.voucherType = null;
-        this.onClear();
       } else {
         getVoucherByGroupId(this);
       }

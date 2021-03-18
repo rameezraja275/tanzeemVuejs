@@ -15,6 +15,8 @@ export async function fetchAccounts(vueObj) {
   const variables = {
     acc_type: GROUP_ACCOUNTS
   };
+  vueObj.slctTrnsfrAcCodeLoader = true;
+  vueObj.slctloanAcNoIdLoader = true;
   try {
     const result = await vueObj.$apollo.query({
       query: GET_ACCOUNTS,
@@ -33,12 +35,17 @@ export async function fetchAccounts(vueObj) {
   } catch (e) {
     vueObj.message = e;
   }
+  vueObj.slctTrnsfrAcCodeLoader = false;
+  vueObj.slctloanAcNoIdLoader = false;
 }
 
 export async function fetchAccountChilds(vueObj, ID, from) {
   const variables = {
     acc_parent: ID
   };
+  if (from !== "forLoans") {
+    vueObj.slctTrnsfrAcNoIdLoader = true;
+  }
   try {
     const result = await vueObj.$apollo.query({
       query: GET_ACCOUNTS_CHILDS,
@@ -56,6 +63,7 @@ export async function fetchAccountChilds(vueObj, ID, from) {
   } catch (e) {
     vueObj.message = e;
   }
+  vueObj.slctTrnsfrAcNoIdLoader = false;
 }
 
 export async function addNewLoanInstalment(vueObj) {
@@ -120,6 +128,7 @@ export async function fetchMarkUpDetails(vueObj) {
   const variables = {
     ...vueObj.markupDetails
   };
+  vueObj.markUpDetailsLoading = true;
 
   try {
     const result = await vueObj.$apollo.query({
@@ -133,7 +142,9 @@ export async function fetchMarkUpDetails(vueObj) {
     }
   } catch (e) {
     vueObj.message = e;
+    vueObj.receivedMarkupData = {};
   }
+  vueObj.markUpDetailsLoading = false;
 }
 
 export async function fetchLoanInstalments(vueObj) {
@@ -260,10 +271,9 @@ export async function updateLoanInstalment(vueObj) {
       vueObj.snackBarColor = "success";
       vueObj.snackbarText = "Successfully updated loan instalment";
       vueObj.snackbarModel = true;
-      vueObj.editedItem.loan_acc_name = vueObj.accountName;
       Object.assign(
         vueObj.loanInstalments[vueObj.editedIndex],
-        vueObj.editedItem
+        vueObj.dataFromInputs
       );
       vueObj.close();
     }

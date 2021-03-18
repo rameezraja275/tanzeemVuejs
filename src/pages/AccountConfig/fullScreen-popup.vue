@@ -454,7 +454,6 @@ export default {
   data: () => ({
     step: 1,
     valid: true,
-    // rules: [(value) => !!value || "Required."],
     genderOptions: ["Male", "Female"],
     date: null,
     menu: false,
@@ -578,6 +577,12 @@ export default {
         });
       }
       return temp.guarantor_name ? temp : this.guarantorObj2;
+    },
+    returnGuarantor1AccNoId() {
+      return this.guarantorObj1.acc_no_id;
+    },
+    returnGuarantor2AccNoId() {
+      return this.guarantorObj2.acc_no_id;
     }
   },
 
@@ -687,6 +692,16 @@ export default {
       } else {
         this.step = 1;
         this.reset();
+      }
+    },
+    returnGuarantor1AccNoId(val) {
+      if (val === 0) {
+        this.guarantorObj1 = {};
+      }
+    },
+    returnGuarantor2AccNoId(val) {
+      if (val === 0) {
+        this.guarantorObj2 = {};
       }
     }
   },

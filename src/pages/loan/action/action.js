@@ -71,10 +71,10 @@ export async function addNewLoanIssue(vueObj) {
     narration: vueObj.dataFromInputs.narration,
     guarantor: vueObj.dataFromInputs.guarantor
   };
-  if (variables.loan_type == 1) {
-    variables.transfer_acc_code_id = 0;
-    variables.transfer_acc_no_id = 0;
-  }
+  // if (variables.loan_type == 1) {
+  //   variables.transfer_acc_code_id = 0;
+  //   variables.transfer_acc_no_id = 0;
+  // }
 
   try {
     const result = await vueObj.$apollo.mutate({
@@ -118,7 +118,7 @@ export async function updateLoanIssue(vueObj, editedIndex) {
   var snackBarTxt = null;
   var dataToSend = omitTypeOff(vueObj.dataFromInputs);
   const variables = {
-    id: vueObj.editId,
+    id: vueObj.selectedItemId,
     issue_date: dataToSend.issue_date,
     loan_type: Number(dataToSend.loan_type),
     transfer_acc_code_id: Number(dataToSend.transfer_acc_code_id),
@@ -144,7 +144,7 @@ export async function updateLoanIssue(vueObj, editedIndex) {
         currentData.getLoanIssues.forEach((element, index) => {
           if (element.id == variables.id) {
             temp[index] = updateLoanIssue;
-            console.log(temp[index], "updated data");
+            temp[index].loan_acc_name = vueObj.accountName;
           }
         });
         cache.writeQuery({
@@ -158,6 +158,7 @@ export async function updateLoanIssue(vueObj, editedIndex) {
     if (result.errors) {
       throw result.errors[0].message;
     } else {
+      vueObj.dataFromInputs.loan_acc_name = vueObj.accountName;
       Object.assign(
         vueObj.loanAccountDetails[editedIndex],
         vueObj.dataFromInputs
@@ -181,7 +182,7 @@ export async function updateLoanIssue(vueObj, editedIndex) {
 export async function deleteLoanIssue(vueObj, editedIndex) {
   vueObj.loaderOn = true;
   const variables = {
-    id: vueObj.deleteId
+    id: vueObj.selectedItemId
   };
 
   try {
@@ -231,6 +232,8 @@ export async function getDetailAccounts(vueObj) {
   const variables = {
     acc_type: GROUP_ACCOUNTS
   };
+  vueObj.slctLoanAcNoLoader = true;
+  vueObj.slctTrnsfrAcCodeLoader = true;
 
   try {
     const result = await vueObj.$apollo.query({
@@ -244,6 +247,7 @@ export async function getDetailAccounts(vueObj) {
       const variables = {
         acc_parent: null
       };
+      vueObj.slctTrnsfrAcCodeLoader = false;
 
       result.data.getAccounts.forEach(element => {
         if (element.acc_name == "Loan") {
@@ -263,6 +267,7 @@ export async function getDetailAccounts(vueObj) {
       } catch (e) {
         vueObj.message = e;
       }
+      vueObj.slctLoanAcNoLoader = false;
     }
   } catch (e) {
     vueObj.message = e;
@@ -273,6 +278,7 @@ export async function getAccountChilds(vueObj, accParent) {
   const variables = {
     acc_parent: accParent
   };
+  vueObj.slctTrnsfrAccNoIdLoader = true;
 
   try {
     const result = await vueObj.$apollo.query({
@@ -287,4 +293,5 @@ export async function getAccountChilds(vueObj, accParent) {
   } catch (e) {
     vueObj.message = e;
   }
+  vueObj.slctTrnsfrAccNoIdLoader = false;
 }
