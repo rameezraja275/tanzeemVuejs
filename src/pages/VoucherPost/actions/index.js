@@ -24,6 +24,9 @@ export async function addUpdateVouchers(vueObj) {
   }
   temp.forEach(element => {
     delete element.acc_code;
+    if (vueObj.isEditMode) {
+      element.acc_master_id = Number(vueObj.voucherGroupId);
+    }
   });
   const variables = {
     voucher_date: vueObj.voucherPostDate,
@@ -70,8 +73,26 @@ export async function addUpdateVouchers(vueObj) {
       vueObj.snackBarColor = "success";
       vueObj.snackbar = true;
       const temp = new Date().toISOString().substr(0, 10);
-      if (!vueObj.isEditMode && vueObj.voucherPostDate == temp) {
-        vueObj.addNewVoucherToList(result.data.addAccountVoucher);
+      if (vueObj.filterVoucherByDate) {
+        if (
+          !vueObj.isEditMode &&
+          vueObj.voucherPostDate == vueObj.filterVoucherByDate
+        ) {
+          vueObj.addNewVoucherToList(result.data.addAccountVoucher);
+        }
+        if (
+          vueObj.isEditMode &&
+          vueObj.voucherPostDate !== vueObj.filterVoucherByDate
+        ) {
+          vueObj.removeFromList(vueObj.voucherGroupId);
+        }
+      } else {
+        if (!vueObj.isEditMode && vueObj.voucherPostDate == temp) {
+          vueObj.addNewVoucherToList(result.data.addAccountVoucher);
+        }
+        if (vueObj.isEditMode && vueObj.voucherPostDate !== temp) {
+          vueObj.removeFromList(vueObj.voucherGroupId);
+        }
       }
       vueObj.$router.push({ path: `/voucherpost` });
       vueObj.onClear();
@@ -89,6 +110,7 @@ export async function addUpdateVouchers(vueObj) {
         }
       }));
   } catch (e) {
+    console.log(e, "error");
     vueObj.snackBarColor = "red";
     // var newText = e.toString();
     // newText = newText.replace("Error: GraphQL error: ", "");
@@ -187,7 +209,8 @@ export async function getVoucherByDate(vueObj) {
       query: GET_VOUCHER_POST,
       variables: {
         voucher_date: vueObj.filterDate
-      }
+      },
+      fetchPolicy: "network-only"
     });
     if (result.errors) {
       throw result.errors[0].message;

@@ -97,13 +97,15 @@ export default {
   watch: {
     filterDate: {
       handler(newItem, oldItem) {
+        console.log(newItem, "new date");
+        this.changeVouchersFilterDate(newItem);
         getVoucherByDate(this);
       },
       deep: true
     }
   },
   methods: {
-    ...mapActions(["changeFocusOnDate"]),
+    ...mapActions(["changeFocusOnDate", "changeVouchersFilterDate"]),
     addNewVoucherPost() {
       if (this.$route.params.vpid) {
         this.$router.push({ path: "/voucherpost" });

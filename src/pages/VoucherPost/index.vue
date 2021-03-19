@@ -36,6 +36,7 @@ export default {
     },
     removeFromList(voucherId) {
       let temp = [...this.vouchersGroups];
+      console.log(voucherId);
       temp.forEach((element, index) => {
         if (voucherId == element.id) {
           this.vouchersGroups.splice(index, 1);

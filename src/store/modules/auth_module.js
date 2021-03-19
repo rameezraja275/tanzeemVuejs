@@ -1,6 +1,8 @@
 const state = {
   focusOnDate: false,
-  acCodeFocus: false
+  acCodeFocus: false,
+
+  filterVoucherByDate: ""
 };
 
 const getters = {};
@@ -11,6 +13,9 @@ const actions = {
   },
   changeFocusOnAccInput({ commit }, payload) {
     commit("changeFocusAccCode", payload);
+  },
+  changeVouchersFilterDate({ commit }, payload) {
+    commit("changeFilterDate", payload);
   }
 };
 
@@ -20,6 +25,9 @@ const mutations = {
   },
   changeFocusAccCode: (state, payload) => {
     state.acCodeFocus = payload;
+  },
+  changeFilterDate: (state, payload) => {
+    state.filterVoucherByDate = payload;
   }
 };
 

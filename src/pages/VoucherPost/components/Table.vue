@@ -189,7 +189,8 @@ export default {
 
   computed: {
     ...mapState({
-      focusOnDate: state => state.auth_module.focusOnDate
+      focusOnDate: state => state.auth_module.focusOnDate,
+      filterVoucherByDate: state => state.auth_module.filterVoucherByDate
     }),
     formTitle() {
       return this.editedIndex === -1 ? "Add Voucher" : "Edit Voucher";
@@ -214,7 +215,9 @@ export default {
         this.tableLoading = false;
         this.voucherPostDate = new Date().toISOString().substr(0, 10);
         this.voucherType = null;
+        this.onClear();
       } else {
+        this.onClear();
         getVoucherByGroupId(this);
       }
     },
@@ -254,7 +257,6 @@ export default {
       this.dialog = true;
       this.editedItem = item;
       this.editedIndex = this.voucherGroup.indexOf(item);
-      console.log(this.editedIndex, "index");
     },
 
     deleteItem(item) {
