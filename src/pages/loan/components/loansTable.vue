@@ -41,6 +41,12 @@
                   <v-window v-model="step">
                     <v-window-item :value="1">
                       <v-card-text>
+                        <span
+                          class="subtitle-2"
+                          style="font-weight: 500;color: #222;"
+                        >
+                          Enter Basic Info:
+                        </span>
                         <v-row>
                           <v-col cols="12" sm="6" md="4">
                             <v-menu
@@ -278,9 +284,11 @@
                     <v-window-item :value="2">
                       <v-card-text>
                         <span
-                          >Please enter your <strong>guarantor</strong> account
-                          details</span
+                          class="subtitle-2"
+                          style="font-weight: 500;color: #222;"
+                          >Please enter your guarantor info:</span
                         >
+
                         <v-row>
                           <v-col cols="12" sm="6" md="4">
                             <validation-provider
@@ -294,7 +302,7 @@
                                 :readonly="disableAndReadonly"
                                 :item-text="AcNumIdNdName"
                                 item-value="id"
-                                label="A/C No ID"
+                                label="A/C No"
                                 required
                                 :error-messages="errors"
                                 :loading="slctLoadingOnAcHolders"
@@ -351,7 +359,11 @@
                           </v-col>
                         </v-row>
 
-                        <span>Please enter second guarantor details</span>
+                        <span
+                          class="subtitle-2"
+                          style="font-weight: 500;color: #222;"
+                          >Please enter your second guarantor info:</span
+                        >
                         <v-row>
                           <v-col cols="12" sm="6" md="4">
                             <validation-provider
@@ -365,7 +377,7 @@
                                 :readonly="disableAndReadonly"
                                 :item-text="AcNumIdNdName"
                                 item-value="id"
-                                label="A/C No ID"
+                                label="A/C No"
                                 required
                                 :error-messages="errors"
                                 :loading="slctLoadingOnAcHolders"
@@ -453,17 +465,26 @@
           <!-- Delete dialog -->
           <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
-              <div class="pt-6 text-center">
-                <p style="font-size: 23px">
-                  Are you sure you want to delete this item?
-                </p>
-              </div>
+              <p
+                style="font-size: 20px;text-align: center;padding-top: 10px;margin-bottom: 0px;"
+              >
+                Are you sure you want to delete this item?
+              </p>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
+                <v-btn
+                  color="blue darken-1"
+                  text
+                  @click="closeDelete"
+                  style="font-size: 14px"
                   >Cancel</v-btn
                 >
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm"
+                <v-btn
+                  color="blue darken-1"
+                  text
+                  @click="deleteItemConfirm"
+                  :loading="deleteBtnLoading"
+                  style="font-size: 14px"
                   >OK</v-btn
                 >
                 <v-spacer></v-spacer>
@@ -625,7 +646,9 @@ export default {
     slctLoanAcNoLoader: false,
     slctTrnsfrAcCodeLoader: false,
     slctTrnsfrAccNoIdLoader: false,
-    slctLoadingOnAcHolders: false
+    slctLoadingOnAcHolders: false,
+
+    deleteBtnLoading: false
   }),
 
   computed: {
@@ -821,7 +844,6 @@ export default {
 
     deleteItemConfirm() {
       deleteLoanIssue(this, this.editedIndex);
-      this.closeDelete();
     },
 
     close() {

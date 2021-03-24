@@ -94,7 +94,9 @@ export async function addUpdateVouchers(vueObj) {
           vueObj.removeFromList(vueObj.voucherGroupId);
         }
       }
-      vueObj.$router.push({ path: `/voucherpost` });
+      if (vueObj.isEditMode) {
+        vueObj.$router.push({ path: `/voucherpost` });
+      }
       vueObj.onClear();
     }
     !vueObj.isEditMode &&
@@ -162,7 +164,7 @@ export async function deleteVouchers(vueObj) {
       vueObj.snackbar = true;
       vueObj.removeFromList(vueObj.voucherGroupId);
       vueObj.onClear();
-      if (vueObj.$route.params.newRoute.params.vpid) {
+      if (vueObj.$route.params.vpid) {
         vueObj.$router.push({ path: `/voucherpost` });
       }
       vueObj.closeDelete();

@@ -33,6 +33,9 @@
             <v-window v-model="step">
               <v-window-item :value="1">
                 <v-card-text>
+                  <span class="subtitle-2">
+                    Enter Basic Info:
+                  </span>
                   <v-row>
                     <v-col md="4">
                       <validation-provider
@@ -70,7 +73,7 @@
                     <v-col md="4">
                       <validation-provider
                         v-slot="{ errors }"
-                        name="Account"
+                        name="A/C Code"
                         rules="required"
                       >
                         <v-autocomplete
@@ -81,7 +84,7 @@
                           :readonly="disableAndReadonly"
                           :item-text="accountNameNdCode"
                           item-value="id"
-                          label="Account"
+                          label="A/C Code"
                           :loading="selectLoadingACCode === 1"
                         ></v-autocomplete>
                       </validation-provider>
@@ -89,11 +92,11 @@
                     <v-col md="4">
                       <validation-provider
                         v-slot="{ errors }"
-                        name="Account Number"
+                        name="Account No"
                         rules="required"
                       >
                         <v-text-field
-                          label="A/C Number"
+                          label="A/C No"
                           v-model="dataFromInputs.acc_no"
                           required
                           :error-messages="errors"
@@ -275,8 +278,8 @@
 
               <v-window-item :value="2">
                 <v-card-text>
-                  <span class="caption grey--text text--darken-1">
-                    Please enter your guarantor's info
+                  <span class="subtitle-2">
+                    Please enter your guarantor info:
                   </span>
 
                   <v-row>
@@ -286,7 +289,7 @@
                         item-text="first_name"
                         item-value="id"
                         v-model="guarantorObj1.acc_no_id"
-                        label="A/C Number ID"
+                        label="A/C No"
                         :readonly="disableAndReadonly"
                         :loading="slctLoadingOnAcHolders"
                       ></v-autocomplete>
@@ -321,8 +324,8 @@
                       ></v-text-field>
                     </v-col>
                   </v-row>
-                  <span class="caption grey--text text--darken-1">
-                    Second guarantor(optional)
+                  <span class="subtitle-2">
+                    Second guarantor(optional):
                   </span>
 
                   <v-row>
@@ -332,7 +335,7 @@
                         item-text="first_name"
                         item-value="id"
                         v-model="guarantorObj2.acc_no_id"
-                        label="A/C Number ID"
+                        label="A/C No"
                         :readonly="disableAndReadonly"
                         :loading="slctLoadingOnAcHolders"
                       ></v-autocomplete>
@@ -739,5 +742,9 @@ export default {
 <style scoped>
 .d-flex * {
   margin: 0 20px;
+}
+.subtitle-2 {
+  font-weight: 500;
+  color: #222;
 }
 </style>

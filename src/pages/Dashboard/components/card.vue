@@ -1,13 +1,17 @@
 <template>
-  <div style="cursor: pointer;">
+  <div style="cursor: pointer;" @click="goToPath()">
     <v-hover v-slot="{ hover }">
-      <v-card class="mt-5" width="320" :elevation="hover ? 8 : 2">
+      <v-card
+        class="mt-5"
+        width="320"
+        :elevation="hover && elevateCurrent ? 5 : 2"
+      >
         <v-list-item three-line>
           <div style="position: relative; top: -17px">
             <v-sheet
               class="mr-5 alignIcon"
               :color="sheetColor"
-              :elevation="hover ? 5 : 2"
+              :elevation="hover && elevateCurrent ? 5 : 2"
               height="70"
               width="70"
             >
@@ -21,16 +25,6 @@
             <v-list-item-title>{{ cardTextContent }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-
-        <!-- <v-card-actions>
-            <v-btn
-            outlined
-            rounded
-            text
-            >
-            Button
-            </v-btn>
-        </v-card-actions> -->
       </v-card>
     </v-hover>
   </div>
@@ -38,7 +32,22 @@
 
 <script>
 export default {
-  props: ["cardTitle", "cardTextContent", "iconName", "sheetColor"]
+  props: [
+    "cardTitle",
+    "cardTextContent",
+    "iconName",
+    "sheetColor",
+    "elevateCurrent"
+  ],
+  methods: {
+    goToPath() {
+      if (this.cardTitle === "Loan Issue") {
+        this.$router.push({ path: `/loan` });
+      } else if (this.cardTitle === "No Of Members") {
+        this.$router.push({ path: "/accountconfig" });
+      }
+    }
+  }
 };
 </script>
 

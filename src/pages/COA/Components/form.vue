@@ -107,12 +107,18 @@
         </div>
         <v-dialog v-model="dialogDelete" max-width="500px">
           <v-card>
-            <v-card-title class="headline"
-              >Are you sure you want to delete this item?</v-card-title
+            <p
+              style="font-size:20px;text-align:center;padding-top:10px;margin-bottom:0px;"
             >
+              Are you sure you want to delete this item?
+            </p>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="closeDelete"
+              <v-btn
+                color="blue darken-1"
+                text
+                @click="closeDelete"
+                style="font-size: 14px"
                 >Cancel</v-btn
               >
               <v-btn
@@ -120,6 +126,7 @@
                 text
                 @click="onDelete"
                 :loading="deleteBtnLoading"
+                style="font-size: 14px"
                 >OK</v-btn
               >
               <v-spacer></v-spacer>
@@ -218,11 +225,6 @@ export default {
       },
       error(error) {
         var temp = error.toString();
-        // if(temp.includes("Network") && temp.includes("error")) {
-        //   this.message = temp.substring(7, 20);
-        //   this.snackBarColor = "red";
-        //   this.snackbarModel = true
-        // }
         this.message = temp;
         this.snackBarColor = "red";
         this.snackbarModel = true;
@@ -312,6 +314,7 @@ export default {
         ...variables,
         acc_code: this.acc_code
       };
+      console.log(variables, "variables");
       try {
         const result = await this.$apollo.mutate({
           mutation: this.isEditable ? UPDATE_ACCOUNT : ADD_ACCOUNT,
@@ -323,8 +326,8 @@ export default {
             : {
                 ...variables,
                 acc_code: Number(this.acc_code)
-              },
-          update: this.updateCache(this.isEditable)
+              }
+          // update: this.updateCache(this.isEditable)
         });
 
         if (result.errors) {
@@ -345,8 +348,8 @@ export default {
           if (tempObj.acc_type === GROUP_ACCOUNTS) {
             tempObj.children = [];
           }
+          console.log("function called");
           this.addInParentArray(tempObj, this.isEditable);
-          this.$router.push({ path: `/coa` });
           this.onClear();
         }
       } catch (e) {
@@ -359,12 +362,10 @@ export default {
       this.mutationLoading = false;
     },
     onClear() {
-      if (this.$route.params.acccode) {
-        this.acc_code = "";
-      }
+      this.acc_code = "";
       this.accountName = "";
       this.accParent = null;
-      this.accType = GROUP_ACCOUNTS;
+      this.accType = null;
       this.$refs.observer.reset();
     },
     async onDelete() {
@@ -556,6 +557,8 @@ export default {
                 acc_type: this.accType
               }
             });
+            // console.log(currentData, "data from update cache in GET ACCOUNTS BY TYPE");
+            // PROBLEM IS HERE
             cache.writeQuery({
               query: GET_ACCOUNTS,
               variables: {

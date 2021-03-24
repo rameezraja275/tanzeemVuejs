@@ -165,7 +165,7 @@ export async function fetchLoanInstalments(vueObj) {
 }
 
 export async function deleteLoanInstalment(vueObj, ID) {
-  vueObj.tableLoading = true;
+  vueObj.deleteBtnLoading = true;
   const variables = {
     id: ID
   };
@@ -199,6 +199,7 @@ export async function deleteLoanInstalment(vueObj, ID) {
       vueObj.snackbarText = result.data.deleteLoanInstallment.message;
       vueObj.loanInstalments.splice(vueObj.editedIndex, 1);
       vueObj.snackbarModel = true;
+      vueObj.closeDelete();
     }
   } catch (e) {
     vueObj.message = e;
@@ -208,7 +209,7 @@ export async function deleteLoanInstalment(vueObj, ID) {
     vueObj.snackbarText = removeGraphQlTagFromErrors(e);
     vueObj.snackbarModel = true;
   }
-  vueObj.tableLoading = false;
+  vueObj.deleteBtnLoading = false;
 }
 
 export async function getLoanInstalmentById(vueObj, item) {

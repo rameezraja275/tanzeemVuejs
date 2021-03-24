@@ -81,7 +81,7 @@ export async function newAccountHolder(vueObj) {
 }
 
 export async function deleteAccountHolder(vueObj, deleteIndex) {
-  vueObj.tableLoading = true;
+  vueObj.deleteBtnLoading = true;
   const variables = {
     id: vueObj.id
   };
@@ -113,6 +113,7 @@ export async function deleteAccountHolder(vueObj, deleteIndex) {
     } else {
       vueObj.snackBarText = "Successfully deleted account holder";
       vueObj.snackBarColor = "success";
+      vueObj.closeDelete();
     }
   } catch (e) {
     vueObj.message = e;
@@ -122,7 +123,7 @@ export async function deleteAccountHolder(vueObj, deleteIndex) {
     vueObj.snackBarText = removeGraphQlTagFromErrors(e);
   }
   vueObj.snackBarModel = true;
-  vueObj.tableLoading = false;
+  vueObj.deleteBtnLoading = false;
 }
 
 export async function updateAccountHolder(vueObj, editedIndex) {

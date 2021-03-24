@@ -180,7 +180,7 @@ export async function updateLoanIssue(vueObj, editedIndex) {
 }
 
 export async function deleteLoanIssue(vueObj, editedIndex) {
-  vueObj.loaderOn = true;
+  vueObj.deleteBtnLoading = true;
   const variables = {
     id: vueObj.selectedItemId
   };
@@ -216,6 +216,7 @@ export async function deleteLoanIssue(vueObj, editedIndex) {
       vueObj.snackBarText = "Successfully deleted loan issue";
       vueObj.snackBarColor = "success";
       vueObj.snackBarModel = true;
+      vueObj.closeDelete();
     }
   } catch (e) {
     vueObj.message = e;
@@ -225,7 +226,7 @@ export async function deleteLoanIssue(vueObj, editedIndex) {
     vueObj.snackBarText = removeGraphQlTagFromErrors(e);
     vueObj.snackBarModel = true;
   }
-  vueObj.loaderOn = false;
+  vueObj.deleteBtnLoading = false;
 }
 
 export async function getDetailAccounts(vueObj) {

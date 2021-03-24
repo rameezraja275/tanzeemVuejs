@@ -36,10 +36,12 @@
                   <v-card-title>
                     <span class="headline">{{ formTitle }}</span>
                   </v-card-title>
-
                   <v-card-text>
+                    <!-- <span class="subtitle-2" style="font-weight: 500;color: #222;">
+                      Enter Basic Info:
+                    </span> -->
                     <v-container>
-                      <v-row>
+                      <v-row style="height:90px;">
                         <v-col cols="12" sm="6" md="4">
                           <v-menu
                             v-model="menu"
@@ -294,15 +296,26 @@
           </v-dialog>
           <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
-              <v-card-title class="headline"
-                >Are you sure you want to delete this item?</v-card-title
+              <p
+                style="font-size: 20px;text-align: center;padding-top: 10px;margin-bottom: 0px;"
               >
+                Are you sure you want to delete this item?
+              </p>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
+                <v-btn
+                  color="blue darken-1"
+                  text
+                  @click="closeDelete"
+                  style="font-size: 14px"
                   >Cancel</v-btn
                 >
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm"
+                <v-btn
+                  color="blue darken-1"
+                  text
+                  @click="deleteItemConfirm"
+                  style="font-size: 14px"
+                  :loading="deleteBtnLoading"
                   >OK</v-btn
                 >
                 <v-spacer></v-spacer>
@@ -366,22 +379,14 @@ export default {
         sortable: false,
         value: "deposit_date"
       },
-      { text: "Loan A/C No", value: "loan_acc_no_id", sortable: false },
-      { text: "Loan A/C", value: "loan_acc_name", sortable: false },
+      { text: "A/C No", value: "loan_acc_no_id", sortable: false },
+      { text: "A/C Title", value: "loan_acc_name", sortable: false },
       { text: "Deposit Amount", value: "deposit_amount", sortable: false },
       { text: "Markup Amount", value: "markup_amount", sortable: false },
       { text: "Actions", value: "actions", sortable: false }
     ],
     loanInstalments: [],
     editedIndex: -1,
-    // editedItem: {},
-    // defaultItem: {
-    //   name: "",
-    //   calories: 0,
-    //   fat: 0,
-    //   carbs: 0,
-    //   protein: 0
-    // },
 
     dataFromInputs: {
       deposit_type: 1
@@ -431,7 +436,9 @@ export default {
     // loader on autocompletes
     slctTrnsfrAcCodeLoader: false,
     slctTrnsfrAcNoIdLoader: false,
-    slctloanAcNoIdLoader: false
+    slctloanAcNoIdLoader: false,
+    // del btn loader
+    deleteBtnLoading: false
   }),
 
   computed: {
@@ -548,7 +555,6 @@ export default {
     deleteItemConfirm() {
       // this.loanInstalments.splice(this.editedIndex, 1);
       deleteLoanInstalment(this, this.currentItemId);
-      this.closeDelete();
     },
 
     close() {

@@ -7,6 +7,7 @@
           :cardTextContent="cardTextContent1"
           :iconName="iconName1"
           :sheetColor="sheetColor1"
+          elevateCurrent="true"
         ></dashBoard-Card>
       </v-col>
       <v-col cols="12" sm="6" md="3">
@@ -23,6 +24,8 @@
           :cardTextContent="cardTextContent3"
           :iconName="iconName3"
           :sheetColor="sheetColor3"
+          elevateCurrent="true"
+          :to="{ path: `/accountconfig` }"
         ></dashBoard-Card>
       </v-col>
       <v-col cols="12" sm="6" md="3">
@@ -56,7 +59,7 @@ export default {
       iconName2: "mdi-cash-plus",
       sheetColor2: "blue",
 
-      cardTitle3: "Some other thing",
+      cardTitle3: "No Of Members",
       cardTextContent3: "12,000",
       iconName3: "mdi-cash-plus",
       sheetColor3: "orange",

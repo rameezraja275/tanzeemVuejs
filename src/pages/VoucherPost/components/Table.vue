@@ -246,6 +246,7 @@ export default {
     },
     onClear() {
       this.voucherGroup = [];
+      this.voucherType = null;
     },
     onSubmit() {
       addUpdateVouchers(this);

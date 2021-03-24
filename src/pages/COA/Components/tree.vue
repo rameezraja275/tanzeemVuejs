@@ -53,6 +53,7 @@ export default {
   methods: {
     ...mapActions(["changeFocusOnAccInput"]),
     async getChilds(item) {
+      console.log(item);
       const result = await this.$apollo.query({
         query: GET_ACCOUNTS_CHILDS,
         variables: {
@@ -78,14 +79,6 @@ export default {
         this.$router.push({ path: "/coa" });
       }
       this.changeFocusOnAccInput(true);
-    },
-
-    addInParentArray(data) {
-      this.newArray.forEach(element => {
-        if (element.acc_parent == data.acc_parent) {
-          element.children.push(data);
-        }
-      });
     }
   },
   computed: {
@@ -95,7 +88,6 @@ export default {
   },
   watch: {
     parentAccounts() {
-      console.log(this.parentAccounts, "parent accounts");
       this.items;
     }
   }
