@@ -53,7 +53,6 @@ export default {
   methods: {
     ...mapActions(["changeFocusOnAccInput"]),
     async getChilds(item) {
-      console.log(item);
       const result = await this.$apollo.query({
         query: GET_ACCOUNTS_CHILDS,
         variables: {
@@ -71,6 +70,7 @@ export default {
           item.children.push({ ...child, children: [] });
         } else {
           item.children.push({ ...child });
+          // item.children.push({ ...child, children: [] });
         }
       });
     },

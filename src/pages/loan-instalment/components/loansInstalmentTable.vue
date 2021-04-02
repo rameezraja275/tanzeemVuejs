@@ -387,23 +387,16 @@ export default {
     ],
     loanInstalments: [],
     editedIndex: -1,
-
     dataFromInputs: {
       deposit_type: 1
     },
-
     disableAndReadonly: false,
-
-    // date picker
     menu: false,
 
     // group accounts
     allGroupAccounts: null,
     accountChilds: null,
     loanAccounts: null,
-
-    // readonly section of form
-    // receivedInsData: null,
 
     markupDetails: null,
 
@@ -418,8 +411,6 @@ export default {
     submitLoading: false,
 
     // for delete and edit
-    // deleteId: null,
-    // editId: null,
     currentItemId: null,
 
     // loader for table

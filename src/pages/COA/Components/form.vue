@@ -314,7 +314,6 @@ export default {
         ...variables,
         acc_code: this.acc_code
       };
-      console.log(variables, "variables");
       try {
         const result = await this.$apollo.mutate({
           mutation: this.isEditable ? UPDATE_ACCOUNT : ADD_ACCOUNT,
@@ -348,7 +347,6 @@ export default {
           if (tempObj.acc_type === GROUP_ACCOUNTS) {
             tempObj.children = [];
           }
-          console.log("function called");
           this.addInParentArray(tempObj, this.isEditable);
           this.onClear();
         }
@@ -632,7 +630,7 @@ export default {
   },
   watch: {
     $route: function(newCode, oldCode) {
-      if (newCode.params.acccode == "0") {
+      if (!newCode.params.acccode) {
         this.onClear();
       }
       this.getCurrentAccount();

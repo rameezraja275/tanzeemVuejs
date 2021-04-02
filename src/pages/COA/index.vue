@@ -74,19 +74,37 @@ export default {
             }
           }
         });
-        console.log(this.getAccountParents, data);
       }
     },
     removeItemFromArray(ID) {
       this.getAccountParents.forEach(element => {
         if (element.children) {
-          for (let i = 0; i < element.children.length; i++) {
-            if (element.children[i].id == ID) {
-              element.children.splice(i, 1);
-            }
-          }
+          this.dfs(element, ID);
+          // for (let i = 0; i < element.children.length; i++) {
+          //   if (element.children[i].id == ID) {
+          //     element.children.splice(i, 1);
+          //   }
+          // }
         }
       });
+    },
+    dfs(node, id) {
+      if (node.id === id) {
+        return node;
+      }
+      if (node.children) {
+        var length = node.children.length;
+        for (var i = 0; i < length; i++) {
+          var foundNode = this.dfs(node.children[i], id);
+          if (foundNode) {
+            if (node.children[i].id === id) {
+              node.children.splice(i, 1);
+            }
+            return foundNode;
+          }
+        }
+      }
+      return null;
     }
   },
   // apollo: {
