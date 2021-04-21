@@ -70,7 +70,6 @@ export default {
           item.children.push({ ...child, children: [] });
         } else {
           item.children.push({ ...child });
-          // item.children.push({ ...child, children: [] });
         }
       });
     },

@@ -13,7 +13,7 @@
       <form @submit.prevent="onSubmit" autocomplete="off">
         <validation-provider
           v-slot="{ errors }"
-          name="Acc Code"
+          name="A/C Code"
           rules="required|max:4"
         >
           <v-text-field
@@ -23,34 +23,34 @@
             v-model="acc_code"
             :counter="4"
             :error-messages="errors"
-            label="Acc Code"
+            label="A/C Code"
             required
             type="number"
           ></v-text-field>
         </validation-provider>
         <validation-provider
           v-slot="{ errors }"
-          name="Acc Name"
+          name="A/C Name"
           rules="required|max:30"
         >
           <v-text-field
             v-model="accountName"
             :counter="30"
             :error-messages="errors"
-            label="Acc Name"
+            label="A/C Name"
             required
           ></v-text-field>
         </validation-provider>
         <validation-provider
           v-slot="{ errors }"
-          name="accParent"
+          name="A/C Parent"
           rules="required"
         >
           <v-autocomplete
             v-model="accParent"
             :items="groupAccounts"
             :error-messages="errors"
-            label="Acc Parent"
+            label="A/C Parent"
             data-vv-name="select"
             required
             :item-text="accNameAccCode"
@@ -61,7 +61,7 @@
         <p>Account Type</p>
         <validation-provider
           v-slot="{ errors }"
-          name="accType"
+          name="A/C Type"
           rules="required"
         >
           <v-radio-group v-model="accType" row :error-messages="errors">
@@ -72,7 +72,7 @@
         <v-select
           v-model="accConfig"
           :items="configAccounts"
-          label="Configure account"
+          label="Configure Account"
           :disabled="disableConfigureAC"
           data-vv-name="select"
           item-text="label"
@@ -348,6 +348,7 @@ export default {
             tempObj.children = [];
           }
           this.addInParentArray(tempObj, this.isEditable);
+          this.allAcounts.push(tempObj);
           this.onClear();
         }
       } catch (e) {
@@ -639,6 +640,7 @@ export default {
       if (val) {
         setTimeout(() => {
           this.$refs.accCode.focus();
+          this.onClear();
         }, 50);
       }
     }

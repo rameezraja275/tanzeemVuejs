@@ -15,7 +15,7 @@
                   rules="required"
                 >
                   <v-autocomplete
-                    v-model="editedItem.acc_code_id"
+                    v-model="formItems.acc_code_id"
                     :items="accounts"
                     :error-messages="errors"
                     :loading="selectLoadingACCode"
@@ -30,7 +30,7 @@
               </v-col>
               <v-col cols="12" sm="6" md="6">
                 <v-autocomplete
-                  v-model="editedItem.acc_no_id"
+                  v-model="formItems.acc_no_id"
                   :loading="selectLoadingSubAc"
                   :items="accounts_child"
                   label="A/C No"
@@ -45,17 +45,17 @@
                   rules="required|min_value:0"
                 >
                   <v-text-field
-                    v-model.number="editedItem.dr"
+                    v-model.number="formItems.dr"
                     label="DR"
                     :error-messages="errors"
                     required
                     type="number"
                     :step="allowedDecimalPlaces"
                     :rules="
-                      editedItem.dr !== ``
+                      formItems.dr !== ``
                         ? [
-                            editedItem.dr !== editedItem.cr ||
-                              'Cr and Dr can not be equal'
+                            formItems.dr !== formItems.cr ||
+                              'CR and DR can not be equal'
                           ]
                         : []
                     "
@@ -69,17 +69,17 @@
                   rules="required|min_value:0"
                 >
                   <v-text-field
-                    v-model.number="editedItem.cr"
+                    v-model.number="formItems.cr"
                     label="CR"
                     :error-messages="errors"
                     required
                     type="number"
                     :step="allowedDecimalPlaces"
                     :rules="
-                      editedItem.cr !== ``
+                      formItems.cr !== ``
                         ? [
-                            editedItem.dr !== editedItem.cr ||
-                              'Cr and Dr can not be equal'
+                            formItems.dr !== formItems.cr ||
+                              'CR and DR can not be equal'
                           ]
                         : []
                     "
@@ -91,7 +91,7 @@
               <v-col cols="12" sm="6" md="12">
                 <v-textarea
                   label="Narration"
-                  v-model="editedItem.narration"
+                  v-model="formItems.narration"
                   rows="4"
                 ></v-textarea>
               </v-col>
@@ -149,21 +149,23 @@ export default {
     ValidationProvider,
     ValidationObserver
   },
-  props: ["editedItem", "close", "save", "formTitle", "setAccCode"],
+  props: ["editedItem", "close", "save", "formTitle", "dialog"],
   data: () => ({
     accounts: [],
     accounts_child: [],
     crDrEqual: false,
     selectLoadingACCode: false,
     selectLoadingSubAc: false,
-    allowedDecimalPlaces: ALLOWED_DECIMALS
+    allowedDecimalPlaces: ALLOWED_DECIMALS,
+    formItems: {}
   }),
   methods: {
     getAccCode() {
-      if (this.editedItem.acc_code_id) {
+      if (this.formItems.acc_code_id) {
         this.accounts.forEach(element => {
-          if (element.id == this.editedItem.acc_code_id) {
-            this.setAccCode(element.acc_code);
+          if (element.id == this.formItems.acc_code_id) {
+            this.formItems.acc_code = element.acc_code;
+            // this.setAccCode(element.acc_code);
           }
         });
       }
@@ -174,25 +176,26 @@ export default {
     submit() {
       this.$refs.observer.validate();
       this.accounts_child = [];
-      this.save();
+      this.save(this.formItems);
       this.$refs.observer.reset();
     },
     closeForm() {
       this.close();
       this.accounts_child = [];
+      this.formItems = {};
       this.$refs.observer.reset();
     }
   },
   computed: {
     returnCr() {
-      return this.editedItem.cr;
+      return this.formItems.cr;
     },
     returnDr() {
-      return this.editedItem.dr;
+      return this.formItems.dr;
     }
   },
   watch: {
-    editedItem: {
+    formItems: {
       handler(newItem, oldItem) {
         if (newItem.acc_code_id) {
           getAccountChilds(this, newItem);
@@ -200,28 +203,34 @@ export default {
       },
       deep: true
     },
+    dialog(val) {
+      if (val) {
+        this.formItems = { ...this.editedItem };
+      }
+    },
     returnCr(val) {
       if (val) {
-        this.editedItem.dr = 0;
+        this.formItems.dr = 0;
         this.crDrEqual = false;
       }
-      if (val === this.editedItem.dr) {
+      if (val === this.formItems.dr) {
         this.crDrEqual = true;
       }
     },
     returnDr(val) {
       if (val) {
-        this.editedItem.cr = 0;
+        this.formItems.cr = 0;
         this.crDrEqual = false;
       }
-      if (val === this.editedItem.cr) {
+      if (val === this.formItems.cr) {
         this.crDrEqual = true;
       }
     }
   },
   created() {
-    if (this.editedItem.acc_code_id) {
-      getAccountChilds(this, this.editedItem);
+    this.formItems = { ...this.editedItem };
+    if (this.formItems.acc_code_id) {
+      getAccountChilds(this, this.formItems);
     }
     getGroupAccounts(this);
   }

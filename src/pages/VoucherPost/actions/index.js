@@ -132,7 +132,6 @@ export async function deleteVouchers(vueObj) {
       mutation: DELETE_POST_VOUCHER,
       variables: variables,
       update: cache => {
-        console.log(vueObj.voucherPostDate, "date in delete");
         let currentData = cache.readQuery({
           query: GET_VOUCHER_POST,
           variables: {

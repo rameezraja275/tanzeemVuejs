@@ -92,7 +92,7 @@
                     <v-col md="4">
                       <validation-provider
                         v-slot="{ errors }"
-                        name="Account No"
+                        name="A/C No"
                         rules="required"
                       >
                         <v-text-field
@@ -250,7 +250,7 @@
                         <template v-slot:activator="{ on, attrs }">
                           <validation-provider
                             v-slot="{ errors }"
-                            name="Account Opening Date"
+                            name="A/C Opening Date"
                             rules="required"
                           >
                             <v-text-field

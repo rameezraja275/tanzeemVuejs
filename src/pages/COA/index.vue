@@ -58,28 +58,31 @@ export default {
       }
     },
     addInParentArray(data, editMode) {
-      if (!editMode) {
-        this.getAccountParents.forEach(element => {
-          if (element.id == data.acc_parent) {
-            element.children.push(data);
-          }
-        });
-      } else {
-        this.getAccountParents.forEach(element => {
-          if (element.children) {
-            for (let i = 0; i < element.children.length; i++) {
-              if (element.children[i].id === data.id) {
-                element.children.splice(i, 1, data);
-              }
-            }
-          }
-        });
-      }
+      // if (!editMode) {
+      //   this.getAccountParents.forEach(element => {
+      //     this.dfs(element, data.acc_parent, false, data, editMode);
+      //   });
+      // } else {
+      //   this.getAccountParents.forEach(element => {
+      //     if (element.children) {
+      //       this.dfs(element, data.id, false, data, editMode);
+      //     }
+      //   });
+      // }
+      console.log(data, "inside function");
+      this.getAccountParents.forEach(element => {
+        if (!editMode) {
+          console.log(data.acc_parent, "parent");
+          this.dfs(element, data.acc_parent, false, data, editMode);
+        } else {
+          this.dfs(element, data.id, false, data, editMode);
+        }
+      });
     },
     removeItemFromArray(ID) {
       this.getAccountParents.forEach(element => {
         if (element.children) {
-          this.dfs(element, ID);
+          this.dfs(element, ID, true);
           // for (let i = 0; i < element.children.length; i++) {
           //   if (element.children[i].id == ID) {
           //     element.children.splice(i, 1);
@@ -88,17 +91,42 @@ export default {
         }
       });
     },
-    dfs(node, id) {
+    dfs(node, id, fromDelete, data, editMode) {
       if (node.id === id) {
-        return node;
+        if (data && !editMode) {
+          node.children.push(data);
+        }
+        for (let i = 0; i < node.children; i++) {
+          if (data && editMode) {
+            node.children.splice(i, 1, data);
+          }
+          if (fromDelete) {
+            node.children.splice(i, 1);
+          }
+        }
+        return;
       }
       if (node.children) {
         var length = node.children.length;
         for (var i = 0; i < length; i++) {
-          var foundNode = this.dfs(node.children[i], id);
+          var foundNode = this.dfs(
+            node.children[i],
+            id,
+            fromDelete,
+            data,
+            editMode
+          );
           if (foundNode) {
             if (node.children[i].id === id) {
-              node.children.splice(i, 1);
+              if (fromDelete) {
+                node.children.splice(i, 1);
+              }
+              if (data && !editMode) {
+                node.children[i].children.push(data);
+              }
+              if (data && editMode) {
+                node.children.splice(i, 1, data);
+              }
             }
             return foundNode;
           }
@@ -107,11 +135,6 @@ export default {
       return null;
     }
   },
-  // apollo: {
-  //   getAccountParents: {
-  //     query: GET_ACCOUNTS_PARENTS
-  //   }
-  // }
   created() {
     this.getParents();
   }

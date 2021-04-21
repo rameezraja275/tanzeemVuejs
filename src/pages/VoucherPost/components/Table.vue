@@ -79,7 +79,7 @@
               :close="close"
               :save="save"
               :formTitle="formTitle"
-              :setAccCode="setAccCode"
+              :dialog="dialog"
             />
           </v-dialog>
           <v-dialog v-model="dialogDelete" max-width="500px">
@@ -292,21 +292,17 @@ export default {
       });
     },
 
-    save() {
+    save(data) {
       if (this.editedIndex > -1) {
-        Object.assign(this.voucherGroup[this.editedIndex], this.editedItem);
+        Object.assign(this.voucherGroup[this.editedIndex], data);
       } else {
-        this.voucherGroup.push(this.editedItem);
+        this.voucherGroup.push(data);
       }
       this.close();
     },
 
     closeSnackbar() {
       this.snackbar = false;
-    },
-
-    setAccCode(code) {
-      this.editedItem.acc_code = code;
     }
   }
 };

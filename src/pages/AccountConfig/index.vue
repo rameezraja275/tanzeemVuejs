@@ -15,7 +15,7 @@
     >
       <template v-slot:top>
         <v-toolbar flat>
-          <v-toolbar-title>A/C Holders</v-toolbar-title>
+          <v-toolbar-title>Account Holders</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
           <v-btn color="primary" dark class="mb-2" @click="newUser()">
