@@ -69,11 +69,14 @@ export default {
       //     }
       //   });
       // }
-      console.log(data, "inside function");
       this.getAccountParents.forEach(element => {
         if (!editMode) {
-          console.log(data.acc_parent, "parent");
-          this.dfs(element, data.acc_parent, false, data, editMode);
+          if (element.id === data.acc_parent) {
+            element.children.push(data);
+          }
+          {
+            this.dfs(element, data.acc_parent, false, data, editMode);
+          }
         } else {
           this.dfs(element, data.id, false, data, editMode);
         }
@@ -81,30 +84,20 @@ export default {
     },
     removeItemFromArray(ID) {
       this.getAccountParents.forEach(element => {
-        if (element.children) {
-          this.dfs(element, ID, true);
-          // for (let i = 0; i < element.children.length; i++) {
-          //   if (element.children[i].id == ID) {
-          //     element.children.splice(i, 1);
-          //   }
-          // }
-        }
+        this.dfs(element, ID, true);
+        // if (element.children.id === ID) {
+        //   console.log("found element", ID);
+        //   // for (let i = 0; i < element.children.length; i++) {
+        //   //   if (element.children[i].id == ID) {
+        //   //     element.children.splice(i, 1);
+        //   //   }
+        //   // }
+        // }
       });
     },
     dfs(node, id, fromDelete, data, editMode) {
       if (node.id === id) {
-        if (data && !editMode) {
-          node.children.push(data);
-        }
-        for (let i = 0; i < node.children; i++) {
-          if (data && editMode) {
-            node.children.splice(i, 1, data);
-          }
-          if (fromDelete) {
-            node.children.splice(i, 1);
-          }
-        }
-        return;
+        return true;
       }
       if (node.children) {
         var length = node.children.length;

@@ -85,6 +85,7 @@
                           :item-text="accountNameNdCode"
                           item-value="id"
                           label="A/C Code"
+                          :disabled="editAccountDetails ? true : false"
                           :loading="selectLoadingACCode === 1"
                         ></v-autocomplete>
                       </validation-provider>
@@ -101,6 +102,7 @@
                           required
                           :error-messages="errors"
                           :readonly="disableAndReadonly"
+                          :disabled="editAccountDetails ? true : false"
                         ></v-text-field>
                       </validation-provider>
                     </v-col>
@@ -504,38 +506,12 @@ export default {
       return temp;
     },
     returnAccountHolders() {
-      // let temp = {
-      //   first_name: "Deselect",
-      //   id: 0,
-      // };
-      // let newObj = [...this.accountHoldersData];
-      // newObj.unshift(temp);
-
-      // return newObj;
       return [{ first_name: "Deselect", id: 0 }, ...this.accountHoldersData];
     },
     idIsNotDefined1() {
-      // let temp = null;
-      // if (this.guarantorObj1.acc_no_id !== 0) {
-      //   temp = true;
-      // } else {
-      //   temp = false;
-      // }
-      // if (this.guarantorObj1.acc_no_id == null) {
-      //   temp = false;
-      // }
       return this.guarantorObj1.acc_no_id ? true : false;
     },
     idIsNotDefined2() {
-      // let temp = null;
-      // if (this.guarantorObj2.acc_no_id !== 0) {
-      //   temp = true;
-      // } else {
-      //   temp = false;
-      // }
-      // if (this.guarantorObj2.acc_no_id == null) {
-      //   temp = false;
-      // }
       return this.guarantorObj2.acc_no_id ? true : false;
     },
 
@@ -677,13 +653,9 @@ export default {
         setTimeout(() => {
           this.$refs.firstNameFocus.focus();
         }, 280);
-        if (this.editAccountDetails.account_holder) {
+        if (this.editAccountDetails) {
           if (this.editAccountDetails.account_holder.first_name) {
-            // delete type name from obj
-            // this.deleteTypeName();
-
             this.dataFromInputs = this.editAccountDetails.account_holder;
-
             if (this.editAccountDetails.guarantors[0]) {
               this.guarantorObj1 = this.editAccountDetails.guarantors[0];
             }

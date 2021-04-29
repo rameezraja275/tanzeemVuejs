@@ -41,6 +41,44 @@
                       Enter Basic Info:
                     </span> -->
                     <v-container>
+                      <v-row>
+                        <v-col cols="12" sm="6" md="4">
+                          <validation-provider
+                            v-slot="{ errors }"
+                            name="Loan A/C No"
+                            rules="required"
+                          >
+                            <v-autocomplete
+                              v-model="dataFromInputs.loan_acc_no_id"
+                              :items="loanAccounts"
+                              :item-text="loanCodeNdName"
+                              item-value="id"
+                              :readonly="disableAndReadonly"
+                              label="Loan A/C No"
+                              required
+                              :error-messages="errors"
+                              :loading="slctloanAcNoIdLoader"
+                            ></v-autocomplete>
+                          </validation-provider>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="4">
+                          <validation-provider
+                            v-slot="{ errors }"
+                            name="Deposit Amount"
+                            rules="required"
+                          >
+                            <v-text-field
+                              v-model="dataFromInputs.deposit_amount"
+                              label="Deposit Amount"
+                              type="number"
+                              :readonly="disableAndReadonly"
+                              required
+                              :error-messages="errors"
+                            ></v-text-field>
+                          </validation-provider>
+                        </v-col>
+                      </v-row>
+
                       <v-row style="height:90px;">
                         <v-col cols="12" sm="6" md="4">
                           <v-menu
@@ -157,44 +195,6 @@
                                   : false
                               "
                             ></v-autocomplete>
-                          </validation-provider>
-                        </v-col>
-                      </v-row>
-
-                      <v-row>
-                        <v-col cols="12" sm="6" md="4">
-                          <validation-provider
-                            v-slot="{ errors }"
-                            name="Loan A/C No"
-                            rules="required"
-                          >
-                            <v-autocomplete
-                              v-model="dataFromInputs.loan_acc_no_id"
-                              :items="loanAccounts"
-                              :item-text="loanCodeNdName"
-                              item-value="id"
-                              :readonly="disableAndReadonly"
-                              label="Loan A/C No"
-                              required
-                              :error-messages="errors"
-                              :loading="slctloanAcNoIdLoader"
-                            ></v-autocomplete>
-                          </validation-provider>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="4">
-                          <validation-provider
-                            v-slot="{ errors }"
-                            name="Deposit Amount"
-                            rules="required"
-                          >
-                            <v-text-field
-                              v-model="dataFromInputs.deposit_amount"
-                              label="Deposit Amount"
-                              type="number"
-                              :readonly="disableAndReadonly"
-                              required
-                              :error-messages="errors"
-                            ></v-text-field>
                           </validation-provider>
                         </v-col>
                       </v-row>

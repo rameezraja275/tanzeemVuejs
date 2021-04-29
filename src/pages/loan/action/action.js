@@ -71,10 +71,10 @@ export async function addNewLoanIssue(vueObj) {
     narration: vueObj.dataFromInputs.narration,
     guarantor: vueObj.dataFromInputs.guarantor
   };
-  // if (variables.loan_type == 1) {
-  //   variables.transfer_acc_code_id = 0;
-  //   variables.transfer_acc_no_id = 0;
-  // }
+  if (variables.loan_type == 1) {
+    variables.transfer_acc_code_id = 0;
+    variables.transfer_acc_no_id = 0;
+  }
 
   try {
     const result = await vueObj.$apollo.mutate({

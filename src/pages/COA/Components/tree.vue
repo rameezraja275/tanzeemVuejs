@@ -29,6 +29,9 @@
           <template v-slot:prepend="{ item }">
             <v-btn text :to="{ path: `/coa/${item.acc_code}` }">
               <span> {{ item.acc_name }} </span>
+              <v-icon right dark v-if="item.acc_config !== 0">
+                mdi-cloud-upload
+              </v-icon>
             </v-btn>
           </template>
         </v-treeview>
@@ -82,6 +85,7 @@ export default {
   },
   computed: {
     items() {
+      console.log(this.parentAccounts, "asdf");
       return this.parentAccounts;
     }
   },

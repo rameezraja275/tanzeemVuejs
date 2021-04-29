@@ -229,9 +229,7 @@ export default {
     },
 
     clearEditAccObj() {
-      this.editAccountDetails = {
-        guarantors: []
-      };
+      this.editAccountDetails = null;
     }
   }
 };

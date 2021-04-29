@@ -43,7 +43,7 @@
                       <v-card-text>
                         <span
                           class="subtitle-2"
-                          style="font-weight: 500;color: #222;"
+                          style="font-weight: 500; color: #222"
                         >
                           Enter Basic Info:
                         </span>
@@ -285,7 +285,7 @@
                       <v-card-text>
                         <span
                           class="subtitle-2"
-                          style="font-weight: 500;color: #222;"
+                          style="font-weight: 500; color: #222"
                           >Please enter your guarantor info:</span
                         >
 
@@ -306,6 +306,15 @@
                                 required
                                 :error-messages="errors"
                                 :loading="slctLoadingOnAcHolders"
+                                :rules="
+                                  guarantor1.acc_no_id !== !guarantor1.acc_no_id
+                                    ? [
+                                        guarantor1.acc_no_id !==
+                                          guarantor2.acc_no_id ||
+                                          'Guarantor 1 and guarantor 2 can not be the same person'
+                                      ]
+                                    : []
+                                "
                               ></v-autocomplete>
                             </validation-provider>
                           </v-col>
@@ -361,7 +370,7 @@
 
                         <span
                           class="subtitle-2"
-                          style="font-weight: 500;color: #222;"
+                          style="font-weight: 500; color: #222"
                           >Please enter your second guarantor info:</span
                         >
                         <v-row>
@@ -380,6 +389,15 @@
                                 label="A/C No"
                                 required
                                 :error-messages="errors"
+                                :rules="
+                                  guarantor2.acc_no_id !== !guarantor2.acc_no_id
+                                    ? [
+                                        guarantor2.acc_no_id !==
+                                          guarantor1.acc_no_id ||
+                                          'Guarantor 1 and guarantor 2 can not be the same person'
+                                      ]
+                                    : []
+                                "
                                 :loading="slctLoadingOnAcHolders"
                               ></v-autocomplete>
                             </validation-provider>
@@ -466,7 +484,12 @@
           <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
               <p
-                style="font-size: 20px;text-align: center;padding-top: 10px;margin-bottom: 0px;"
+                style="
+                  font-size: 20px;
+                  text-align: center;
+                  padding-top: 10px;
+                  margin-bottom: 0px;
+                "
               >
                 Are you sure you want to delete this item?
               </p>
