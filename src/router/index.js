@@ -124,6 +124,21 @@ const routes = [
       }
     }
   },
+  {
+    path: "/reports",
+    name: "Reports",
+    component: () => import("../pages/reports/"),
+    meta: { layout: Layout },
+    beforeEnter(to, from, next) {
+      if (validateToken()) {
+        next();
+      } else {
+        next({
+          name: "Login"
+        });
+      }
+    }
+  },
   { path: "*", component: () => import("../pages/pageNotFound/") }
 ];
 

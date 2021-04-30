@@ -76,6 +76,11 @@ export default {
           icon: "mdi-cash-plus",
           to: "/loanInstalment"
         },
+        {
+          title: "Reports",
+          icon: "mdi-file-chart",
+          to: "/reports"
+        },
         { title: "Sign Out", icon: "mdi-exit-to-app" }
       ],
       mini: true

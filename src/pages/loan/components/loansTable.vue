@@ -457,7 +457,7 @@
                       B<span class="text-lowercase">ack</span>
                     </v-btn>
                     <v-btn
-                      :disabled="step === 2"
+                      v-if="step === 1"
                       color="primary"
                       depressed
                       @click="step++"

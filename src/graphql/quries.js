@@ -693,3 +693,30 @@ export const UPDATE_LOAN_INSTALMENT = gql`
     }
   }
 `;
+
+export const ACCOUNT_LEDGER_REPORT = gql`
+  query getAccountLedgerReport(
+    $acc_code_id: BigInt
+    $acc_no_id: BigInt
+    $start_date: Date
+    $end_date: Date
+  ) {
+    getAccountLedgerReport(
+      acc_code_id: $acc_code_id
+      acc_no_id: $acc_no_id
+      start_date: $start_date
+      end_date: $end_date
+    ) {
+      id
+      acc_code_id
+      acc_code_name
+      acc_no_id
+      acc_no_name
+      narration
+      voucher_date
+      voucher_type
+      dr
+      cr
+    }
+  }
+`;
