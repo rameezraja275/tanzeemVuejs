@@ -27,6 +27,9 @@ export async function addUpdateVouchers(vueObj) {
     if (vueObj.isEditMode) {
       element.acc_master_id = Number(vueObj.voucherGroupId);
     }
+    if (!element.acc_no_id) {
+      element.acc_no_id = 0;
+    }
   });
   const variables = {
     voucher_date: vueObj.voucherPostDate,
@@ -192,6 +195,7 @@ export async function getVoucherByGroupId(vueObj) {
       throw result.errors[0].message;
     } else {
       vueObj.voucherGroup = result.data.getAccountVouchers.vouchers;
+      console.log(vueObj.voucherGroup, "data");
       vueObj.voucherPostDate =
         result.data.getAccountVouchers.group_details.voucher_date;
       vueObj.voucherType =

@@ -137,7 +137,14 @@ const routes = [
           name: "Login"
         });
       }
-    }
+    },
+    children: [
+      {
+        path: ":reportId",
+        component: () => import("../pages/reports/"),
+        meta: { layout: Layout }
+      }
+    ]
   },
   { path: "*", component: () => import("../pages/pageNotFound/") }
 ];

@@ -69,16 +69,35 @@
             <v-radio label="Detail" :value="DETAIL_ACCOUNTS"></v-radio>
           </v-radio-group>
         </validation-provider>
+
+        <validation-provider
+          v-slot="{ errors }"
+          name="A/C Nature"
+          rules="required"
+        >
+          <v-select
+            v-model="accNature"
+            :items="accNatureItems"
+            label="A/C Nature"
+            item-text="label"
+            item-value="label"
+            :loading="slctLoadingCnfigAC === 1"
+            :error-messages="errors"
+            required
+          ></v-select>
+        </validation-provider>
+
         <v-select
           v-model="accConfig"
           :items="configAccounts"
-          label="Configure Account"
+          label="Configure A/C"
           :disabled="disableConfigureAC"
           data-vv-name="select"
           item-text="label"
           item-value="id"
           :loading="slctLoadingCnfigAC === 1"
         ></v-select>
+
         <div class="text-right">
           <v-btn
             class="mr-4"
@@ -179,7 +198,12 @@ extend("max", {
 });
 
 export default {
-  props: ["addInParentArray", "removeItemFromArray"],
+  props: [
+    "addInParentArray",
+    "removeItemFromArray",
+    "groupAccounts",
+    "slctLoadingAcParents"
+  ],
   components: {
     ValidationProvider,
     ValidationObserver,
@@ -192,7 +216,7 @@ export default {
     accParent: null,
     id: null,
     items: [],
-    groupAccounts: [],
+    // groupAccounts: [],
     allAcounts: [],
     configAccounts: [],
     mutationLoading: false,
@@ -211,26 +235,36 @@ export default {
     isMainAccount: false,
 
     // for autocomplete loader
-    slctLoadingAcParents: 0,
-    slctLoadingCnfigAC: 0
+    // slctLoadingAcParents: 0,
+    slctLoadingCnfigAC: 0,
+
+    accNatureItems: [
+      { label: "Asset" },
+      { label: "Expense" },
+      { label: "Liability" },
+      { label: "Income" },
+      { label: "Equity" }
+    ],
+    accNature: null
   }),
   apollo: {
-    getAccounts: {
-      query: GET_ACCOUNTS,
-      variables: {
-        acc_type: GROUP_ACCOUNTS
-      },
-      result({ data }) {
-        this.groupAccounts = data.getAccounts;
-      },
-      error(error) {
-        var temp = error.toString();
-        this.message = temp;
-        this.snackBarColor = "red";
-        this.snackbarModel = true;
-      },
-      loadingKey: "slctLoadingAcParents"
-    },
+    // getAccounts: {
+    //   query: GET_ACCOUNTS,
+    //   variables: {
+    //     acc_type: GROUP_ACCOUNTS
+    //   },
+    //   result({ data }) {
+    //     this.groupAccounts = data.getAccounts;
+    //     console.log(this.groupAccounts, "group acc")
+    //   },
+    //   error(error) {
+    //     var temp = error.toString();
+    //     this.message = temp;
+    //     this.snackBarColor = "red";
+    //     this.snackbarModel = true;
+    //   },
+    //   loadingKey: "slctLoadingAcParents"
+    // },
     getAllAccounts: {
       query: GET_ACCOUNTS_NO_ID,
       result({ data }) {
@@ -242,6 +276,7 @@ export default {
       query: GET_ACCOUNTS_CONFIG,
       result({ data }) {
         this.configAccounts = data.getAccountConfig;
+        this.configAccounts.unshift({ id: 0, label: "Deselect" });
       },
       loadingKey: "slctLoadingCnfigAC"
     }
@@ -304,7 +339,8 @@ export default {
         acc_name: this.accountName,
         acc_parent: this.accParent,
         acc_type: this.accType,
-        acc_config: this.accConfig
+        acc_config: this.accConfig,
+        acc_nature: this.accNature
       };
 
       if (!variables.acc_config) {
@@ -325,8 +361,8 @@ export default {
             : {
                 ...variables,
                 acc_code: Number(this.acc_code)
-              }
-          // update: this.updateCache(this.isEditable)
+              },
+          update: this.updateCache(this.isEditable)
         });
 
         if (result.errors) {
@@ -365,6 +401,7 @@ export default {
       this.accountName = "";
       this.accParent = null;
       this.accType = null;
+      (this.accNature = ""), (this.accConfig = "");
       this.$refs.observer.reset();
     },
     async onDelete() {
@@ -487,7 +524,8 @@ export default {
           acc_parent,
           id,
           acc_type,
-          acc_config
+          acc_config,
+          acc_nature
         } = accountData;
         this.acc_code = acc_code;
         this.accountName = acc_name;
@@ -495,6 +533,7 @@ export default {
         this.accType = acc_type;
         this.accConfig = acc_config;
         this.id = id;
+        this.accNature = acc_nature;
       }
     },
     closeSnackbar() {
@@ -513,6 +552,7 @@ export default {
             acc_name: this.accountName,
             acc_config: this.accConfig,
             acc_type: this.accType,
+            acc_nature: this.accNature,
             __typename: "Account"
           };
           try {

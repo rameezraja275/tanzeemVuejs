@@ -344,7 +344,8 @@ import {
   fetchLoanInstalments,
   deleteLoanInstalment,
   getLoanInstalmentById,
-  updateLoanInstalment
+  updateLoanInstalment,
+  getLoanAccNoItems
 } from "../actions/action";
 
 import { required } from "vee-validate/dist/rules";
@@ -588,6 +589,7 @@ export default {
   created() {
     fetchAccounts(this);
     fetchLoanInstalments(this);
+    getLoanAccNoItems(this);
   }
 };
 </script>

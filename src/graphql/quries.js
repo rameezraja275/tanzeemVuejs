@@ -22,6 +22,7 @@ export const GET_ACCOUNTS = gql`
       acc_name
       acc_type
       acc_config
+      acc_nature
     }
   }
 `;
@@ -35,6 +36,7 @@ export const GET_ACCOUNTS_NO_ID = gql`
       acc_name
       acc_type
       acc_config
+      acc_nature
     }
   }
 `;
@@ -48,6 +50,7 @@ export const GET_ACCOUNTS_BY_ID = gql`
       acc_parent
       acc_type
       acc_config
+      acc_nature
     }
   }
 `;
@@ -61,6 +64,7 @@ export const GET_ACCOUNTS_PARENTS = gql`
       acc_name
       acc_type
       acc_config
+      acc_nature
     }
   }
 `;
@@ -74,6 +78,7 @@ export const GET_ACCOUNTS_CHILDS = gql`
       acc_name
       acc_type
       acc_config
+      acc_nature
     }
   }
 `;
@@ -85,6 +90,7 @@ export const ADD_ACCOUNT = gql`
     $acc_parent: BigInt!
     $acc_type: TinyInt!
     $acc_config: TinyInt!
+    $acc_nature: String!
   ) {
     addAccount(
       acc_name: $acc_name
@@ -92,6 +98,7 @@ export const ADD_ACCOUNT = gql`
       acc_parent: $acc_parent
       acc_type: $acc_type
       acc_config: $acc_config
+      acc_nature: $acc_nature
     ) {
       message
       id
@@ -106,6 +113,7 @@ export const UPDATE_ACCOUNT = gql`
     $acc_parent: BigInt!
     $acc_type: TinyInt!
     $acc_config: TinyInt!
+    $acc_nature: String!
   ) {
     updateAccount(
       id: $id
@@ -113,6 +121,7 @@ export const UPDATE_ACCOUNT = gql`
       acc_parent: $acc_parent
       acc_type: $acc_type
       acc_config: $acc_config
+      acc_nature: $acc_nature
     ) {
       id
       acc_code
@@ -120,6 +129,7 @@ export const UPDATE_ACCOUNT = gql`
       acc_parent
       acc_type
       acc_config
+      acc_nature
     }
   }
 `;
@@ -717,6 +727,24 @@ export const ACCOUNT_LEDGER_REPORT = gql`
       voucher_type
       dr
       cr
+    }
+  }
+`;
+
+export const GET_TRIAL_BALANCE = gql`
+  query getTrialBalance($date: Date) {
+    getTrialBalance(date: $date) {
+      acc_name
+      acc_nature
+      balance
+    }
+  }
+`;
+
+export const GET_CONFIGURE_ACCOUNT_ID = gql`
+  query getConfigureAccount($acc_config: Int) {
+    getConfigureAccount(acc_config: $acc_config) {
+      id
     }
   }
 `;

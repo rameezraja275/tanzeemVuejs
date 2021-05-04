@@ -5,13 +5,14 @@ import {
   UPDATE_LOAN_ISSUE,
   DELETE_LOAN_ISSUE,
   GET_ACCOUNTS,
-  GET_ACCOUNTS_CHILDS
+  GET_ACCOUNTS_CHILDS,
+  GET_CONFIGURE_ACCOUNT_ID
 } from "../../../graphql/quries";
 import {
   omitTypeOff,
   removeGraphQlTagFromErrors
 } from "../../../utils/helpers";
-import { GROUP_ACCOUNTS } from "../../../utils/constants";
+import { GROUP_ACCOUNTS, ACCOUNT_CONFIG_LOAN } from "../../../utils/constants";
 
 export async function fetchLoanIssues(vueObj) {
   vueObj.loaderOn = true;
@@ -44,7 +45,6 @@ export async function fetchLoanIssuesById(vueObj, ID) {
       throw result.errors[0].message;
     } else {
       vueObj.dataFromInputs = result.data.getLoanIssueById.loan_issue;
-
       vueObj.guarantor1 = result.data.getLoanIssueById.guarantors[0];
       vueObj.guarantor2 = result.data.getLoanIssueById.guarantors[1];
       vueObj.dialog = true;
@@ -161,7 +161,7 @@ export async function updateLoanIssue(vueObj, editedIndex) {
       vueObj.dataFromInputs.loan_acc_name = vueObj.accountName;
       Object.assign(
         vueObj.loanAccountDetails[editedIndex],
-        vueObj.dataFromInputs
+        result.data.updateLoanIssue
       );
       vueObj.snackBarColor = "success";
       snackBarTxt = "Successfully updated loan issue";
@@ -233,7 +233,6 @@ export async function getDetailAccounts(vueObj) {
   const variables = {
     acc_type: GROUP_ACCOUNTS
   };
-  vueObj.slctLoanAcNoLoader = true;
   vueObj.slctTrnsfrAcCodeLoader = true;
 
   try {
@@ -245,20 +244,34 @@ export async function getDetailAccounts(vueObj) {
       throw result.errors[0].message;
     } else {
       vueObj.allGroupAccounts = result.data.getAccounts;
-      const variables = {
-        acc_parent: null
-      };
-      vueObj.slctTrnsfrAcCodeLoader = false;
+    }
+  } catch (e) {
+    vueObj.message = e;
+  }
+  vueObj.slctTrnsfrAcCodeLoader = false;
+}
 
-      result.data.getAccounts.forEach(element => {
-        if (element.acc_name == "Loan") {
-          variables.acc_parent = element.id;
-        }
-      });
+export async function getAccNoItems(vueObj) {
+  vueObj.slctLoanAcNoLoader = true;
+  console.log(ACCOUNT_CONFIG_LOAN);
+  const variables = {
+    acc_config: ACCOUNT_CONFIG_LOAN
+  };
+  try {
+    const result = await vueObj.$apollo.query({
+      query: GET_CONFIGURE_ACCOUNT_ID,
+      variables: variables
+    });
+    if (result.errors) {
+      throw result.errors[0].message;
+    } else {
+      const variables2 = {
+        acc_parent: result.data.getConfigureAccount[0].id
+      };
       try {
         const result2 = await vueObj.$apollo.query({
           query: GET_ACCOUNTS_CHILDS,
-          variables: variables
+          variables: variables2
         });
         if (result2.errors) {
           throw result2.errors[0].message;
@@ -268,11 +281,12 @@ export async function getDetailAccounts(vueObj) {
       } catch (e) {
         vueObj.message = e;
       }
-      vueObj.slctLoanAcNoLoader = false;
     }
   } catch (e) {
     vueObj.message = e;
   }
+
+  vueObj.slctLoanAcNoLoader = false;
 }
 
 export async function getAccountChilds(vueObj, accParent) {

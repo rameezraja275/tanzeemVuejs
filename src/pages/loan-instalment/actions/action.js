@@ -6,10 +6,11 @@ import {
   GET_LOAN_INSTALMENTS,
   DELETE_LOAN_INSTALMENT,
   GET_LOAN_INSTALMENTS_BY_ID,
-  UPDATE_LOAN_INSTALMENT
+  UPDATE_LOAN_INSTALMENT,
+  GET_CONFIGURE_ACCOUNT_ID
 } from "../../../graphql/quries";
 import { removeGraphQlTagFromErrors } from "../../../utils/helpers";
-import { GROUP_ACCOUNTS } from "../../../utils/constants";
+import { GROUP_ACCOUNTS, ACCOUNT_CONFIG_LOAN } from "../../../utils/constants";
 
 export async function fetchAccounts(vueObj) {
   const variables = {
@@ -37,6 +38,32 @@ export async function fetchAccounts(vueObj) {
   }
   vueObj.slctTrnsfrAcCodeLoader = false;
   vueObj.slctloanAcNoIdLoader = false;
+}
+
+export async function getLoanAccNoItems(vueObj) {
+  vueObj.slctLoanAcNoLoader = true;
+  const variables = {
+    acc_config: ACCOUNT_CONFIG_LOAN
+  };
+  try {
+    const result = await vueObj.$apollo.query({
+      query: GET_CONFIGURE_ACCOUNT_ID,
+      variables: variables
+    });
+    if (result.errors) {
+      throw result.errors[0].message;
+    } else {
+      fetchAccountChilds(
+        vueObj,
+        result.data.getConfigureAccount[0].id,
+        "forLoans"
+      );
+    }
+  } catch (e) {
+    vueObj.message = e;
+  }
+
+  vueObj.slctLoanAcNoLoader = false;
 }
 
 export async function fetchAccountChilds(vueObj, ID, from) {

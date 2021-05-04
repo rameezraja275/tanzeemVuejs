@@ -1,10 +1,11 @@
 import {
   ACCOUNT_LEDGER_REPORT,
-  GET_ACCOUNTS_CHILDS
+  GET_ACCOUNTS_CHILDS,
+  GET_TRIAL_BALANCE
 } from "../../../graphql/quries";
 import { removeGraphQlTagFromErrors } from "../../../utils/helpers";
 
-export async function fetchReports(vueObj) {
+export async function fetchReportsAcLedger(vueObj) {
   vueObj.btnLoading = true;
   vueObj.tableLoadingStatus(true);
   let variables = {
@@ -16,7 +17,6 @@ export async function fetchReports(vueObj) {
   if (!variables.acc_no_id) {
     variables.acc_no_id = 0;
   }
-  console.log(variables, "vars");
   try {
     const result = await vueObj.$apollo.query({
       query: ACCOUNT_LEDGER_REPORT,
@@ -25,8 +25,33 @@ export async function fetchReports(vueObj) {
     if (result.errors) {
       throw result.errors[0].message;
     } else {
-      console.log(result, "reports");
       vueObj.emitFetchedReports(result.data.getAccountLedgerReport);
+    }
+  } catch (error) {
+    vueObj.message = error;
+    vueObj.snackbarModel = true;
+    vueObj.snackBarColor = "red";
+    vueObj.snackbarText = removeGraphQlTagFromErrors(error);
+  }
+  vueObj.btnLoading = false;
+  vueObj.tableLoadingStatus(false);
+}
+
+export async function fetchReportsTrialBlnc(vueObj) {
+  vueObj.btnLoading = true;
+  vueObj.tableLoadingStatus(true);
+  let variables = {
+    date: vueObj.dataFromInputs.startDate
+  };
+  try {
+    const result = await vueObj.$apollo.query({
+      query: GET_TRIAL_BALANCE,
+      variables: variables
+    });
+    if (result.errors) {
+      throw result.errors[0].message;
+    } else {
+      vueObj.emitFetchedReports(result.data.getTrialBalance);
     }
   } catch (error) {
     vueObj.message = error;

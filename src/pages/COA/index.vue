@@ -9,6 +9,8 @@
       :readOnlySTatus="readOnlySTatus"
       :addInParentArray="addInParentArray"
       :removeItemFromArray="removeItemFromArray"
+      :groupAccounts="groupAccounts"
+      :slctLoadingAcParents="slctLoadingAcParents"
     />
   </div>
 </template>
@@ -16,7 +18,8 @@
 <script>
 import Tree from "./Components/tree";
 import Form from "./Components/form";
-import { GET_ACCOUNTS_PARENTS } from "../../graphql/quries";
+import { GET_ACCOUNTS_PARENTS, GET_ACCOUNTS } from "../../graphql/quries";
+import { GROUP_ACCOUNTS } from "../../utils/constants";
 
 export default {
   name: "COA",
@@ -29,7 +32,10 @@ export default {
       getAccountParents: [],
       readOnlySTatus: true,
       loading: false,
-      newId: null
+      newId: null,
+
+      groupAccounts: [],
+      slctLoadingAcParents: 0
     };
   },
   methods: {
@@ -58,6 +64,7 @@ export default {
       }
     },
     addInParentArray(data, editMode) {
+      console.log(data, "data to add");
       // if (!editMode) {
       //   this.getAccountParents.forEach(element => {
       //     this.dfs(element, data.acc_parent, false, data, editMode);
@@ -73,6 +80,7 @@ export default {
         if (!editMode) {
           if (element.id === data.acc_parent) {
             element.children.push(data);
+            this.groupAccounts.push(data);
           }
           {
             this.dfs(element, data.acc_parent, false, data, editMode);
@@ -83,6 +91,9 @@ export default {
       });
     },
     removeItemFromArray(ID) {
+      // this.groupAccounts.forEach(element => {
+      //   if(element)
+      // })
       this.getAccountParents.forEach(element => {
         this.dfs(element, ID, true);
         // if (element.children.id === ID) {
@@ -126,6 +137,22 @@ export default {
         }
       }
       return null;
+    }
+  },
+  apollo: {
+    getAccounts: {
+      query: GET_ACCOUNTS,
+      variables: {
+        acc_type: GROUP_ACCOUNTS
+      },
+      result({ data }) {
+        this.groupAccounts = data.getAccounts;
+      },
+      error(error) {
+        var temp = error.toString();
+        this.message = temp;
+      },
+      loadingKey: "slctLoadingAcParents"
     }
   },
   created() {

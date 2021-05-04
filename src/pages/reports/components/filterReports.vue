@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card elevation="1">
     <SnackBar
       :snackbarModel="snackbarModel"
       :snackBarColor="snackBarColor"
@@ -13,7 +13,7 @@
       <validation-observer ref="observer" v-slot="{ invalid }">
         <form class="d-flex flex-column align-center pb-4" autocomplete="off">
           <v-row style="min-width: 60%">
-            <v-col>
+            <v-col style="max-width:355px" class="mx-auto">
               <v-menu
                 v-model="menu"
                 :close-on-content-click="false"
@@ -31,7 +31,7 @@
                     <v-text-field
                       ref="startDate"
                       v-model="dataFromInputs.startDate"
-                      label="Start Date"
+                      :label="reportOf == 200 ? `As On` : `Start Date`"
                       prepend-inner-icon="mdi-calendar"
                       readonly
                       v-bind="attrs"
@@ -48,7 +48,7 @@
                 ></v-date-picker>
               </v-menu>
             </v-col>
-            <v-col>
+            <v-col v-if="reportOf == 200 ? false : true">
               <v-menu
                 v-model="menu2"
                 :close-on-content-click="false"
@@ -84,7 +84,7 @@
               </v-menu>
             </v-col>
           </v-row>
-          <v-row style="min-width: 60%">
+          <v-row style="min-width: 60%" v-if="reportOf == 200 ? false : true">
             <v-col>
               <validation-provider
                 v-slot="{ errors }"
@@ -122,7 +122,7 @@
             @click="applyFilters"
             :disabled="invalid"
             :loading="btnLoading"
-            >Apply Filters</v-btn
+            >Show</v-btn
           >
         </form>
       </validation-observer>
@@ -133,7 +133,11 @@
 <script>
 import { GET_ACCOUNTS_NO_ID } from "../../../graphql/quries";
 import SnackBar from "../../../components/snackBar";
-import { fetchReports, fetchAccountChilds } from "../actions/actions";
+import {
+  fetchReportsAcLedger,
+  fetchAccountChilds,
+  fetchReportsTrialBlnc
+} from "../actions/actions";
 import { required, digits, min_value } from "vee-validate/dist/rules";
 import {
   extend,
@@ -164,19 +168,18 @@ export default {
       menu2: null,
       acCodesArr: [],
       acNoArr: [],
-      //   acCodeId: null,
-      //   accNoId: null,
       dataFromInputs: {
         startDate: new Date().toISOString().substr(0, 10),
         endDate: new Date().toISOString().substr(0, 10)
       },
-      selectLoadingACCode: false,
+      selectLoadingACCode: 0,
       selectLoadingACNo: false,
       btnLoading: false,
 
       snackbarModel: false,
       snackBarColor: "",
-      snackbarText: ""
+      snackbarText: "",
+      reportOf: ""
     };
   },
   methods: {
@@ -184,7 +187,11 @@ export default {
       return `${item.acc_code} - ${item.acc_name}`;
     },
     applyFilters() {
-      fetchReports(this);
+      if (this.reportOf == 200) {
+        fetchReportsTrialBlnc(this);
+      } else {
+        fetchReportsAcLedger(this);
+      }
     },
     emitFetchedReports(data) {
       this.$emit("emitFetchedReports", data);
@@ -201,6 +208,13 @@ export default {
       this.snackbarModel = false;
     }
   },
+  watch: {
+    $route(val) {
+      this.reportOf = val.params.reportId;
+      (this.dataFromInputs.startDate = new Date().toISOString().substr(0, 10)),
+        (this.dataFromInputs.endDate = new Date().toISOString().substr(0, 10));
+    }
+  },
   apollo: {
     getAccounts: {
       query: GET_ACCOUNTS_NO_ID,
@@ -209,6 +223,9 @@ export default {
       },
       loadingKey: "selectLoadingACCode"
     }
+  },
+  created() {
+    this.reportOf = this.$route.params.reportId;
   }
 };
 </script>

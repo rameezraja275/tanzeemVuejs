@@ -307,7 +307,7 @@
                                 :error-messages="errors"
                                 :loading="slctLoadingOnAcHolders"
                                 :rules="
-                                  guarantor1.acc_no_id !== !guarantor1.acc_no_id
+                                  guarantor1.acc_no_id !== undefined
                                     ? [
                                         guarantor1.acc_no_id !==
                                           guarantor2.acc_no_id ||
@@ -390,7 +390,7 @@
                                 required
                                 :error-messages="errors"
                                 :rules="
-                                  guarantor2.acc_no_id !== !guarantor2.acc_no_id
+                                  guarantor2.acc_no_id !== undefined
                                     ? [
                                         guarantor2.acc_no_id !==
                                           guarantor1.acc_no_id ||
@@ -535,6 +535,7 @@ import {
   fetchLoanIssuesById,
   updateLoanIssue,
   getDetailAccounts,
+  getAccNoItems,
   getAccountChilds
 } from "../action/action";
 import { fetchAccountHolders } from "../../AccountConfig/actions/actions";
@@ -784,7 +785,7 @@ export default {
       val || this.closeDelete();
     },
     changeInDates(val) {
-      if (val === true) {
+      if (val === true && this.editedIndex !== 0) {
         this.maturityDate();
       }
     },
@@ -930,6 +931,7 @@ export default {
     fetchLoanIssues(this);
     fetchAccountHolders(this);
     getDetailAccounts(this);
+    getAccNoItems(this);
   }
 };
 </script>

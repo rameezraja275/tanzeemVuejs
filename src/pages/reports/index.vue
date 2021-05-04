@@ -1,12 +1,17 @@
 <template>
-  <ReportsCard />
+  <v-card class="flex" height="100%">
+    <ReportLists />
+    <ReportsTable />
+  </v-card>
 </template>
 
 <script>
-import ReportsCard from "./components/reportsCard.vue";
+import ReportsTable from "./components/reportsTable.vue";
+import ReportLists from "./components/reportLists.vue";
 export default {
   components: {
-    ReportsCard
+    ReportsTable,
+    ReportLists
   }
 };
 </script>

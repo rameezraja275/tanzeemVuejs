@@ -85,7 +85,6 @@ export default {
   },
   computed: {
     items() {
-      console.log(this.parentAccounts, "asdf");
       return this.parentAccounts;
     }
   },
