@@ -64,7 +64,6 @@ export default {
       }
     },
     addInParentArray(data, editMode) {
-      console.log(data, "data to add");
       // if (!editMode) {
       //   this.getAccountParents.forEach(element => {
       //     this.dfs(element, data.acc_parent, false, data, editMode);

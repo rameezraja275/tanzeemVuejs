@@ -618,13 +618,18 @@ export const GET_MARKUP_DETAIL = gql`
 `;
 
 export const GET_LOAN_INSTALMENTS = gql`
-  query {
-    getLoanInstallment {
+  query getLoanInstallment($offset: Int, $limit: Int, $loan_acc_no_id: Int) {
+    getLoanInstallment(
+      offset: $offset
+      limit: $limit
+      loan_acc_no_id: $loan_acc_no_id
+    ) {
       id
       deposit_date
       deposit_type
       transfer_acc_code_id
       transfer_acc_no_id
+      loan_acc_code_id
       loan_acc_no_id
       loan_acc_name
       principal
@@ -637,6 +642,7 @@ export const GET_LOAN_INSTALMENTS = gql`
       narration
       createdAt
       updatedAt
+      TotalRecords
     }
   }
 `;

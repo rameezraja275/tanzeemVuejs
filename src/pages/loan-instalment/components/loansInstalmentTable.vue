@@ -9,8 +9,9 @@
     <v-data-table
       :headers="headers"
       :items="loanInstalments"
-      sort-by="calories"
       :loading="tableLoading"
+      :server-items-length="totalItems"
+      @update:options="paginate"
       class="elevation-1"
     >
       <template v-slot:top>
@@ -79,7 +80,7 @@
                         </v-col>
                       </v-row>
 
-                      <v-row style="height:90px;">
+                      <v-row style="height: 90px">
                         <v-col cols="12" sm="6" md="4">
                           <v-menu
                             v-model="menu"
@@ -297,7 +298,12 @@
           <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
               <p
-                style="font-size: 20px;text-align: center;padding-top: 10px;margin-bottom: 0px;"
+                style="
+                  font-size: 20px;
+                  text-align: center;
+                  padding-top: 10px;
+                  margin-bottom: 0px;
+                "
               >
                 Are you sure you want to delete this item?
               </p>
@@ -325,7 +331,9 @@
         </v-toolbar>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
-        <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
+        <v-icon small class="mr-2" @click="editItem(item)">
+          md i-pencil
+        </v-icon>
         <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
         <v-icon size="20" class="ml-2" @click="showCompleteInfo(item)">
           mdi-account-details
@@ -430,7 +438,12 @@ export default {
     slctTrnsfrAcNoIdLoader: false,
     slctloanAcNoIdLoader: false,
     // del btn loader
-    deleteBtnLoading: false
+    deleteBtnLoading: false,
+
+    limit: 11,
+    offset: 0,
+    page: 0,
+    totalItems: 0
   }),
 
   computed: {
@@ -477,6 +490,17 @@ export default {
   },
 
   watch: {
+    // options: {
+    //   handler(val) {
+    //     console.log(val)
+    //     if(this.limit === 10) {
+    //       this.offset = this.offset + 10
+    //     }
+    //     if(val.itemsPerPage)
+    //     fetchLoanInstalments(this, { limit: this.limit, offset: this.offset });
+    //   },
+    //   deep: true,
+    // },
     dialog(val) {
       val || this.close();
     },
@@ -501,6 +525,15 @@ export default {
   },
 
   methods: {
+    paginate(val) {
+      fetchLoanInstalments(this, { limit: this.limit, offset: this.offset });
+      if (val.page > this.page) {
+        this.offset = this.offset + 11;
+      } else {
+        this.offset = this.offset - 11;
+      }
+      this.page = val.page;
+    },
     changeData() {
       this.dataFromInputs.markup_days = this.receivedMarkupData.markup_days;
       this.dataFromInputs.markup_amount = this.receivedMarkupData.markup_amount;
@@ -584,12 +617,21 @@ export default {
     closeSnackbar() {
       this.snackbarModel = false;
     }
-  },
 
+    // paginate(val) {
+    //   if (val.page > this.page) {
+    //     this.offset = this.offset + 11
+    //     fetchLoanInstalments(this, {limit: this.limit, offset: this.offset})
+    //     this.page = val.page;
+    //   }
+    // },
+  },
   created() {
     fetchAccounts(this);
-    fetchLoanInstalments(this);
     getLoanAccNoItems(this);
   }
+  // mounted() {
+  //   fetchLoanInstalments(this, { limit: this.limit, offset: this.offset, fromCreated: true });
+  // }
 };
 </script>

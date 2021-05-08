@@ -26,11 +26,11 @@ export async function fetchAccounts(vueObj) {
     if (result.errors) {
       throw result.errors[0].message;
     } else {
-      result.data.getAccounts.forEach(element => {
-        if (element.acc_name == "Loan") {
-          fetchAccountChilds(vueObj, element.id, "forLoans");
-        }
-      });
+      // result.data.getAccounts.forEach(element => {
+      //   if (element.acc_name == "Loan") {
+      //     fetchAccountChilds(vueObj, element.id, "forLoans");
+      //   }
+      // });
       vueObj.allGroupAccounts = result.data.getAccounts;
     }
   } catch (e) {
@@ -115,7 +115,12 @@ export async function addNewLoanInstalment(vueObj) {
       variables: variables,
       update: (cache, { data: { addLoanInstallment } }) => {
         let currentData = cache.readQuery({
-          query: GET_LOAN_INSTALMENTS
+          query: GET_LOAN_INSTALMENTS,
+          variables: {
+            limit: vueObj.limit,
+            offset: vueObj.offset,
+            loan_acc_no_id: 0
+          }
         });
         addLoanInstallment.loan_acc_name = vueObj.accountName;
         cache.writeQuery({
@@ -142,8 +147,6 @@ export async function addNewLoanInstalment(vueObj) {
   } catch (e) {
     vueObj.message = e;
     vueObj.snackBarColor = "red";
-    // var error = e.toString();
-    // error = error.replace("Error: GraphQL error: ", "");
     vueObj.snackbarText = removeGraphQlTagFromErrors(e);
     vueObj.snackbarModel = true;
   }
@@ -174,19 +177,27 @@ export async function fetchMarkUpDetails(vueObj) {
   vueObj.markUpDetailsLoading = false;
 }
 
-export async function fetchLoanInstalments(vueObj) {
+export async function fetchLoanInstalments(vueObj, data) {
   vueObj.tableLoading = true;
+  const variables = {
+    limit: data.limit,
+    offset: data.offset,
+    loan_acc_no_id: 0
+  };
   try {
     const result = await vueObj.$apollo.query({
-      query: GET_LOAN_INSTALMENTS
+      query: GET_LOAN_INSTALMENTS,
+      variables: variables
     });
     if (result.errors) {
       throw result.errors[0].message;
     } else {
       vueObj.loanInstalments = result.data.getLoanInstallment;
+      vueObj.totalItems = vueObj.loanInstalments[0].TotalRecords;
     }
   } catch (e) {
     vueObj.message = e;
+    vueObj.offset = vueObj.offset - 11;
   }
   vueObj.tableLoading = false;
 }
@@ -203,7 +214,12 @@ export async function deleteLoanInstalment(vueObj, ID) {
       variables: variables,
       update: cache => {
         let currentData = cache.readQuery({
-          query: GET_LOAN_INSTALMENTS
+          query: GET_LOAN_INSTALMENTS,
+          variables: {
+            limit: vueObj.limit,
+            offset: vueObj.offset,
+            loan_acc_no_id: 0
+          }
         });
         let temp = [...currentData.getLoanInstallment];
         currentData.getLoanInstallment.forEach((element, index) => {
@@ -231,8 +247,6 @@ export async function deleteLoanInstalment(vueObj, ID) {
   } catch (e) {
     vueObj.message = e;
     vueObj.snackBarColor = "red";
-    // var error = e.toString();
-    // error = error.replace("Error: GraphQL error: ", "");
     vueObj.snackbarText = removeGraphQlTagFromErrors(e);
     vueObj.snackbarModel = true;
   }
@@ -308,8 +322,6 @@ export async function updateLoanInstalment(vueObj) {
   } catch (e) {
     vueObj.message = e;
     vueObj.snackBarColor = "red";
-    // var error = e.toString();
-    // error = error.replace("Error: GraphQL error: ", "");
     vueObj.snackbarText = removeGraphQlTagFromErrors(e);
     vueObj.snackbarModel = true;
   }
