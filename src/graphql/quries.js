@@ -765,3 +765,34 @@ export const ADD_VOUCHER_USING_EXCEL_FILE = gql`
     }
   }
 `;
+
+export const GET_LOAN_LEDGER = gql`
+  query getLoanLedger($issue_id: Int) {
+    getLoanLedger(issue_id: $issue_id) {
+      ledger {
+        loan_type
+        loan_amount
+        markup_percentage
+        maturity_date
+        deposit_date
+        deposit_type
+        principal
+        deposit_amount
+        markup_amount
+        markup_receiveable
+        markup_days
+        penalty_amount
+        penalty_days
+      }
+    }
+  }
+`;
+
+export const GET_LOAN_ISSUES_AMOUNT_ONLY = gql`
+  query {
+    getLoanIssues {
+      id
+      loan_amount
+    }
+  }
+`;

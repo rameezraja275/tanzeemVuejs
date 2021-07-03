@@ -64,11 +64,14 @@
 import FilterAcLedger from "../components/filters/filter-account-ledger.vue";
 import FilterBlncSheet from "../components/filters/filter-balance-sheet.vue";
 import FilterTrialBlnc from "../components/filters/filter-trial-balance.vue";
+import FilterLoanLedger from "../components/filters/filter-loan-ledger.vue";
+
 export default {
   components: {
     FilterAcLedger,
     FilterBlncSheet,
-    FilterTrialBlnc
+    FilterTrialBlnc,
+    FilterLoanLedger
   },
   props: ["currentHeaderForTable"],
   data() {
@@ -134,6 +137,8 @@ export default {
         temp = "FilterTrialBlnc";
       } else if (this.reportOf == 300) {
         temp = "FilterBlncSheet";
+      } else if (this.reportOf == 400) {
+        temp = "FilterLoanLedger";
       }
       return temp;
     }
