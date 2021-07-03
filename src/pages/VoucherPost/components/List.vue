@@ -17,6 +17,26 @@
             >V<span class="text-lowercase">oucher</span></span
           >
         </v-btn>
+        <v-btn
+          block
+          plain
+          @click="$refs.fileUpload.click()"
+          class="primary mt-3"
+          :loading="importBtnLoading"
+        >
+          <span
+            >I<span class="text-lowercase">mport </span>F<span
+              class="text-lowercase"
+              >rom </span
+            >E<span class="text-lowercase">xcel</span></span
+          >
+        </v-btn>
+        <input
+          ref="fileUpload"
+          type="file"
+          @change="selectFileToImport"
+          hidden
+        />
         <v-menu
           v-model="menu2"
           :close-on-content-click="false"
@@ -74,10 +94,12 @@
 
 <script>
 import { mapActions } from "vuex";
-import { getVoucherByDate } from "../actions/index";
+import { getVoucherByDate, addVouchersByImport } from "../actions/index";
 import snackBarComp from "../../../components/snackBar";
+import XLSX from "xlsx";
+
 export default {
-  props: ["vouchersGroups", "voucherGroupsList"],
+  props: ["vouchersGroups", "voucherGroupsList", "addNewVoucherToList"],
   components: {
     "snack-bar": snackBarComp
   },
@@ -89,15 +111,17 @@ export default {
 
     snackBarColor: "",
     snackBarText: "",
-    snackBarModel: false
+    snackBarModel: false,
+    file: "",
+
+    importBtnLoading: false
   }),
   created() {
     getVoucherByDate(this);
   },
   watch: {
     filterDate: {
-      handler(newItem, oldItem) {
-        console.log(newItem, "new date");
+      handler(newItem) {
         this.changeVouchersFilterDate(newItem);
         getVoucherByDate(this);
       },
@@ -114,6 +138,68 @@ export default {
     },
     closeSnackbar() {
       this.snackBarModel = false;
+    },
+    selectFileToImport(event) {
+      this.file = event.target.files ? event.target.files[0] : null;
+      if (this.file) {
+        const reader = new FileReader();
+
+        reader.onload = e => {
+          const bstr = e.target.result;
+          const wb = XLSX.read(bstr, {
+            type: "binary"
+          });
+          const wsname = wb.SheetNames[0];
+          const ws = wb.Sheets[wsname];
+          const data = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false });
+          const verifyFileTemplate = function() {
+            var temp = null;
+            data.forEach(element => {
+              if (!element[1] || !element[2]) {
+                temp = false;
+              }
+            });
+            if (!data[1][0]) {
+              temp = false;
+            }
+            if (temp === null) {
+              temp = true;
+            }
+            return temp;
+          };
+          if (!verifyFileTemplate()) {
+            this.snackBarModel = true;
+            this.snackBarText =
+              "The data from the file is not structured properly";
+            this.snackBarColor = "red";
+            return;
+          }
+          const dateToSend = this.formatDateInImport(data[1][0]);
+
+          let dataToSend = { voucher_date: dateToSend, vouchers: [] };
+          data.forEach((element, index) => {
+            if (index >= 1) {
+              dataToSend.vouchers.push({
+                accNo: element[1],
+                amount: element[2]
+              });
+            }
+          });
+
+          addVouchersByImport(this, dataToSend);
+        };
+
+        reader.readAsBinaryString(this.file);
+      }
+    },
+    formatDateInImport(date) {
+      date = date.split("/");
+      var temp = date[0];
+      date[2] = `20${date[2]}`;
+      date[0] = date[2];
+      date[2] = temp;
+      date = date.join("-");
+      return date;
     }
   }
 };

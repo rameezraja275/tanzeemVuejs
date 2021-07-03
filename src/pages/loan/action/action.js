@@ -253,7 +253,6 @@ export async function getDetailAccounts(vueObj) {
 
 export async function getAccNoItems(vueObj) {
   vueObj.slctLoanAcNoLoader = true;
-  console.log(ACCOUNT_CONFIG_LOAN);
   const variables = {
     acc_config: ACCOUNT_CONFIG_LOAN
   };

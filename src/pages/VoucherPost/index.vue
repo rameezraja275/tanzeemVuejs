@@ -3,6 +3,7 @@
     <List
       :vouchersGroups="vouchersGroups"
       :voucherGroupsList="voucherGroupsList"
+      :addNewVoucherToList="addNewVoucherToList"
     />
     <Table
       :addNewVoucherToList="addNewVoucherToList"

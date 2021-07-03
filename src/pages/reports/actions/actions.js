@@ -86,3 +86,29 @@ export async function fetchAccountChilds(vueObj) {
   }
   vueObj.selectLoadingACNo = false;
 }
+
+export async function fetchReportsBlncSheet(vueObj) {
+  vueObj.btnLoading = true;
+  vueObj.tableLoadingStatus(true);
+  let variables = {
+    start_data: vueObj.dataFromInputs.startDate
+  };
+  try {
+    const result = await vueObj.$apollo.query({
+      query: ACCOUNT_LEDGER_REPORT,
+      variables: variables
+    });
+    if (result.errors) {
+      throw result.errors[0].message;
+    } else {
+      vueObj.emitFetchedReports(result.data.REPORTS);
+    }
+  } catch (error) {
+    vueObj.message = error;
+    vueObj.snackbarModel = true;
+    vueObj.snackBarColor = "red";
+    vueObj.snackbarText = removeGraphQlTagFromErrors(error);
+  }
+  vueObj.btnLoading = false;
+  vueObj.tableLoadingStatus(false);
+}

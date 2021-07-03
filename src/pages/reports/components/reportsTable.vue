@@ -1,17 +1,52 @@
 <template>
   <div class="mt-10 container">
     <div>
-      <Filters
+      <component
         v-on:emitFetchedReports="receivedDataForTable($event)"
         v-on:tableLoadingStatus="changeTableLoaderStatus($event)"
-      />
+        class="mb-2"
+        v-bind:is="currentFiltersCompToUse"
+      >
+      </component>
       <div v-if="reportsArr.length !== 0">
         <v-data-table
           :loading="tableLoading"
-          :headers="tableOf"
+          :hide-default-footer="reportOf == 300"
+          :headers="currentHeaderForTable"
           :items="reportsArr"
           class="elevation-1"
         >
+          <template v-slot:top v-if="reportOf == 300">
+            <v-toolbar flat>
+              <v-toolbar-title>Assets</v-toolbar-title>
+              <v-divider class="mx-4" inset vertical></v-divider>
+              <v-spacer></v-spacer>
+            </v-toolbar>
+          </template>
+          <template v-slot:no-data>
+            <h4>No reports found</h4>
+          </template>
+          <template v-slot:[`item.diffOfCrDr`]="{ item }">
+            <v-icon color="green">{{ item.icon }}</v-icon
+            ><span style="color:red;">{{ item.diffOfCrDr }}</span>
+          </template>
+        </v-data-table>
+        <!-- Needed another data table if report is for balance sheet-->
+        <v-data-table
+          v-if="reportOf == 300"
+          :loading="tableLoading"
+          hide-default-footer
+          :headers="currentHeaderForTable"
+          :items="reportsArr"
+          class="elevation-1 mt-2"
+        >
+          <template v-slot:top>
+            <v-toolbar flat>
+              <v-toolbar-title>Liabilities</v-toolbar-title>
+              <v-divider class="mx-4" inset vertical></v-divider>
+              <v-spacer></v-spacer>
+            </v-toolbar>
+          </template>
           <template v-slot:no-data>
             <h4>No reports found</h4>
           </template>
@@ -26,56 +61,20 @@
 </template>
 
 <script>
-import Filters from "../components/filterReports";
+import FilterAcLedger from "../components/filters/filter-account-ledger.vue";
+import FilterBlncSheet from "../components/filters/filter-balance-sheet.vue";
+import FilterTrialBlnc from "../components/filters/filter-trial-balance.vue";
 export default {
   components: {
-    Filters
+    FilterAcLedger,
+    FilterBlncSheet,
+    FilterTrialBlnc
   },
-  computed: {
-    tableOf() {
-      var temp = null;
-      if (this.reportOf == 200) {
-        temp = [...this.headersForTrialBlnc];
-      } else {
-        temp = [...this.headers];
-      }
-      return temp;
-    }
-  },
+  props: ["currentHeaderForTable"],
   data() {
     return {
-      headers: [
-        {
-          text: "Date",
-          align: "start",
-          sortable: false,
-          value: "voucher_date"
-        },
-        {
-          text: "A/C No",
-          align: "start",
-          sortable: false,
-          value: "acc_no_id"
-        },
-        { text: "A/C Title", value: "acc_code_name", sortable: false },
-        { text: "Narration", value: "narration", sortable: false },
-        { text: "DR", value: "dr", sortable: false },
-        { text: "CR", value: "cr", sortable: false },
-        { text: "Balance", value: "balance", sortable: false }
-      ],
-      headersForTrialBlnc: [
-        { text: "A/C title", value: "acc_name", sortable: false },
-        { text: "DR", value: "dr", sortable: false },
-        { text: "CR", value: "cr", sortable: false },
-        {
-          text: "Out of balance",
-          value: "diffOfCrDr",
-          sortable: false,
-          width: "320px"
-        }
-      ],
       tableLoading: false,
-      reportsArr: [],
+      reportsArr: [{ acc_name: "Loan", dr: 120, cr: 12, total: 130 }],
       reportOf: ""
     };
   },
@@ -120,11 +119,23 @@ export default {
           }
         }
       }
-      console.log(temp, "data");
       this.reportsArr = [...temp];
     },
     changeTableLoaderStatus(status) {
       this.tableLoading = status;
+    }
+  },
+  computed: {
+    currentFiltersCompToUse() {
+      let temp = null;
+      if (this.reportOf == 100 || !this.reportOf) {
+        temp = "FilterAcLedger";
+      } else if (this.reportOf == 200) {
+        temp = "FilterTrialBlnc";
+      } else if (this.reportOf == 300) {
+        temp = "FilterBlncSheet";
+      }
+      return temp;
     }
   },
   watch: {

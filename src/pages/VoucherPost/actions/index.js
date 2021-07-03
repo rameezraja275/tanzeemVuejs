@@ -5,7 +5,8 @@ import {
   DELETE_POST_VOUCHER,
   GET_VOUCHERS_BY_GROUPID,
   GET_ACCOUNTS_CHILDS,
-  GET_ACCOUNTS
+  GET_ACCOUNTS,
+  ADD_VOUCHER_USING_EXCEL_FILE
 } from "../../../graphql/quries";
 import {
   omitTypeOff,
@@ -266,4 +267,33 @@ export async function getGroupAccounts(vueObj) {
     vueObj.message = error;
   }
   vueObj.selectLoadingACCode = false;
+}
+
+export async function addVouchersByImport(vueObj, data) {
+  vueObj.addingImportedFile = true;
+  vueObj.importBtnLoading = true;
+  try {
+    const result = await vueObj.$apollo.mutate({
+      mutation: ADD_VOUCHER_USING_EXCEL_FILE,
+      variables: {
+        ...data
+      }
+    });
+    if (result.errors) {
+      throw result.errors[0].message;
+    } else {
+      vueObj.addNewVoucherToList(result.data.addAccountVoucherMulti);
+      vueObj.snackBarColor = "success";
+      vueObj.snackBarText = "Successfully imported excel file";
+      vueObj.snackBarModel = true;
+    }
+  } catch (error) {
+    vueObj.message = error;
+    var temp = error.toString();
+    vueObj.snackBarColor = "red";
+    vueObj.snackBarText = temp;
+    vueObj.snackBarModel = true;
+  }
+  vueObj.addingImportedFile = false;
+  vueObj.importBtnLoading = false;
 }

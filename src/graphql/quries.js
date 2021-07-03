@@ -754,3 +754,14 @@ export const GET_CONFIGURE_ACCOUNT_ID = gql`
     }
   }
 `;
+
+export const ADD_VOUCHER_USING_EXCEL_FILE = gql`
+  mutation addAccountVoucherMulti(
+    $voucher_date: Date
+    $vouchers: [Add_Voucher_Input_Multi]
+  ) {
+    addAccountVoucherMulti(voucher_date: $voucher_date, vouchers: $vouchers) {
+      id
+    }
+  }
+`;

@@ -31,7 +31,7 @@
                     <v-text-field
                       ref="startDate"
                       v-model="dataFromInputs.startDate"
-                      :label="reportOf !== 100 ? `As On` : `Start Date`"
+                      label="Start Date"
                       prepend-inner-icon="mdi-calendar"
                       readonly
                       v-bind="attrs"
@@ -48,7 +48,7 @@
                 ></v-date-picker>
               </v-menu>
             </v-col>
-            <v-col v-if="reportOf == 100 ? true : false">
+            <v-col>
               <v-menu
                 v-model="menu2"
                 :close-on-content-click="false"
@@ -84,7 +84,7 @@
               </v-menu>
             </v-col>
           </v-row>
-          <v-row style="min-width: 60%" v-if="reportOf == 100 ? true : false">
+          <v-row style="min-width: 60%">
             <v-col>
               <validation-provider
                 v-slot="{ errors }"
@@ -131,14 +131,12 @@
 </template>
 
 <script>
-import { GET_ACCOUNTS_NO_ID } from "../../../graphql/quries";
-import SnackBar from "../../../components/snackBar";
+import { GET_ACCOUNTS_NO_ID } from "../../../../graphql/quries";
+import SnackBar from "../../../../components/snackBar.vue";
 import {
   fetchReportsAcLedger,
-  fetchAccountChilds,
-  fetchReportsTrialBlnc,
-  fetchReportsBlncSheet
-} from "../actions/actions";
+  fetchAccountChilds
+} from "../../actions/actions";
 import { required, digits, min_value } from "vee-validate/dist/rules";
 import {
   extend,
@@ -165,36 +163,37 @@ export default {
   },
   data() {
     return {
-      // menu: null,
-      // menu2: null,
-      // acCodesArr: [],
-      // acNoArr: [],
-      // dataFromInputs: {
-      //   startDate: new Date().toISOString().substr(0, 10),
-      //   endDate: new Date().toISOString().substr(0, 10)
-      // },
-      // selectLoadingACCode: 0,
-      // selectLoadingACNo: false,
-      // btnLoading: false,
-
+      menu: null,
+      menu2: null,
+      acCodesArr: [],
+      acNoArr: [],
+      dataFromInputs: {
+        startDate: new Date().toISOString().substr(0, 10),
+        endDate: new Date().toISOString().substr(0, 10)
+      },
+      selectLoadingACCode: 0,
+      selectLoadingACNo: false,
+      btnLoading: false,
       snackbarModel: false,
       snackBarColor: "",
-      snackbarText: "",
-      reportOf: ""
+      snackbarText: ""
     };
+  },
+  apollo: {
+    getAccounts: {
+      query: GET_ACCOUNTS_NO_ID,
+      result({ data }) {
+        this.acCodesArr = data.getAccounts;
+      },
+      loadingKey: "selectLoadingACCode"
+    }
   },
   methods: {
     accountNameNdCode(item) {
       return `${item.acc_code} - ${item.acc_name}`;
     },
     applyFilters() {
-      if (this.reportOf == 200) {
-        fetchReportsTrialBlnc(this);
-      } else if (this.reportOf == 300) {
-        fetchReportsBlncSheet(this);
-      } else {
-        fetchReportsAcLedger(this);
-      }
+      fetchReportsAcLedger(this);
     },
     emitFetchedReports(data) {
       this.$emit("emitFetchedReports", data);
@@ -212,23 +211,10 @@ export default {
     }
   },
   watch: {
-    $route(val) {
-      this.reportOf = val.params.reportId;
-      (this.dataFromInputs.startDate = new Date().toISOString().substr(0, 10)),
-        (this.dataFromInputs.endDate = new Date().toISOString().substr(0, 10));
+    $route() {
+      this.dataFromInputs.startDate = new Date().toISOString().substr(0, 10);
+      this.dataFromInputs.endDate = new Date().toISOString().substr(0, 10);
     }
-  },
-  apollo: {
-    getAccounts: {
-      query: GET_ACCOUNTS_NO_ID,
-      result({ data }) {
-        this.acCodesArr = data.getAccounts;
-      },
-      loadingKey: "selectLoadingACCode"
-    }
-  },
-  created() {
-    this.reportOf = this.$route.params.reportId;
   }
 };
 </script>

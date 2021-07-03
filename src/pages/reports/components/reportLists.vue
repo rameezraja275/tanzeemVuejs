@@ -26,7 +26,7 @@ export default {
       items: [
         { text: "Account Ledger", id: 100 },
         { text: "Trial Balance", id: 200 },
-        { text: "Report 3", id: 300 },
+        { text: "Balance sheet", id: 300 },
         { text: "Report 4", id: 400 }
       ],
       selectedItem: ""
