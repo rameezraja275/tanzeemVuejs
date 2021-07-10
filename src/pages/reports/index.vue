@@ -61,6 +61,16 @@ export default {
         { text: "Service Charges DR", value: "principal", sortable: false },
         { text: "Service Charges CR", value: "cr", sortable: false },
         { text: "Service Charges Blnc", value: "principal", sortable: false }
+      ],
+      headersForProfitLossIncome: [
+        { text: "A/C title", value: "acc_name", sortable: false },
+        { text: "Amount", value: "amount", sortable: false },
+        { text: "Total", value: "total", sortable: false }
+      ],
+      headersForProfitLossExpenditure: [
+        { text: "A/C title", value: "acc_name", sortable: false },
+        { text: "Amount", value: "amount", sortable: false },
+        { text: "Total", value: "total", sortable: false }
       ]
     };
   },
@@ -74,6 +84,11 @@ export default {
         temp = [...this.headersForBlncSheet];
       } else if (reportOf == 400) {
         temp = [...this.headersForLoanLedger];
+      } else if (reportOf == 500) {
+        temp = [
+          [...this.headersForProfitLossIncome],
+          [...this.headersForProfitLossExpenditure]
+        ];
       } else {
         temp = [...this.headersForAccLedger];
       }

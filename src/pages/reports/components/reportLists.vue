@@ -27,7 +27,8 @@ export default {
         { text: "Account Ledger", id: 100 },
         { text: "Trial Balance", id: 200 },
         { text: "Balance sheet", id: 300 },
-        { text: "Loan Ledger", id: 400 }
+        { text: "Loan Ledger", id: 400 },
+        { text: "Profit Loss Statement", id: 500 }
       ],
       selectedItem: ""
     };

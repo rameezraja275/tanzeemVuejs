@@ -8,12 +8,18 @@
         v-bind:is="currentFiltersCompToUse"
       >
       </component>
-      <div v-if="reportsArr.length !== 0">
+      <v-card>
+        <v-card-title v-if="reportOf == 500">
+          Income
+        </v-card-title>
+        <v-spacer></v-spacer>
         <v-data-table
           :loading="tableLoading"
-          :hide-default-footer="reportOf == 300"
-          :headers="currentHeaderForTable"
-          :items="reportsArr"
+          :hide-default-footer="reportOf == 300 || reportOf == 500"
+          :headers="
+            reportOf != 500 ? currentHeaderForTable : currentHeaderForTable[0]
+          "
+          :items="reportOf != 500 ? reportsArr : reportsArrIncomeProfitLoss"
           class="elevation-1"
         >
           <template v-slot:top v-if="reportOf == 300">
@@ -33,13 +39,21 @@
         </v-data-table>
         <!-- Needed another data table if report is for balance sheet-->
         <v-data-table
-          v-if="reportOf == 300"
+          v-if="reportOf == 300 || reportOf == 500"
           :loading="tableLoading"
           hide-default-footer
-          :headers="currentHeaderForTable"
-          :items="reportsArr"
+          :headers="
+            reportOf != 500 ? currentHeaderForTable : currentHeaderForTable[1]
+          "
+          :items="
+            reportOf == 500 ? reportsArrExpenditureProfitLoss : reportsArr
+          "
           class="elevation-1 mt-2"
         >
+          <v-card-title v-if="reportOf == 500">
+            Expenditure
+          </v-card-title>
+          <v-spacer></v-spacer>
           <template v-slot:top>
             <v-toolbar flat>
               <v-toolbar-title>Liabilities</v-toolbar-title>
@@ -69,7 +83,7 @@
             <h4>No reports found</h4>
           </template>
         </v-data-table> -->
-      </div>
+      </v-card>
     </div>
   </div>
 </template>
@@ -92,6 +106,21 @@ export default {
     return {
       tableLoading: false,
       reportsArr: [],
+      reportsArrIncomeProfitLoss: [
+        { acc_name: "Bf Surplus", amount: 0 },
+        { acc_name: "MISE. Income", amount: 7000 },
+        { acc_name: "Bank Profit On Pls Accounts", amount: 26843 },
+        { acc_name: "Bank Profit On Investment", amount: 67203 },
+        { acc_name: "Total:", total: 101049 }
+      ],
+      reportsArrExpenditureProfitLoss: [
+        { acc_name: "Audit Fee (provision)", amount: 5000 },
+        { acc_name: "Bank charges", amount: 100 },
+        { acc_name: "AGM Expenses", amount: 1300 },
+        { acc_name: "Deprsciation Expences", amount: 0 },
+        { acc_name: "Loans Write Off", amount: 0 },
+        { acc_name: "Total Expenditure:", total: 6400 }
+      ],
       reportOf: ""
     };
   },
