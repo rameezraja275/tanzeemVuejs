@@ -259,7 +259,8 @@ export async function getAccNoItems(vueObj) {
   try {
     const result = await vueObj.$apollo.query({
       query: GET_CONFIGURE_ACCOUNT_ID,
-      variables: variables
+      variables: variables,
+      fetchPolicy: "network-only"
     });
     if (result.errors) {
       throw result.errors[0].message;
@@ -270,7 +271,8 @@ export async function getAccNoItems(vueObj) {
       try {
         const result2 = await vueObj.$apollo.query({
           query: GET_ACCOUNTS_CHILDS,
-          variables: variables2
+          variables: variables2,
+          fetchPolicy: "network-only"
         });
         if (result2.errors) {
           throw result2.errors[0].message;

@@ -50,6 +50,17 @@ export default {
         { text: "DR", value: "dr", sortable: false },
         { text: "CR", value: "cr", sortable: false },
         { text: "Total Asset", value: "total", sortable: false }
+      ],
+      headersForLoanLedger: [
+        { text: "Date", value: "date", sortable: false },
+        { text: "Markup %", value: "markup_percentage", sortable: false },
+        { text: "No. of days", value: "markup_days", sortable: false },
+        { text: "Principle DR", value: "principal", sortable: false },
+        { text: "Principle CR", value: "cr", sortable: false },
+        { text: "Principle Blnc", value: "principal", sortable: false },
+        { text: "Service Charges DR", value: "principal", sortable: false },
+        { text: "Service Charges CR", value: "cr", sortable: false },
+        { text: "Service Charges Blnc", value: "principal", sortable: false }
       ]
     };
   },
@@ -61,6 +72,8 @@ export default {
         temp = [...this.headersForTrialBlnc];
       } else if (reportOf == 300) {
         temp = [...this.headersForBlncSheet];
+      } else if (reportOf == 400) {
+        temp = [...this.headersForLoanLedger];
       } else {
         temp = [...this.headersForAccLedger];
       }

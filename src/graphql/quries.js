@@ -770,6 +770,7 @@ export const GET_LOAN_LEDGER = gql`
   query getLoanLedger($issue_id: Int) {
     getLoanLedger(issue_id: $issue_id) {
       ledger {
+        issue_date
         loan_type
         loan_amount
         markup_percentage

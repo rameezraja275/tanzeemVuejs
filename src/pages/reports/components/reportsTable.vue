@@ -55,6 +55,20 @@
             ><span style="color:red;">{{ item.diffOfCrDr }}</span>
           </template>
         </v-data-table>
+
+        <!-- loan ledger reports -->
+        <!-- <v-data-table
+          v-if="reportOf == 400 && reportsArr.length > 0"
+          :loading="tableLoading"
+          :hide-default-footer="reportOf == 400"
+          :headers="currentHeaderForTable"
+          :items="reportsArr"
+          class="elevation-1"
+        >
+          <template v-slot:no-data>
+            <h4>No reports found</h4>
+          </template>
+        </v-data-table> -->
       </div>
     </div>
   </div>
@@ -77,7 +91,7 @@ export default {
   data() {
     return {
       tableLoading: false,
-      reportsArr: [{ acc_name: "Loan", dr: 120, cr: 12, total: 130 }],
+      reportsArr: [],
       reportOf: ""
     };
   },

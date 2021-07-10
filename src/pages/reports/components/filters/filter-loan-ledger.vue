@@ -117,6 +117,7 @@ export default {
       fetchReportsLoanLedger(this);
     },
     emitFetchedReports(data) {
+      this.prepareDataForTable(data);
       this.$emit("emitFetchedReports", data);
     },
     tableLoadingStatus(status) {
@@ -133,6 +134,15 @@ export default {
     },
     loanAmountNdId(item) {
       return `${item.id} - ${item.loan_amount}`;
+    },
+    prepareDataForTable(data) {
+      data[0].date = data[0].issue_date;
+      data.forEach((element, index) => {
+        element.cr = 0;
+        if (index > 0) {
+          element.date = element.deposit_date;
+        }
+      });
     }
   },
   watch: {
