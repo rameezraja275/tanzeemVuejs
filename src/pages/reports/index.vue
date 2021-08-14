@@ -1,101 +1,52 @@
 <template>
   <v-card class="flex" height="100%">
     <ReportLists />
-    <ReportsTable :currentHeaderForTable="currentHeaderForTable" />
+    <component v-bind:is="currentFiltersCompToUse"> </component>
   </v-card>
 </template>
 
 <script>
-import ReportsTable from "./components/reportsTable.vue";
 import ReportLists from "./components/reportLists.vue";
+import AccountLedger from "./components/reportPages/accountLedger.vue";
+import BalanceSheet from "./components/reportPages/balanceSheet.vue";
+import LoanLedger from "./components/reportPages/loanLedger.vue";
+import ProfitLossStatements from "./components/reportPages/profitLossStatements.vue";
+import TrialBalance from "./components/reportPages/trialBalance.vue";
 export default {
   components: {
-    ReportsTable,
-    ReportLists
+    ReportLists,
+    AccountLedger,
+    BalanceSheet,
+    LoanLedger,
+    ProfitLossStatements,
+    TrialBalance
   },
   data() {
     return {
-      headersForAccLedger: [
-        {
-          text: "Date",
-          align: "start",
-          sortable: false,
-          value: "voucher_date"
-        },
-        {
-          text: "A/C No",
-          align: "start",
-          sortable: false,
-          value: "acc_no_id"
-        },
-        { text: "A/C Title", value: "acc_code_name", sortable: false },
-        { text: "Narration", value: "narration", sortable: false },
-        { text: "DR", value: "dr", sortable: false },
-        { text: "CR", value: "cr", sortable: false },
-        { text: "Balance", value: "balance", sortable: false }
-      ],
-      headersForTrialBlnc: [
-        { text: "A/C title", value: "acc_name", sortable: false },
-        { text: "DR", value: "dr", sortable: false },
-        { text: "CR", value: "cr", sortable: false },
-        {
-          text: "Out of balance",
-          value: "diffOfCrDr",
-          sortable: false,
-          width: "320px"
-        }
-      ],
-      headersForBlncSheet: [
-        { text: "A/C title", value: "acc_name", sortable: false },
-        { text: "DR", value: "dr", sortable: false },
-        { text: "CR", value: "cr", sortable: false },
-        { text: "Total Asset", value: "total", sortable: false }
-      ],
-      headersForLoanLedger: [
-        { text: "Date", value: "date", sortable: false },
-        { text: "Markup %", value: "markup_percentage", sortable: false },
-        { text: "No. of days", value: "markup_days", sortable: false },
-        { text: "Principle DR", value: "principal", sortable: false },
-        { text: "Principle CR", value: "cr", sortable: false },
-        { text: "Principle Blnc", value: "principal", sortable: false },
-        { text: "Service Charges DR", value: "principal", sortable: false },
-        { text: "Service Charges CR", value: "cr", sortable: false },
-        { text: "Service Charges Blnc", value: "principal", sortable: false }
-      ],
-      headersForProfitLossIncome: [
-        { text: "A/C title", value: "acc_name", sortable: false },
-        { text: "Amount", value: "amount", sortable: false },
-        { text: "Total", value: "total", sortable: false }
-      ],
-      headersForProfitLossExpenditure: [
-        { text: "A/C title", value: "acc_name", sortable: false },
-        { text: "Amount", value: "amount", sortable: false },
-        { text: "Total", value: "total", sortable: false }
-      ]
+      reportOf: this.$route.params.reportId
     };
   },
   computed: {
-    currentHeaderForTable() {
-      let temp = [];
-      let reportOf = this.$route.params.reportId;
-      if (reportOf == 200) {
-        temp = [...this.headersForTrialBlnc];
-      } else if (reportOf == 300) {
-        temp = [...this.headersForBlncSheet];
-      } else if (reportOf == 400) {
-        temp = [...this.headersForLoanLedger];
-      } else if (reportOf == 500) {
-        temp = [
-          [...this.headersForProfitLossIncome],
-          [...this.headersForProfitLossExpenditure]
-        ];
-      } else {
-        temp = [...this.headersForAccLedger];
+    currentFiltersCompToUse() {
+      let temp = null;
+      if (this.reportOf == 100 || !this.reportOf) {
+        temp = "AccountLedger";
+      } else if (this.reportOf == 200) {
+        temp = "TrialBalance";
+      } else if (this.reportOf == 300) {
+        temp = "BalanceSheet";
+      } else if (this.reportOf == 400) {
+        temp = "LoanLedger";
+      } else if (this.reportOf == 500) {
+        temp = "ProfitLossStatements";
       }
       return temp;
+    }
+  },
+  watch: {
+    $route(val) {
+      this.reportOf = val.params.reportId;
     }
   }
 };
 </script>
-
-<style></style>
