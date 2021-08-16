@@ -141,8 +141,8 @@
 </template>
 
 <script>
-import { GET_ACCOUNTS_NO_ID } from "../../../../graphql/quries";
-import SnackBar from "../../../../components/snackBar.vue";
+import { GET_ACCOUNTS_NO_ID } from "@/graphql/quries";
+import SnackBar from "@/components/snackBar.vue";
 import Table from "../dataTable.vue";
 
 import {
