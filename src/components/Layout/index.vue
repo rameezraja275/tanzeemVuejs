@@ -79,7 +79,7 @@ export default {
         {
           title: "Reports",
           icon: "mdi-file-chart",
-          to: "/reports"
+          to: "/reports/100"
         },
         { title: "Sign Out", icon: "mdi-exit-to-app" }
       ],

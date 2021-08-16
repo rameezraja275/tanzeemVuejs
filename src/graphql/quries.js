@@ -797,3 +797,15 @@ export const GET_LOAN_ISSUES_AMOUNT_ONLY = gql`
     }
   }
 `;
+
+export const GET_PROFIT_LOSS = gql`
+  query getProfitLoss($process_date: Date) {
+    getProfitLoss(process_date: $process_date) {
+      statement {
+        account_name
+        account_balance
+        account_nature
+      }
+    }
+  }
+`;

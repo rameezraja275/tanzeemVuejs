@@ -4,7 +4,8 @@ import {
   GET_TRIAL_BALANCE,
   GET_LOAN_LEDGER,
   GET_CONFIGURE_ACCOUNT_ID,
-  GET_LOAN_ISSUES_AMOUNT_ONLY
+  GET_LOAN_ISSUES_AMOUNT_ONLY,
+  GET_PROFIT_LOSS
 } from "../../../graphql/quries";
 import { removeGraphQlTagFromErrors } from "../../../utils/helpers";
 import { ACCOUNT_CONFIG_LOAN } from "../../../utils/constants";
@@ -29,7 +30,7 @@ export async function fetchReportsAcLedger(vueObj) {
     if (result.errors) {
       throw result.errors[0].message;
     } else {
-      vueObj.emitFetchedReports(result.data.getAccountLedgerReport);
+      vueObj.prepareAndRenderDataInTable(result.data.getAccountLedgerReport);
     }
   } catch (error) {
     vueObj.message = error;
@@ -45,7 +46,7 @@ export async function fetchReportsTrialBlnc(vueObj) {
   vueObj.btnLoading = true;
   vueObj.tableLoadingStatus(true);
   let variables = {
-    date: vueObj.dataFromInputs.startDate
+    date: vueObj.startDate
   };
   try {
     const result = await vueObj.$apollo.query({
@@ -55,7 +56,7 @@ export async function fetchReportsTrialBlnc(vueObj) {
     if (result.errors) {
       throw result.errors[0].message;
     } else {
-      vueObj.emitFetchedReports(result.data.getTrialBalance);
+      vueObj.prepareAndRenderDataInTable(result.data.getTrialBalance);
     }
   } catch (error) {
     vueObj.message = error;
@@ -95,7 +96,7 @@ export async function fetchReportsBlncSheet(vueObj) {
   vueObj.btnLoading = true;
   vueObj.tableLoadingStatus(true);
   let variables = {
-    start_data: vueObj.dataFromInputs.startDate
+    start_data: vueObj.startDate
   };
   try {
     const result = await vueObj.$apollo.query({
@@ -105,7 +106,7 @@ export async function fetchReportsBlncSheet(vueObj) {
     if (result.errors) {
       throw result.errors[0].message;
     } else {
-      vueObj.emitFetchedReports(result.data.REPORTS);
+      vueObj.itemsForBalanceSheet = result.data.REPORTS;
     }
   } catch (error) {
     vueObj.message = error;
@@ -131,7 +132,7 @@ export async function fetchReportsLoanLedger(vueObj) {
     if (result.errors) {
       throw result.errors[0].message;
     } else {
-      vueObj.emitFetchedReports(result.data.getLoanLedger.ledger);
+      vueObj.prepareAndRenderDataInTable(result.data.getLoanLedger.ledger);
     }
   } catch (error) {
     vueObj.message = error;
@@ -205,4 +206,30 @@ export async function fetchLoanHistory(vueObj) {
     vueObj.snackbarText = removeGraphQlTagFromErrors(error);
   }
   vueObj.loanHistoryLoading = false;
+}
+
+export async function fetchProfitLossStatements(vueObj) {
+  vueObj.btnLoading = true;
+  vueObj.tableLoadingStatus(true);
+  let variables = {
+    process_date: vueObj.startDate
+  };
+  try {
+    const result = await vueObj.$apollo.query({
+      query: GET_PROFIT_LOSS,
+      variables: variables
+    });
+    if (result.errors) {
+      throw result.errors[0].message;
+    } else {
+      vueObj.prepareAndRenderDataInTable(result.data.getProfitLoss.statement);
+    }
+  } catch (error) {
+    vueObj.message = error;
+    vueObj.snackbarModel = true;
+    vueObj.snackBarColor = "red";
+    vueObj.snackbarText = removeGraphQlTagFromErrors(error);
+  }
+  vueObj.btnLoading = false;
+  vueObj.tableLoadingStatus(false);
 }
