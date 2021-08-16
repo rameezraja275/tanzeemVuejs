@@ -97,7 +97,7 @@ const routes = [
   {
     path: "/loan",
     name: "Loan",
-    component: () => import("../pages/loan/"),
+    component: () => import("../pages/Loan/"),
     meta: { layout: Layout },
     beforeEnter(to, from, next) {
       if (validateToken()) {
@@ -112,7 +112,7 @@ const routes = [
   {
     path: "/loanInstalment",
     name: "Loan Instalment",
-    component: () => import("../pages/loan-instalment/"),
+    component: () => import("../pages/LoanInstalment/"),
     meta: { layout: Layout },
     beforeEnter(to, from, next) {
       if (validateToken()) {
@@ -127,7 +127,7 @@ const routes = [
   {
     path: "/reports",
     name: "Reports",
-    component: () => import("../pages/reports/"),
+    component: () => import("../pages/ReportsPage/"),
     meta: { layout: Layout },
     beforeEnter(to, from, next) {
       if (validateToken()) {
@@ -141,7 +141,7 @@ const routes = [
     children: [
       {
         path: ":reportId",
-        component: () => import("../pages/reports/"),
+        component: () => import("../pages/ReportsPage/"),
         meta: { layout: Layout }
       }
     ]

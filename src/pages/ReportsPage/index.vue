@@ -7,11 +7,11 @@
 
 <script>
 import ReportLists from "./components/reportLists.vue";
-import AccountLedger from "./components/reportPages/accountLedger.vue";
-import BalanceSheet from "./components/reportPages/balanceSheet.vue";
-import LoanLedger from "./components/reportPages/loanLedger.vue";
-import ProfitLossStatements from "./components/reportPages/profitLossStatements.vue";
-import TrialBalance from "./components/reportPages/trialBalance.vue";
+import AccountLedger from "./components/reports/accountLedger.vue";
+import BalanceSheet from "./components/reports/balanceSheet.vue";
+import LoanLedger from "./components/reports/loanLedger.vue";
+import ProfitLossStatements from "./components/reports/profitLossStatements.vue";
+import TrialBalance from "./components/reports/trialBalance.vue";
 export default {
   components: {
     ReportLists,
