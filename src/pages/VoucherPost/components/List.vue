@@ -94,6 +94,7 @@
 
 <script>
 import { mapActions } from "vuex";
+import { isValidDate } from "@/utils/helpers.js";
 import { getVoucherByDate, addVouchersByImport } from "../actions/index";
 import snackBarComp from "../../../components/snackBar";
 import XLSX from "xlsx";
@@ -159,8 +160,10 @@ export default {
                 temp = false;
               }
             });
-            if (!data[1][0]) {
+            if (data[1] && !data[1][0]) {
               temp = false;
+            } else {
+              temp = isValidDate(data[1][0]);
             }
             if (temp === null) {
               temp = true;
@@ -170,7 +173,7 @@ export default {
           if (!verifyFileTemplate()) {
             this.snackBarModel = true;
             this.snackBarText =
-              "The data from the file is not structured properly";
+              "The data from the file is not structured properly!";
             this.snackBarColor = "red";
             return;
           }
@@ -190,12 +193,14 @@ export default {
         };
 
         reader.readAsBinaryString(this.file);
+
+        event.target.value = "";
       }
     },
     formatDateInImport(date) {
       date = date.split("/");
       var temp = date[0];
-      date[2] = `20${date[2]}`;
+      date[2] = date[2].length < 4 ? `20${date[2]}` : date[2];
       date[0] = date[2];
       date[2] = temp;
       date = date.join("-");
