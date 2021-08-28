@@ -196,7 +196,6 @@ export async function getVoucherByGroupId(vueObj) {
       throw result.errors[0].message;
     } else {
       vueObj.voucherGroup = result.data.getAccountVouchers.vouchers;
-      console.log(vueObj.voucherGroup, "data");
       vueObj.voucherPostDate =
         result.data.getAccountVouchers.group_details.voucher_date;
       vueObj.voucherType =
@@ -221,7 +220,6 @@ export async function getVoucherByDate(vueObj) {
     if (result.errors) {
       throw result.errors[0].message;
     } else {
-      // vueObj.vouchersGroups = result.data.getGroupVouchers;
       vueObj.voucherGroupsList(result.data.getGroupVouchers);
       vueObj.loading = false;
     }

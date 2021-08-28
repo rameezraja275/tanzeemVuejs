@@ -20,3 +20,12 @@ export const removeGraphQlTagFromErrors = data => {
   error = error.replace("Error: GraphQL error: ", "");
   return error;
 };
+
+export const isValidDate = dateString => {
+  // First check for the pattern
+  if (!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateString)) {
+    return false;
+  } else {
+    return true;
+  }
+};
